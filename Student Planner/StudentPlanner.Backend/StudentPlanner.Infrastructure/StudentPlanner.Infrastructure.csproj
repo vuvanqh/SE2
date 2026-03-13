@@ -10,4 +10,10 @@
     <ProjectReference Include="..\StudentPlanner.Core\StudentPlanner.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DbContexts\" />
+    <Folder Include="EntityConfigurations\" />
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
 </Project>
