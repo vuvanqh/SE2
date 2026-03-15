@@ -5,5 +5,7 @@
     <Project Path="StudentPlanner.Infrastructure/StudentPlanner.Infrastructure.csproj" Id="e97238a1-7613-456c-8a3a-e1c011a26f44" />
     <Project Path="StudentPlanner.UI/StudentPlanner.UI.csproj" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/tests/">
+    <Project Path="StudentPlanner.Tests/StudentPlanner.Tests.csproj" Id="48017817-08e0-42cb-bfa8-db17a1128a69" />
+  </Folder>
 </Solution>
