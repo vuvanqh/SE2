@@ -6,9 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Application\Events\PersonalEvents\DTOs\" />
-    <Folder Include="Application\Events\PersonalEvents\Services\" />
-  </ItemGroup>
-
 </Project>
