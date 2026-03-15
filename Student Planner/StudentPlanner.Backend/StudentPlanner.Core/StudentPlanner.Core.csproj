@@ -10,8 +10,6 @@
     <Folder Include="Application\DTOs\" />
     <Folder Include="Application\Services\" />
     <Folder Include="Application\ServiceContracts\" />
-    <Folder Include="Domain\Entities\" />
-    <Folder Include="Domain\RepositoryContracts\" />
   </ItemGroup>
 
 </Project>

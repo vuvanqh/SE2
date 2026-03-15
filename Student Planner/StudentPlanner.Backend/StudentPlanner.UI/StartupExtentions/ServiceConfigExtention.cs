@@ -1,4 +1,7 @@
-﻿namespace StudentPlanner.UI;
+﻿using StudentPlanner.Core.Domain.RepositoryContracts;
+using StudentPlanner.Infrastructure.Repositories;
+
+namespace StudentPlanner.UI;
 
 public static class ServiceConfigExtention
 {
@@ -7,5 +10,6 @@ public static class ServiceConfigExtention
         //services
 
         //repo
+        services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();
     }
 }
