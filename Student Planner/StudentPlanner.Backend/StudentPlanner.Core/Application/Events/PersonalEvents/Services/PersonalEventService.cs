@@ -6,7 +6,6 @@ namespace StudentPlanner.Core.Application.PersonalEvents;
 public class PersonalEventService : IPersonalEventService
 {
     private readonly IPersonalEventRepository _personalEventRepo;
-    private readonly PersonalEventPolicy _policy = new PersonalEventPolicy();
     public PersonalEventService(IPersonalEventRepository personalEventRepo)
     {
         _personalEventRepo = personalEventRepo;
@@ -19,9 +18,12 @@ public class PersonalEventService : IPersonalEventService
         return personalEvent.Id;
     }
 
-    public Task DeletePersonalEventAsync(Guid userId, Guid eventId)
+    public async Task DeletePersonalEventAsync(Guid userId, Guid eventId)
     {
-        throw new NotImplementedException();
+        PersonalEvent? personalEvent = await _personalEventRepo.GetEventByEventIdAsync(eventId);
+        PersonalEventPolicy.EnsureHasPermissions(userId, personalEvent);
+
+        await _personalEventRepo.DeleteAsync(eventId);
     }
 
     public Task<PersonalEventResponse?> GetEventByIdAsync(Guid userId, Guid eventId)
@@ -37,11 +39,9 @@ public class PersonalEventService : IPersonalEventService
     public async Task UpdatePersonalEventAsync(Guid userId, Guid eventId, UpdatePersonalEventRequest request)
     {
         PersonalEvent? personalEvent = await _personalEventRepo.GetEventByEventIdAsync(eventId);
+        PersonalEventPolicy.EnsureHasPermissions(userId, personalEvent);
 
-        if (personalEvent == null)
-            throw new ArgumentException("Event does not exist.");
-        if (personalEvent.UserId != userId) 
-            throw new UnauthorizedAccessException("You do not have permission to access this event.");
+        personalEvent = request.ToPersonalEvent(userId, eventId);
 
         PersonalEventPolicy.EnsureValidEvent(personalEvent);
         await _personalEventRepo.UpdateAsync(personalEvent);

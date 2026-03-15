@@ -82,7 +82,7 @@ public class PersonalEventTests
     }
     #endregion
 
-    #region Update Personal Event Test
+    #region Update Personal Event Tests
     [Fact]
     public async Task UpdatePersonalEvent_ShouldUpdateEvent_WhenRequestIsValid()
     {
@@ -116,7 +116,7 @@ public class PersonalEventTests
     }
 
     [Fact]
-    public async Task UpdateEvent_ShouldThrow_WhenUserDoesNotOwnTheEvent()
+    public async Task UpdatePersonalEvent_ShouldThrow_WhenUserDoesNotOwnTheEvent()
     {
         Guid eventId = Guid.NewGuid();
         Guid dummyUser = Guid.NewGuid();
@@ -139,7 +139,7 @@ public class PersonalEventTests
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => personalEventService.UpdatePersonalEventAsync(dummyUser2, eventId, request));
     }
     [Fact]
-    public async Task UpdateEvent_ShouldThrow_WhenEventDoesNotExist()
+    public async Task UpdatePersonalEvent_ShouldThrow_WhenEventDoesNotExist()
     {
         Guid eventId = Guid.NewGuid();
         Guid dummyUser = Guid.NewGuid();
@@ -154,7 +154,7 @@ public class PersonalEventTests
         await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.UpdatePersonalEventAsync(dummyUser, eventId, request));
     }
     [Fact]
-    public async Task UpdateEvent_ShouldThrow_WhenEndDateBeforeEqualStartDate()
+    public async Task UpdatePersonalEvent_ShouldThrow_WhenEndDateBeforeEqualStartDate()
     {
         Guid dummyUser = Guid.NewGuid();
 
@@ -167,7 +167,7 @@ public class PersonalEventTests
         await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.UpdatePersonalEventAsync(dummyUser, Guid.NewGuid(), request));
     }
     [Fact]
-    public async Task UpdateEvent_ShouldThrow_WhenTitleIsEmpty()
+    public async Task UpdatePersonalEvent_ShouldThrow_WhenTitleIsEmpty()
     {
         Guid dummyUser = Guid.NewGuid();
 
@@ -181,7 +181,7 @@ public class PersonalEventTests
         Exception exception = await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.UpdatePersonalEventAsync(dummyUser, Guid.NewGuid(), request));
     }
     [Fact]
-    public async Task UpdateEvent_ShouldThrow_WhenStartDateInPast()
+    public async Task UpdatePersonalEvent_ShouldThrow_WhenStartDateInPast()
     {
         Guid dummyUser = Guid.NewGuid();
 
@@ -192,6 +192,68 @@ public class PersonalEventTests
             .Create();
 
         Exception exception = await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.UpdatePersonalEventAsync(dummyUser, Guid.NewGuid(), request));
+    }
+    #endregion
+
+    #region Delete Personal Event Tests
+    [Fact]
+    public async Task DeletePersonalEvent_ShouldDeleteEvent_WhenRequestIsValid()
+    {
+        Guid eventId = Guid.NewGuid();
+        Guid dummyUser = Guid.NewGuid();
+
+        PersonalEvent personalEvent = new PersonalEvent()
+        {
+            Id = eventId,
+            UserId = dummyUser,
+            EventDetails = _fixture.Build<EventDetails>()
+                .With(t => t.StartTime, DateTime.UtcNow)
+                .With(t => t.EndTime, DateTime.UtcNow.AddDays(1))
+                .Create<EventDetails>()
+        };
+
+        _personalEventRepoMock.Setup(t => t.GetEventByEventIdAsync(eventId))
+            .ReturnsAsync(personalEvent);
+
+        PersonalEventService personalEventService = new PersonalEventService(_personalEventRepo);
+        await personalEventService.DeletePersonalEventAsync(dummyUser, eventId);
+
+        _personalEventRepoMock.Verify(r => r.DeleteAsync(It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeletePersonalEvent_ShouldThrow_WhenUserDoesNotOwnTheEvent()
+    {
+        Guid eventId = Guid.NewGuid();
+        Guid dummyUser = Guid.NewGuid();
+        Guid dummyUser2 = Guid.NewGuid();
+
+        PersonalEvent personalEvent = new PersonalEvent()
+        {
+            Id = eventId,
+            UserId = dummyUser,
+            EventDetails = _fixture.Create<EventDetails>()
+        };
+
+        _personalEventRepoMock.Setup(t => t.GetEventByEventIdAsync(eventId))
+            .ReturnsAsync(personalEvent);
+
+        PersonalEventService personalEventService = new PersonalEventService(_personalEventRepo);
+
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => personalEventService.DeletePersonalEventAsync(dummyUser2, eventId));
+    }
+    [Fact]
+    public async Task DeletePersonalEvent_ShouldThrow_WhenEventDoesNotExist()
+    {
+        Guid eventId = Guid.NewGuid();
+        Guid dummyUser = Guid.NewGuid();
+
+        _personalEventRepoMock.Setup(t => t.GetEventByEventIdAsync(eventId))
+            .ReturnsAsync((PersonalEvent?)null);
+
+        PersonalEventService personalEventService = new PersonalEventService(_personalEventRepo);
+
+        await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.DeletePersonalEventAsync(dummyUser, eventId));
     }
     #endregion
 

@@ -15,6 +15,12 @@ public class PersonalEventPolicy
         if (e.EventDetails.EndTime < e.EventDetails.StartTime)
             throw new ArgumentException("The end date must be after the start date.");
     }
-    public void EnsureExists(Guid eventId) { }
+    public static void EnsureHasPermissions(Guid userId, PersonalEvent? personalEvent)
+    {
+        if (personalEvent == null)
+            throw new ArgumentException("Event does not exist.");
+        if (personalEvent.UserId != userId)
+            throw new UnauthorizedAccessException("You do not have permission to access this event.");
+    }
 
 }
