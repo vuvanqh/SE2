@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Application\Authentication\jwt\" />
+    <Folder Include="Application\Authentication\tokens\" />
+  </ItemGroup>
+
 </Project>
