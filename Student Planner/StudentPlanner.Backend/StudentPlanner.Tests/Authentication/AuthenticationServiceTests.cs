@@ -170,5 +170,68 @@ public class AuthenticationServiceTests
         result.Message.Should().Contain("Passwords must be at least 6 characters");
     }
 
+    [Fact]
+    public async Task LoginAsync_ShouldFail_WhenUserNotFound()
+    {
+        var request = new LoginRequestDto
+        {
+            Email = "nonexistent@pw.edu.pl",
+            Password = "SomePassword123!"
+        };
+
+        _userManagerMock.Setup(x => x.FindByEmailAsync(request.Email)).ReturnsAsync((ApplicationUser?)null);
+
+        var result = await _authService.LoginAsync(request);
+
+        result.Success.Should().BeFalse();
+        result.Message.Should().Contain("Invalid Credentials");
+    }
+
+    [Fact]
+    public async Task LoginAsync_ShouldFail_WhenPasswordIsIncorrect()
+    {
+        var request = new LoginRequestDto
+        {
+            Email = "user@pw.edu.pl",
+            Password = "WrongPassword123!"
+        };
+
+        var user = new ApplicationUser { Email = request.Email, FirstName = "Test", LastName = "User" };
+
+        _userManagerMock.Setup(x => x.FindByEmailAsync(request.Email)).ReturnsAsync(user);
+        
+        _userManagerMock.Setup(x => x.CheckPasswordAsync(user, request.Password)).ReturnsAsync(false);
+
+        var result = await _authService.LoginAsync(request);
+
+        result.Success.Should().BeFalse();
+        result.Message.Should().Contain("Invalid Credentials");
+    }
+
+    [Fact]
+    public async Task LoginAsync_ShouldSucceed_AndIdentifyRole_WhenCredentialsAreValid()
+    {
+        var request = new LoginRequestDto
+        {
+            Email = "user@pw.edu.pl",
+            Password = "CorrectPassword123!"
+        };
+
+        var user = new ApplicationUser { Email = request.Email, FirstName = "Test", LastName = "User" };
+        var roles = new List<string> { "Manager" };
+
+        _userManagerMock.Setup(x => x.FindByEmailAsync(request.Email)).ReturnsAsync(user);
+        _userManagerMock.Setup(x => x.CheckPasswordAsync(user, request.Password)).ReturnsAsync(true);
+        _userManagerMock.Setup(x => x.GetRolesAsync(user)).ReturnsAsync(roles); //todo
+
+        var result = await _authService.LoginAsync(request);
+
+        result.Success.Should().BeTrue();
+        result.AccessToken.Should().NotBeNullOrEmpty(); //todo
+        result.Message.Should().Contain("Manager"); //todo
+    }
+
+
+
    
 }
