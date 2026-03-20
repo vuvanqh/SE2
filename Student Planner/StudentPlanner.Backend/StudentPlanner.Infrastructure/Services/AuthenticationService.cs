@@ -91,6 +91,20 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<ResetPasswordResponseDto> ResetPasswordAsync(ResetPasswordRequestDto request)
     {
-       throw new NotImplementedException();
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user == null)
+        {
+            return new ResetPasswordResponseDto { Success = false, Message = "Reset failed: invalid attempt."  };
+        }
+
+        var result = await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+        
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            return new ResetPasswordResponseDto { Success = false, Message = $"Reset failed: {errors}" };
+        }
+
+        return new ResetPasswordResponseDto { Success = true, Message = "Password reset successfully." };
     }
 }

@@ -274,7 +274,7 @@ public class AuthenticationServiceTests
         var isValid = System.ComponentModel.DataAnnotations.Validator.TryValidateObject(request, context, results, true);
 
         isValid.Should().BeFalse();
-        results.Should().Contain(x => x.ErrorMessage.Contains("match"));
+        results.Should().Contain(x => x.ErrorMessage != null && x.ErrorMessage.Contains("match"));
     }
 
     [Fact]
@@ -315,7 +315,7 @@ public class AuthenticationServiceTests
         var result = await _authService.ResetPasswordAsync(request);
 
         result.Success.Should().BeFalse();
-        result.Message.Should().Contain("user not found");
+        result.Message.Should().Contain("invalid attempt");
     }
 
     [Fact]
