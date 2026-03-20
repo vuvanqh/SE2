@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace StudentPlanner.Core.Application.Authentication;
 
-public class ForgotPasswordDto
+public record ForgotPasswordDto
 {
     [Required]
     [EmailAddress]
