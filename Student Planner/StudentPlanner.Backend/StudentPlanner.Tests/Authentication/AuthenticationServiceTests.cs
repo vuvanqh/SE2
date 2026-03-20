@@ -231,6 +231,32 @@ public class AuthenticationServiceTests
         result.Message.Should().Contain("Manager"); //todo
     }
 
+    [Fact]
+    public async Task ForgotPasswordAsync_ShouldSendEmail_WhenUserExists()
+    {
+        var request = new ForgotPasswordDto { Email = "user@pw.edu.pl" };
+        var user = new ApplicationUser { Email = request.Email, FirstName = "Test", LastName = "User" };
+
+        _userManagerMock.Setup(x => x.FindByEmailAsync(request.Email)).ReturnsAsync(user);
+        _userManagerMock.Setup(x => x.GeneratePasswordResetTokenAsync(user)).ReturnsAsync("mocked-token");
+
+        await _authService.ForgotPasswordAsync(request);
+
+        _emailServiceMock.Verify(x => x.SendPasswordResetEmailAsync(request.Email, "mocked-token"), Times.Once);
+    }
+
+    [Fact]
+    public async Task ForgotPasswordAsync_ShouldNotSendEmail_WhenUserDoesNotExist()
+    {
+        var request = new ForgotPasswordDto { Email = "nonexistent@pw.edu.pl" };
+
+        _userManagerMock.Setup(x => x.FindByEmailAsync(request.Email)).ReturnsAsync((ApplicationUser?)null);
+
+        await _authService.ForgotPasswordAsync(request);
+
+        _emailServiceMock.Verify(x => x.SendPasswordResetEmailAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
 
 
    
