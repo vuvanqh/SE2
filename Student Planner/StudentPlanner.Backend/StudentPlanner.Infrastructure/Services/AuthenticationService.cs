@@ -24,7 +24,32 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
     {
-        throw new NotImplementedException();
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user == null)
+        {
+            return new LoginResponseDto { Success = false, Message = "Invalid Credentials" };
+        }
+
+        var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
+        if (!isPasswordValid)
+        {
+            return new LoginResponseDto { Success = false, Message = "Invalid Credentials" };
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var roleString = roles.Any() ? string.Join(", ", roles) : "User"; //todo
+
+        // Placeholder token
+        return new LoginResponseDto
+        {
+            Success = true,
+            Message = $"Login Successful. Role: {roleString}",
+            AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            ExpiresAt = DateTime.UtcNow.AddHours(2),
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email
+        };
     }
 
     public async Task<RegisterResponseDto> RegisterAsync(RegisterRequestDto request)
