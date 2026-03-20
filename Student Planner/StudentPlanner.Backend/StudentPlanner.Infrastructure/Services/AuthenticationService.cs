@@ -81,7 +81,12 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task ForgotPasswordAsync(ForgotPasswordDto request)
     {
-        throw new NotImplementedException();
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user != null)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            await _emailService.SendPasswordResetEmailAsync(request.Email, token);
+        }
     }
 
     public async Task ResetPasswordAsync(ResetPasswordDto request)
