@@ -102,131 +102,256 @@ function initDb() {
 
 function seed() {
   const insertMany = db.transaction(() => {
-    db.prepare(`
+    const insertFaculty = db.prepare(`
       INSERT OR IGNORE INTO faculties (faculty_id, faculty_name, faculty_code)
       VALUES (?, ?, ?)
-    `).run('MINI', 'Mathematics and Information Science', 'MINI01');
+    `);
 
-    db.prepare(`
-      INSERT OR IGNORE INTO faculties (faculty_id, faculty_name, faculty_code)
-      VALUES (?, ?, ?)
-    `).run('WEiTI', 'Electronics and IT', 'WEiTI01');
-
-    db.prepare(`
+    const insertStudent = db.prepare(`
       INSERT OR IGNORE INTO students
       (student_id, first_name, last_name, faculty_id, university_email, status)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run('1', 'Jan', 'Kowalski', 'MINI', 'jan.kowalski@pw.edu.pl', 'ACTIVE');
+    `);
 
-    db.prepare(`
-      INSERT OR IGNORE INTO students
-      (student_id, first_name, last_name, faculty_id, university_email, status)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run('2', 'Anna', 'Nowak', 'MINI', 'anna.nowak@pw.edu.pl', 'ACTIVE');
-
-    db.prepare(`
+    const insertCourse = db.prepare(`
       INSERT OR IGNORE INTO courses (course_id, title, faculty_id)
       VALUES (?, ?, ?)
-    `).run('100', 'Computer Graphics', 'MINI');
+    `);
 
-    db.prepare(`
-      INSERT OR IGNORE INTO courses (course_id, title, faculty_id)
-      VALUES (?, ?, ?)
-    `).run('101', 'Algorithms', 'MINI');
-
-    db.prepare(`
+    const insertTerm = db.prepare(`
       INSERT OR IGNORE INTO terms (term_id, start_date, end_date, is_active)
       VALUES (?, ?, ?, ?)
-    `).run('2025Z', '2025-10-01', '2026-02-28', 0);
+    `);
 
-    db.prepare(`
-      INSERT OR IGNORE INTO terms (term_id, start_date, end_date, is_active)
+    const insertCourseGroup = db.prepare(`
+      INSERT OR IGNORE INTO usos_course_groups (course_id, group_number, class_type, term_id)
       VALUES (?, ?, ?, ?)
-    `).run('2025L', '2026-03-01', '2026-09-30', 1);
+    `);
 
-    db.prepare(`
-      INSERT OR IGNORE INTO usos_course_groups (group_number, course_id, class_type, term_id)
-      VALUES (?, ?, ?, ?)
-    `).run('1', '100', 'Lecture', '2025Z');
-
-    db.prepare(`
-      INSERT OR IGNORE INTO usos_course_groups (group_number, course_id, class_type, term_id)
-      VALUES (?, ?, ?, ?)
-    `).run('1', '101', 'Laboratory', '2025L');
-
-    db.prepare(`
+    const insertEnrollment = db.prepare(`
       INSERT OR IGNORE INTO enrollments
       (student_id, course_id, group_number, class_type, term_id)
       VALUES (?, ?, ?, ?, ?)
-    `).run('1', '100', '1', 'Lecture', '2025Z');
+    `);
 
-    db.prepare(`
-      INSERT OR IGNORE INTO enrollments
-      (student_id, course_id, group_number, class_type, term_id)
-      VALUES (?, ?, ?, ?, ?)
-    `).run('2', '100', '1', 'Lecture', '2025Z');
-
-    db.prepare(`
-      INSERT OR IGNORE INTO enrollments
-      (student_id, course_id, group_number, class_type, term_id)
-      VALUES (?, ?, ?, ?, ?)
-    `).run('2', '101', '1', 'Laboratory', '2025L');
-
-    db.prepare(`
-      INSERT OR IGNORE INTO usos_buildings
-      (building_id, building_name)
+    const insertBuilding = db.prepare(`
+      INSERT OR IGNORE INTO usos_buildings (building_id, building_name)
       VALUES (?, ?)
-    `).run('B1', 'Main Building');
+    `);
 
-    db.prepare(`
-      INSERT OR IGNORE INTO usos_buildings
-      (building_id, building_name)
-      VALUES (?, ?)
-    `).run('B2','Lab Building');
-
-    db.prepare(`
+    const insertRoom = db.prepare(`
       INSERT OR IGNORE INTO usos_rooms
       (room_id, building_id, room_number, room_type)
       VALUES (?, ?, ?, ?)
-    `).run('R1', 'B1', '105', 'ROOM');
+    `);
 
-    db.prepare(`
-      INSERT OR IGNORE INTO usos_rooms
-      (room_id, building_id, room_number, room_type)
-      VALUES (?, ?, ?, ?)
-    `).run('R2', 'B2', '201', 'LAB');
-
-    db.prepare(`
+    const insertScheduleEvent = db.prepare(`
       INSERT OR IGNORE INTO usos_schedule_events
       (course_id, group_number, class_type, title, term_id, start_time, end_time, room_id, is_cancelled)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      '100',
-      '1',
-      'Lecture',
-      'Computer Graphics 1',
-      '2025Z',
-      '2025-10-01 10:00:00',
-      '2025-10-01 12:00:00',
-      'R1',
-      0
-    );
+    `);
 
-    db.prepare(`
-      INSERT OR IGNORE INTO usos_schedule_events
-      (course_id, group_number, class_type, title, term_id, start_time, end_time, room_id, is_cancelled)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      '101',
-      '1',
-      'Laboratory',
-      'Algorithms Lab 1',
-      '2025L',
-      '2026-03-22 14:00:00',
-      '2026-03-22 16:00:00',
-      'R2',
-      0
-    );
+    const faculties = [
+      ['MINI', 'Mathematics and Information Science', 'MINI01'],
+      ['WEiTI', 'Electronics and IT', 'WEiTI01']
+    ];
+
+    const students = [
+      ['1', 'Jan', 'Kowalski', 'MINI', 'jan.kowalski@pw.edu.pl', 'ACTIVE'],
+      ['2', 'Anna', 'Nowak', 'MINI', 'anna.nowak@pw.edu.pl', 'ACTIVE'],
+      ['3', 'Piotr', 'Wiśniewski', 'MINI', 'piotr.wisniewski@pw.edu.pl', 'ACTIVE'],
+      ['4', 'Katarzyna', 'Wójcik', 'MINI', 'katarzyna.wojcik@pw.edu.pl', 'ACTIVE'],
+      ['5', 'Michał', 'Kamiński', 'MINI', 'michal.kaminski@pw.edu.pl', 'ACTIVE'],
+      ['6', 'Zofia', 'Lewandowska', 'MINI', 'zofia.lewandowska@pw.edu.pl', 'ACTIVE'],
+      ['7', 'Tomasz', 'Zieliński', 'MINI', 'tomasz.zielinski@pw.edu.pl', 'ACTIVE'],
+      ['8', 'Julia', 'Szymańska', 'MINI', 'julia.szymanska@pw.edu.pl', 'ACTIVE'],
+      ['9', 'Paweł', 'Woźniak', 'MINI', 'pawel.wozniak@pw.edu.pl', 'ACTIVE'],
+      ['10', 'Maria', 'Dąbrowska', 'MINI', 'maria.dabrowska@pw.edu.pl', 'ACTIVE'],
+
+      ['11', 'Adam', 'Kozłowski', 'WEiTI', 'adam.kozlowski@pw.edu.pl', 'ACTIVE'],
+      ['12', 'Natalia', 'Jankowska', 'WEiTI', 'natalia.jankowska@pw.edu.pl', 'ACTIVE'],
+      ['13', 'Krzysztof', 'Mazur', 'WEiTI', 'krzysztof.mazur@pw.edu.pl', 'ACTIVE'],
+      ['14', 'Aleksandra', 'Krawczyk', 'WEiTI', 'aleksandra.krawczyk@pw.edu.pl', 'ACTIVE'],
+      ['15', 'Mateusz', 'Piotrowski', 'WEiTI', 'mateusz.piotrowski@pw.edu.pl', 'ACTIVE'],
+      ['16', 'Wiktoria', 'Grabowska', 'WEiTI', 'wiktoria.grabowska@pw.edu.pl', 'ACTIVE'],
+      ['17', 'Jakub', 'Pawłowski', 'WEiTI', 'jakub.pawlowski@pw.edu.pl', 'ACTIVE'],
+      ['18', 'Martyna', 'Michalska', 'WEiTI', 'martyna.michalska@pw.edu.pl', 'ACTIVE'],
+      ['19', 'Damian', 'Król', 'WEiTI', 'damian.krol@pw.edu.pl', 'ACTIVE'],
+      ['20', 'Oliwia', 'Wieczorek', 'WEiTI', 'oliwia.wieczorek@pw.edu.pl', 'ACTIVE']
+    ];
+
+    const courses = [
+      ['100', 'Computer Graphics', 'MINI'],
+      ['101', 'Algorithms', 'MINI'],
+      ['102', 'Discrete Mathematics', 'MINI'],
+      ['103', 'Databases', 'MINI'],
+
+      ['200', 'Digital Circuits', 'WEiTI'],
+      ['201', 'Computer Networks', 'WEiTI'],
+      ['202', 'Embedded Systems', 'WEiTI'],
+      ['203', 'Signal Processing', 'WEiTI']
+    ];
+
+    const terms = [
+      ['2025Z', '2025-10-01', '2026-02-28', 0],
+      ['2025L', '2026-03-01', '2026-09-30', 1]
+    ];
+
+    const courseGroups = [
+      ['100', '1', 'Lecture', '2025Z'],
+      ['100', '1', 'Laboratory', '2025Z'],
+      ['101', '1', 'Lecture', '2025Z'],
+      ['101', '1', 'Laboratory', '2025Z'],
+      ['102', '1', 'Lecture', '2025Z'],
+      ['103', '1', 'Lecture', '2025L'],
+      ['103', '1', 'Laboratory', '2025L'],
+
+      ['200', '1', 'Lecture', '2025Z'],
+      ['200', '1', 'Laboratory', '2025Z'],
+      ['201', '1', 'Lecture', '2025L'],
+      ['201', '1', 'Laboratory', '2025L'],
+      ['202', '1', 'Lecture', '2025L'],
+      ['202', '1', 'Laboratory', '2025L'],
+      ['203', '1', 'Lecture', '2025Z']
+    ];
+
+    const buildings = [
+      ['B1', 'Main Building'],
+      ['B2', 'Lab Building'],
+      ['B3', 'Electronics Center']
+    ];
+
+    const rooms = [
+      ['R1', 'B1', '105', 'ROOM'],
+      ['R2', 'B2', '201', 'LAB'],
+      ['R3', 'B1', '210', 'ROOM'],
+      ['R4', 'B3', '301', 'LAB']
+    ];
+
+    const scheduleEvents = [
+  ['100', '1', 'Lecture', 'Computer Graphics - Lecture 1', '2025Z', '2025-10-02 10:00:00', '2025-10-02 12:00:00', 'R1', 0],
+  ['101', '1', 'Laboratory', 'Algorithms - Lab 1', '2025Z', '2025-10-03 12:15:00', '2025-10-03 14:00:00', 'R2', 0],
+  ['103', '1', 'Lecture', 'Databases - Lecture 1', '2025L', '2026-03-04 08:15:00', '2026-03-04 10:00:00', 'R3', 0],
+  ['200', '1', 'Lecture', 'Digital Circuits - Lecture 1', '2025Z', '2025-10-06 09:00:00', '2025-10-06 11:00:00', 'R1', 0],
+  ['201', '1', 'Laboratory', 'Computer Networks - Lab 1', '2025L', '2026-03-10 14:15:00', '2026-03-10 16:00:00', 'R4', 0],
+  ['202', '1', 'Laboratory', 'Embedded Systems - Lab 1', '2025L', '2026-03-12 10:15:00', '2026-03-12 12:00:00', 'R4', 0]
+  ];
+
+    faculties.forEach(f => insertFaculty.run(...f));
+    students.forEach(s => insertStudent.run(...s));
+    courses.forEach(c => insertCourse.run(...c));
+    terms.forEach(t => insertTerm.run(...t));
+    courseGroups.forEach(g => insertCourseGroup.run(...g));
+    buildings.forEach(b => insertBuilding.run(...b));
+    rooms.forEach(r => insertRoom.run(...r));
+    scheduleEvents.forEach(e => insertScheduleEvent.run(...e));
+
+    // MINI students 1-10
+    const miniEnrollments = {
+      '1': [
+        ['100', '1', 'Lecture', '2025Z'],
+        ['101', '1', 'Lecture', '2025Z'],
+        ['101', '1', 'Laboratory', '2025Z']
+      ],
+      '2': [
+        ['100', '1', 'Lecture', '2025Z'],
+        ['102', '1', 'Lecture', '2025Z'],
+        ['103', '1', 'Lecture', '2025L']
+      ],
+      '3': [
+        ['101', '1', 'Lecture', '2025Z'],
+        ['101', '1', 'Laboratory', '2025Z'],
+        ['103', '1', 'Laboratory', '2025L']
+      ],
+      '4': [
+        ['100', '1', 'Lecture', '2025Z'],
+        ['102', '1', 'Lecture', '2025Z']
+      ],
+      '5': [
+        ['100', '1', 'Laboratory', '2025Z'],
+        ['103', '1', 'Lecture', '2025L'],
+        ['103', '1', 'Laboratory', '2025L']
+      ],
+      '6': [
+        ['101', '1', 'Lecture', '2025Z'],
+        ['102', '1', 'Lecture', '2025Z']
+      ],
+      '7': [
+        ['100', '1', 'Lecture', '2025Z'],
+        ['101', '1', 'Laboratory', '2025Z'],
+        ['103', '1', 'Lecture', '2025L']
+      ],
+      '8': [
+        ['102', '1', 'Lecture', '2025Z'],
+        ['103', '1', 'Laboratory', '2025L']
+      ],
+      '9': [
+        ['100', '1', 'Lecture', '2025Z'],
+        ['101', '1', 'Lecture', '2025Z'],
+        ['103', '1', 'Lecture', '2025L']
+      ],
+      '10': [
+        ['100', '1', 'Laboratory', '2025Z'],
+        ['102', '1', 'Lecture', '2025Z']
+      ]
+    };
+
+    // WEiTI students 11-20
+    const weitiEnrollments = {
+      '11': [
+        ['200', '1', 'Lecture', '2025Z'],
+        ['200', '1', 'Laboratory', '2025Z'],
+        ['201', '1', 'Lecture', '2025L']
+      ],
+      '12': [
+        ['200', '1', 'Lecture', '2025Z'],
+        ['203', '1', 'Lecture', '2025Z']
+      ],
+      '13': [
+        ['201', '1', 'Lecture', '2025L'],
+        ['201', '1', 'Laboratory', '2025L'],
+        ['202', '1', 'Lecture', '2025L']
+      ],
+      '14': [
+        ['200', '1', 'Laboratory', '2025Z'],
+        ['202', '1', 'Laboratory', '2025L']
+      ],
+      '15': [
+        ['203', '1', 'Lecture', '2025Z'],
+        ['201', '1', 'Lecture', '2025L']
+      ],
+      '16': [
+        ['200', '1', 'Lecture', '2025Z'],
+        ['202', '1', 'Lecture', '2025L'],
+        ['202', '1', 'Laboratory', '2025L']
+      ],
+      '17': [
+        ['201', '1', 'Laboratory', '2025L'],
+        ['202', '1', 'Lecture', '2025L']
+      ],
+      '18': [
+        ['200', '1', 'Lecture', '2025Z'],
+        ['203', '1', 'Lecture', '2025Z'],
+        ['201', '1', 'Lecture', '2025L']
+      ],
+      '19': [
+        ['202', '1', 'Laboratory', '2025L'],
+        ['201', '1', 'Lecture', '2025L']
+      ],
+      '20': [
+        ['200', '1', 'Lecture', '2025Z'],
+        ['201', '1', 'Laboratory', '2025L'],
+        ['203', '1', 'Lecture', '2025Z']
+      ]
+    };
+
+    [miniEnrollments, weitiEnrollments].forEach(group => {
+      Object.entries(group).forEach(([studentId, list]) => {
+        list.forEach(([courseId, groupNumber, classType, termId]) => {
+          insertEnrollment.run(studentId, courseId, groupNumber, classType, termId);
+        });
+      });
+    });
   });
 
   insertMany();
