@@ -32,10 +32,10 @@ function initDb() {
       is_active INTEGER NOT NULL CHECK (is_active IN (0, 1))
     );
 
-    CREATE TABLE IF NOT EXISTS course_groups (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      group_number TEXT NOT NULL,
+    CREATE TABLE IF NOT EXISTS usos_course_groups (
+      group_id INTEGER PRIMARY KEY AUTOINCREMENT,
       course_id TEXT NOT NULL,
+      group_number TEXT NOT NULL,
       class_type TEXT NOT NULL,
       term_id TEXT NOT NULL,
       UNIQUE(course_id, group_number, class_type, term_id),
@@ -56,35 +56,33 @@ function initDb() {
       FOREIGN KEY (term_id) REFERENCES terms(term_id)
     );
 
-    CREATE TABLE IF NOT EXISTS buildings (
+    CREATE TABLE IF NOT EXISTS usos_buildings (
       building_id TEXT PRIMARY KEY,
-      building_name_pl TEXT NOT NULL,
-      building_name_en TEXT NOT NULL
+      building_name TEXT NOT NULL
     );
 
-    CREATE TABLE IF NOT EXISTS rooms (
+    CREATE TABLE IF NOT EXISTS usos_rooms (
       room_id TEXT PRIMARY KEY,
       building_id TEXT NOT NULL,
       room_number TEXT NOT NULL,
       room_type TEXT NOT NULL,
-      FOREIGN KEY (building_id) REFERENCES buildings(building_id)
+      FOREIGN KEY (building_id) REFERENCES usos_buildings(building_id)
     );
 
-    CREATE TABLE IF NOT EXISTS schedule_events (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+    CREATE TABLE IF NOT EXISTS usos_schedule_events (
+      usos_event_id INTEGER PRIMARY KEY AUTOINCREMENT,
       course_id TEXT NOT NULL,
       group_number TEXT NOT NULL,
       class_type TEXT NOT NULL,
-      title TEXT NOT NULL,
       term_id TEXT NOT NULL,
+      title TEXT NOT NULL,
       start_time TEXT NOT NULL,
       end_time TEXT NOT NULL,
       room_id TEXT,
-      building_id TEXT,
       is_cancelled INTEGER NOT NULL DEFAULT 0 CHECK (is_cancelled IN (0, 1)),
       FOREIGN KEY (course_id) REFERENCES courses(course_id),
-      FOREIGN KEY (room_id) REFERENCES rooms(room_id),
-      FOREIGN KEY (building_id) REFERENCES buildings(building_id)
+      FOREIGN KEY (room_id) REFERENCES usos_rooms(room_id),
+      FOREIGN KEY (term_id) REFERENCES terms(term_id)
     );
 
     CREATE TABLE IF NOT EXISTS sessions (
@@ -118,13 +116,13 @@ function seed() {
       INSERT OR IGNORE INTO students
       (student_id, first_name, last_name, faculty_id, university_email, status)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run('1', 'Jan', 'Kowalski', 'MINI', 'jan.kowalski@uw.edu.pl', 'ACTIVE');
+    `).run('1', 'Jan', 'Kowalski', 'MINI', 'jan.kowalski@pw.edu.pl', 'ACTIVE');
 
     db.prepare(`
       INSERT OR IGNORE INTO students
       (student_id, first_name, last_name, faculty_id, university_email, status)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run('2', 'Anna', 'Nowak', 'MINI', 'anna.nowak@uw.edu.pl', 'ACTIVE');
+    `).run('2', 'Anna', 'Nowak', 'MINI', 'anna.nowak@pw.edu.pl', 'ACTIVE');
 
     db.prepare(`
       INSERT OR IGNORE INTO courses (course_id, title, faculty_id)
@@ -147,12 +145,12 @@ function seed() {
     `).run('2025L', '2026-03-01', '2026-09-30', 1);
 
     db.prepare(`
-      INSERT OR IGNORE INTO course_groups (group_number, course_id, class_type, term_id)
+      INSERT OR IGNORE INTO usos_course_groups (group_number, course_id, class_type, term_id)
       VALUES (?, ?, ?, ?)
     `).run('1', '100', 'Lecture', '2025Z');
 
     db.prepare(`
-      INSERT OR IGNORE INTO course_groups (group_number, course_id, class_type, term_id)
+      INSERT OR IGNORE INTO usos_course_groups (group_number, course_id, class_type, term_id)
       VALUES (?, ?, ?, ?)
     `).run('1', '101', 'Laboratory', '2025L');
 
@@ -175,33 +173,33 @@ function seed() {
     `).run('2', '101', '1', 'Laboratory', '2025L');
 
     db.prepare(`
-      INSERT OR IGNORE INTO buildings
-      (building_id, building_name_pl, building_name_en)
-      VALUES (?, ?, ?)
-    `).run('B1', 'Gmach Główny', 'Main Building');
+      INSERT OR IGNORE INTO usos_buildings
+      (building_id, building_name)
+      VALUES (?, ?)
+    `).run('B1', 'Main Building');
 
     db.prepare(`
-      INSERT OR IGNORE INTO buildings
-      (building_id, building_name_pl, building_name_en)
-      VALUES (?, ?, ?)
-    `).run('B2', 'Budynek Laboratoryjny', 'Lab Building');
+      INSERT OR IGNORE INTO usos_buildings
+      (building_id, building_name)
+      VALUES (?, ?)
+    `).run('B2','Lab Building');
 
     db.prepare(`
-      INSERT OR IGNORE INTO rooms
+      INSERT OR IGNORE INTO usos_rooms
       (room_id, building_id, room_number, room_type)
       VALUES (?, ?, ?, ?)
     `).run('R1', 'B1', '105', 'ROOM');
 
     db.prepare(`
-      INSERT OR IGNORE INTO rooms
+      INSERT OR IGNORE INTO usos_rooms
       (room_id, building_id, room_number, room_type)
       VALUES (?, ?, ?, ?)
     `).run('R2', 'B2', '201', 'LAB');
 
     db.prepare(`
-      INSERT OR IGNORE INTO schedule_events
-      (course_id, group_number, class_type, title, term_id, start_time, end_time, room_id, building_id, is_cancelled)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT OR IGNORE INTO usos_schedule_events
+      (course_id, group_number, class_type, title, term_id, start_time, end_time, room_id, is_cancelled)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       '100',
       '1',
@@ -211,14 +209,13 @@ function seed() {
       '2025-10-01 10:00:00',
       '2025-10-01 12:00:00',
       'R1',
-      'B1',
       0
     );
 
     db.prepare(`
-      INSERT OR IGNORE INTO schedule_events
-      (course_id, group_number, class_type, title, term_id, start_time, end_time, room_id, building_id, is_cancelled)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT OR IGNORE INTO usos_schedule_events
+      (course_id, group_number, class_type, title, term_id, start_time, end_time, room_id, is_cancelled)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       '101',
       '1',
@@ -228,7 +225,6 @@ function seed() {
       '2026-03-22 14:00:00',
       '2026-03-22 16:00:00',
       'R2',
-      'B2',
       0
     );
   });

@@ -1,23 +1,3 @@
-// const students = [
-//   {
-//     student_id: "1",
-//     first_name: "Jan",
-//     last_name: "Kowalski",
-//     faculty_id: "MINI",
-//     university_email: "jan.kowalski@uw.edu.pl",
-//     status: "ACTIVE",
-//     enrolled_courses: ["100", "101"]
-// },
-// {
-//     student_id: "2",
-//     first_name: "Anna",
-//     last_name: "Nowak",
-//     faculty_id: "MINI",
-//     university_email: "anna.nowak@uw.edu.pl",
-//     status: "ACTIVE",
-//     enrolled_courses: ["100", "102"]
-//   }
-// ];
 const db = require('../db');
 
 function getStudentById(student_id) {

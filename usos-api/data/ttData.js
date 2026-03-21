@@ -1,56 +1,3 @@
-// const schedule_events = [
-//    {
-//     course_id: "100",
-//     group_number: "1",
-//     class_type: "LECTURE",
-//     title: "Computer Graphics 1",
-//     term_id: "2025Z",
-//     start_time: "2025-10-01 10:00:00",
-//     end_time: "2025-10-01 12:00:00",
-//     room_id: "R1",
-//     building_id: "B1",
-//     building_name: "Main Building",
-//     is_cancelled: 0
-//   },
-//   {
-//     course_id: "100",
-//     group_number: "1",
-//     class_type: "LAB",
-//     term_id: "2025Z",
-//     title: "Computer Graphics 1",
-//     start_time: "2025-10-02 14:00:00",
-//     end_time: "2025-10-02 16:00:00",
-//     room_id: "R2",
-//     building_id: "B2",
-//     building_name: "Lab Building"
-//   },
-// ];
-
-// const enrollments = [
-//   {
-//     student_id: "1",
-//     course_id: "100",
-//     group_number: "1",
-//     class_type: "LECTURE",
-//     term_id: "2025Z"
-//   }
-// ];
-
-// const courses = [
-//   { course_id: "100", subject_name: "Computer Graphics" }
-// ];
-
-// const buildings = [
-//   {
-//     building_id: "b1", building_name: { pl: "Gmach Główny", en: "Main Building"}
-//   }
-// ];
-
-// const rooms = [
-//   {
-//     room_id: "r1", building_id: "b1", room_number: "105", room_type: "ROOM"
-//   }
-// ];
 const db = require('../db');
 
 function parseDate(value) {
@@ -75,10 +22,7 @@ function mapTimetableRow(row) {
     class_type: row.class_type,
     group_number: row.group_number,
     building_id: row.building_id || null,
-    building_name: {
-      pl: row.building_name_pl || '',
-      en: row.building_name_en || ''
-    },
+    building_name: row.building_name || '',
     room_number: row.room_number || '',
     room_id: row.room_id || null
   };
@@ -95,16 +39,15 @@ function getUserTimetable(user_id, start, days) {
       r.room_id,
       r.room_number,
       b.building_id,
-      b.building_name_pl,
-      b.building_name_en
+      b.building_name
     FROM enrollments e
-    JOIN schedule_events se
+    JOIN usos_schedule_events se
       ON se.course_id = e.course_id
      AND se.group_number = e.group_number
      AND se.class_type = e.class_type
      AND se.term_id = e.term_id
-    LEFT JOIN rooms r ON r.room_id = se.room_id
-    LEFT JOIN buildings b ON b.building_id = se.building_id
+    LEFT JOIN usos_rooms r ON r.room_id = se.room_id
+    LEFT JOIN usos_buildings b ON b.building_id = r.building_id
     WHERE e.student_id = ?
     ORDER BY se.start_time
   `).all(user_id);
@@ -124,11 +67,10 @@ function getRoomTimetable(room_id, start, days) {
       r.room_id,
       r.room_number,
       b.building_id,
-      b.building_name_pl,
-      b.building_name_en
-    FROM schedule_events se
-    LEFT JOIN rooms r ON r.room_id = se.room_id
-    LEFT JOIN buildings b ON b.building_id = se.building_id
+      b.building_name
+    FROM usos_schedule_events se
+    LEFT JOIN usos_rooms r ON r.room_id = se.room_id
+    LEFT JOIN usos_buildings b ON b.building_id = r.building_id
     WHERE se.room_id = ?
     ORDER BY se.start_time
   `).all(room_id);
@@ -148,11 +90,10 @@ function getCourseTimetable(course_id, term_id, start, days) {
       r.room_id,
       r.room_number,
       b.building_id,
-      b.building_name_pl,
-      b.building_name_en
-    FROM schedule_events se
-    LEFT JOIN rooms r ON r.room_id = se.room_id
-    LEFT JOIN buildings b ON b.building_id = se.building_id
+      b.building_name
+    FROM usos_schedule_events se
+    LEFT JOIN usos_rooms r ON r.room_id = se.room_id
+    LEFT JOIN usos_buildings b ON b.building_id = r.building_id
     WHERE se.course_id = ?
       AND se.term_id = ?
     ORDER BY se.start_time
