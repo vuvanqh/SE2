@@ -1,10 +1,13 @@
-﻿using System;
+﻿using StudentPlanner.Core.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace StudentPlanner.Core.Application.Authentication.AuthenticationTokens.ServiceContracts
+namespace StudentPlanner.Core.Application.Authentication;
+
+public interface IRefreshTokenService
 {
-    internal class IRefreshTokenService
-    {
-    }
+    Task<(User, RefreshTokenResult)> RotateTokenAsync(string currentToken);
+    Task<RefreshTokenResult> IssueOnLogin(User user);
+    string HashToken(string token);
 }

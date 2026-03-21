@@ -11,29 +11,31 @@ public class AuthenticationService : IAuthenticationService
     private readonly IEmailService _emailService;
     private readonly IJwtService _jwtService;
     private readonly IUserRepository _userRepo;
+    private readonly IRefreshTokenService _refreshTokenService;
     public AuthenticationService(IIdentityService identityService, IEmailService emailService, IJwtService jwtService,
-        IUserRepository userRepo)
+        IUserRepository userRepo, IRefreshTokenService refreshTokenService)
     {
         _identityService = identityService;
         _emailService = emailService;
         _jwtService = jwtService;
         _userRepo = userRepo;
+        _refreshTokenService = refreshTokenService;
     }
 
 
-    public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
+    public async Task<(LoginResponseDto, RefreshTokenResult)> LoginAsync(LoginRequestDto request)
     {
         var user = await _identityService.SignInAsync(request.Email, request.Password);
+        RefreshTokenResult refreshTokenResult = await _refreshTokenService.IssueOnLogin(user);
         // Placeholder token
-        return new LoginResponseDto
+        return (new LoginResponseDto
         {
-            Success = true,
             Token = _jwtService.CreateToken(user),
             ExpiresAt = DateTime.UtcNow.AddHours(2),
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email
-        };
+        },refreshTokenResult);
     }
 
     public async Task RegisterAsync(RegisterRequestDto request)
@@ -47,7 +49,7 @@ public class AuthenticationService : IAuthenticationService
             FirstName = request.FirstName,
             LastName = request.LastName
         };
-
+        //TO KATARZYNA: _userManager.AddToRole(user, userroles.user or sth like that)
         await _identityService.RegisterUser(user, request.Password);    
     }
 
@@ -65,5 +67,17 @@ public class AuthenticationService : IAuthenticationService
         User user = (await _userRepo.GetUserByEmailAsync(request.Email))?? throw new ApplicationException("Invalid operation.");
  
         await _identityService.ResetPasswordAsync(user.Email, request.Token, request.NewPassword);
+    }
+    public async Task<RefreshTokenResponse> RotateRefreshToken(string refreshToken)
+    {
+
+        (User user, RefreshTokenResult refreshTokenResult) = await _refreshTokenService.RotateTokenAsync(refreshToken);
+
+        return new RefreshTokenResponse()
+        {
+            AccessToken = _jwtService.CreateToken(user),
+            RefreshToken = refreshTokenResult.RefreshToken,
+            ExpirationDate = refreshTokenResult.ExpirationDate
+        };
     }
 }

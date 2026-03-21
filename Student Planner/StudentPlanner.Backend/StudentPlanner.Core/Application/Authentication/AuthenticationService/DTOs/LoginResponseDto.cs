@@ -5,8 +5,6 @@ namespace StudentPlanner.Core.Application.Authentication;
 
 public record LoginResponseDto
 {
-    public bool Success { get; set; }
-
     //session
     public string Token { get; set; } = null!;
     public DateTime ExpiresAt { get; set; }

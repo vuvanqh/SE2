@@ -12,4 +12,5 @@ public interface IUserRepository
     Task<List<User>> GetUserByRoleAsync(string role);
     Task CreateUserAsync(User user, string role);
     Task DeleteUserAsync(User user);
+    Task<User?> GetUserByRefreshToken(string token); 
 }

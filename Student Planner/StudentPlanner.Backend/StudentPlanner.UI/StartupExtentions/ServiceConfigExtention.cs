@@ -16,6 +16,7 @@ public static class ServiceConfigExtention
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddTransient<IJwtService, JwtService>();
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
         //repo
         services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();

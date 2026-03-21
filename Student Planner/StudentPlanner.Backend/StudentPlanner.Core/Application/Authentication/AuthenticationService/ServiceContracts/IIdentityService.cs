@@ -11,4 +11,5 @@ public interface IIdentityService
     Task RegisterUser(User user, string password);
     Task<string> GeneratePasswordResetTokenAsync(string email);
     Task ResetPasswordAsync(string email, string token, string newPasswd);
+    Task UpdateToken(string email, string tokenHash, DateTime expirationDate);
 }
