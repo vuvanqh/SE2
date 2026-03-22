@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace StudentPlanner.Core.Application.Authentication;
 
-public class RegisterRequestDto
+public record RegisterRequestDto
 {
     [Required]
     [EmailAddress(ErrorMessage = "Email is not in a valid email format")]

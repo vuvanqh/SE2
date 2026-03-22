@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 namespace StudentPlanner.Core.Application.Authentication;
 
-public class ResetPasswordDto
+public record ResetPasswordRequestDto
 {
     [Required]
     [EmailAddress(ErrorMessage = "Email is not in a valid email format")]
@@ -11,6 +11,6 @@ public class ResetPasswordDto
     [Required]
     public string NewPassword { get; set; } = null!;
     [Required]
-    [Compare("Password", ErrorMessage ="Passwords do not match")]
+    [Compare("NewPassword", ErrorMessage ="Passwords do not match")]
     public string ConfirmNewPassword { get; set; } = null!;
 }

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 namespace StudentPlanner.Core.Application.Authentication;
 
-public class LoginRequestDto
+public record LoginRequestDto
 {
     [Required]
     [EmailAddress(ErrorMessage = "Email is not in a valid email format")]
