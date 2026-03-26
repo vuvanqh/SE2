@@ -27,7 +27,6 @@ public class AuthenticationService : IAuthenticationService
     {
         var user = await _identityService.SignInAsync(request.Email, request.Password);
         RefreshTokenResult refreshTokenResult = await _refreshTokenService.IssueOnLogin(user);
-        // Placeholder token
         return (new LoginResponseDto
         {
             Token = _jwtService.CreateToken(user),
@@ -39,9 +38,14 @@ public class AuthenticationService : IAuthenticationService
     }
 
     public async Task RegisterAsync(RegisterRequestDto request)
-    {
+    {   
         var existingUser = await _userRepo.GetUserByEmailAsync(request.Email);
-
+        
+        if (existingUser != null) 
+        {
+            throw new ApplicationException("A user with this email already exists.");
+        }
+        // todo integrate usosApi
         var user = new User
         {
             Id = Guid.NewGuid(),
@@ -49,14 +53,19 @@ public class AuthenticationService : IAuthenticationService
             FirstName = request.FirstName,
             LastName = request.LastName
         };
-        //TO KATARZYNA: _userManager.AddToRole(user, userroles.user or sth like that)
+        //todo role
         await _identityService.RegisterUser(user, request.Password);    
     }
 
     public async Task ForgotPasswordAsync(ForgotPasswordRequestDto request)
     {
-        User user = (await _userRepo.GetUserByEmailAsync(request.Email)) ?? throw new ApplicationException("Invalid operation.");
-      
+        User? user = (await _userRepo.GetUserByEmailAsync(request.Email));
+        
+        if (user == null) 
+        {
+            return; 
+        }
+
         var token = await _identityService.GeneratePasswordResetTokenAsync(user.Email);
         await _emailService.SendPasswordResetEmailAsync(request.Email, token);
         
@@ -68,9 +77,9 @@ public class AuthenticationService : IAuthenticationService
  
         await _identityService.ResetPasswordAsync(user.Email, request.Token, request.NewPassword);
     }
+
     public async Task<RefreshTokenResponse> RotateRefreshToken(string refreshToken)
     {
-
         (User user, RefreshTokenResult refreshTokenResult) = await _refreshTokenService.RotateTokenAsync(refreshToken);
 
         return new RefreshTokenResponse()

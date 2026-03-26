@@ -13,13 +13,11 @@ public class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly IEmailService _emailService;
 
-    public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailService emailService)
+    public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
-        _emailService = emailService;
     }
     public async Task<User> SignInAsync(string email, string password)
     {
