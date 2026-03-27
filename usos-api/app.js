@@ -75,7 +75,9 @@ app.use('/services/tt', authMiddleware, ttRoutes);
 app.use('/services/faculties', authMiddleware, facultiesRoutes);
 
 const PORT = process.env.PORT || 3000;
-
+if (require.main == module){
 app.listen(PORT, () => {
     console.log(`API działa na http://localhost:${PORT}`);
 });
+}
+module.exports = app;

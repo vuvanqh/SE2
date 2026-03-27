@@ -10,7 +10,7 @@ const {getFaculties} = require('../data/facultiesData');
 
 // GET /services/faculties
 router.get('/', (req, res) => {
-  res.json(faculties);
+  res.json(getFaculties());
 });
 
 module.exports = router;

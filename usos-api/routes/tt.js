@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getUserTimetable } = require('../data/ttData');
+const { getUserTimetable, getCourseTimetable, getRoomTimetable } = require('../data/ttData');
 
 // GET /services/tt/user
 router.get('/user', (req, res) => {
