@@ -60,7 +60,6 @@ function IntroPage() {
       </div>
     </div>
 
-    <Footer/>
     <Outlet/>
 </>
   

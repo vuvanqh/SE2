@@ -12,6 +12,7 @@
   "dependencies": {
     "@fullcalendar/core": "^6.1.20",
     "@fullcalendar/daygrid": "^6.1.20",
+    "@fullcalendar/interaction": "^6.1.20",
     "@fullcalendar/react": "^6.1.20",
     "@schedule-x/events-service": "^4.3.1",
     "@schedule-x/theme-default": "^4.3.1",
