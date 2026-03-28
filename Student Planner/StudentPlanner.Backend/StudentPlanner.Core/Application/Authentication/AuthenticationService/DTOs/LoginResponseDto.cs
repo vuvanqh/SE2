@@ -5,16 +5,13 @@ namespace StudentPlanner.Core.Application.Authentication;
 
 public record LoginResponseDto
 {
-    public bool Success { get; set; }
-    public string? Message { get; set; }
-
     //session
-    public string? AccessToken { get; set; }
+    public string Token { get; set; } = null!;
     public DateTime ExpiresAt { get; set; }
 
     //data
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-    [EmailAddress] 
-    public string? Email { get; set; }
+    public string FirstName { get; set; } = null!;
+    public string LastName { get; set; } = null!;
+    [EmailAddress]
+    public string? Email { get; set; } = null!;
 }
