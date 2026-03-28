@@ -53,8 +53,7 @@ public class AuthenticationService : IAuthenticationService
             FirstName = request.FirstName,
             LastName = request.LastName
         };
-        //todo role
-        await _identityService.RegisterUser(user, request.Password);    
+        await _identityService.RegisterUser(user, request.Password, UserRoleOptions.User.ToString());
     }
 
     public async Task ForgotPasswordAsync(ForgotPasswordRequestDto request)

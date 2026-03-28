@@ -97,6 +97,10 @@ public class RefreshTokenServiceTests
             .Setup(x => x.GenerateRefreshToken())
             .Returns(newRefreshTokenResult);
 
+        _mockJwtService
+            .Setup(x => x.GetMaxSessionLifetimeDays())
+            .Returns(7.0);
+
         _mockIdentityService
             .Setup(x => x.UpdateToken(user.Email, It.IsAny<string>(), It.IsAny<DateTime>()))
             .Returns(Task.CompletedTask);

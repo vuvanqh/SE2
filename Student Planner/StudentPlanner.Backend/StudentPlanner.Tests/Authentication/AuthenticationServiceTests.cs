@@ -69,13 +69,14 @@ public class AuthenticationServiceTests
         };
 
         _userRepoMock.Setup(repo => repo.GetUserByEmailAsync(request.Email)).ReturnsAsync((User?)null);
-        _identityServiceMock.Setup(s => s.RegisterUser(It.IsAny<User>(), request.Password)).Returns(Task.CompletedTask);
+        _identityServiceMock.Setup(s => s.RegisterUser(It.IsAny<User>(), request.Password, It.IsAny<string?>())).Returns(Task.CompletedTask);
 
         await _authService.RegisterAsync(request);
 
         _identityServiceMock.Verify(s => s.RegisterUser(
             It.Is<User>(u => u.Email == request.Email && u.FirstName == request.FirstName && u.LastName == request.LastName), 
-            request.Password), Times.Once);
+            request.Password,
+            It.IsAny<string?>()), Times.Once);
     }
 
     [Fact]

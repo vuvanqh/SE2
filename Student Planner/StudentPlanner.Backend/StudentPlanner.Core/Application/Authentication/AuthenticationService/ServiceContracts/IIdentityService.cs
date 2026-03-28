@@ -1,4 +1,4 @@
-﻿using StudentPlanner.Core.Entities;
+using StudentPlanner.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +8,7 @@ namespace StudentPlanner.Core.Application.Authentication;
 public interface IIdentityService
 {
     Task<User> SignInAsync(string email, string password);
-    Task RegisterUser(User user, string password);
+    Task RegisterUser(User user, string password, string? role = null);
     Task<string> GeneratePasswordResetTokenAsync(string email);
     Task ResetPasswordAsync(string email, string token, string newPasswd);
     Task UpdateToken(string email, string tokenHash, DateTime expirationDate);

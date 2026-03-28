@@ -1,7 +1,8 @@
-﻿using Azure.Core;
+using Azure.Core;
 using Microsoft.AspNetCore.Identity;
 using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Core.Entities;
+using StudentPlanner.Infrastructure;
 using StudentPlanner.Infrastructure.IdentityEntities;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,13 @@ public class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
 
-    public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+    public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _roleManager = roleManager;
     }
     public async Task<User> SignInAsync(string email, string password)
     {
@@ -30,11 +33,11 @@ public class IdentityService : IIdentityService
         return user.ToUser(); 
     }
 
-    public async Task RegisterUser(User user, string password)
+    public async Task RegisterUser(User user, string password, string? role = null)
     {
         ApplicationUser appUser = new ApplicationUser()
         {
-            Id = Guid.NewGuid(),
+            Id = user.Id,
             UserName = user.Email,
             Email = user.Email,
             FirstName = user.FirstName,
@@ -47,6 +50,15 @@ public class IdentityService : IIdentityService
         {
             var errors = string.Join(", ", result.Errors.Select(e => e.Description));
             throw new ApplicationException(errors);
+        }
+
+        if (role != null)
+        {
+            if (!await _roleManager.RoleExistsAsync(role))
+            {
+                await _roleManager.CreateAsync(new ApplicationRole { Name = role });
+            }
+            await _userManager.AddToRoleAsync(appUser, role);
         }
     }
 

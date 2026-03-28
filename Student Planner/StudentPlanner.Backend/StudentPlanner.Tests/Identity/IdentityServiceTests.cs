@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Infrastructure.IdentityEntities;
 using StudentPlanner.Infrastructure.Identity;
+using StudentPlanner.Infrastructure;
 using FluentAssertions;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
@@ -18,6 +19,7 @@ public class IdentityServiceTests
 {
     private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
     private readonly Mock<SignInManager<ApplicationUser>> _signInManagerMock;
+    private readonly Mock<RoleManager<ApplicationRole>> _roleManagerMock;
     private readonly IIdentityService _identityService;
 
     public IdentityServiceTests()
@@ -29,7 +31,10 @@ public class IdentityServiceTests
         var claimsFactory = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
         _signInManagerMock = new Mock<SignInManager<ApplicationUser>>(_userManagerMock.Object, contextAccessor.Object, claimsFactory.Object, null!, null!, null!, null!);
 
-        _identityService = new IdentityService(_userManagerMock.Object, _signInManagerMock.Object);
+        var roleStore = new Mock<IRoleStore<ApplicationRole>>();
+        _roleManagerMock = new Mock<RoleManager<ApplicationRole>>(roleStore.Object, null!, null!, null!, null!);
+
+        _identityService = new IdentityService(_userManagerMock.Object, _signInManagerMock.Object, _roleManagerMock.Object);
     }
 
     [Fact]
