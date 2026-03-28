@@ -73,7 +73,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task ResetPasswordAsync(ResetPasswordRequestDto request)
     {
-        User user = (await _userRepo.GetUserByEmailAsync(request.Email))?? throw new ApplicationException("Invalid operation.");
+        User user = (await _userRepo.GetUserByEmailAsync(request.Email))?? throw new ApplicationException("User not found.");
  
         await _identityService.ResetPasswordAsync(user.Email, request.Token, request.NewPassword);
     }

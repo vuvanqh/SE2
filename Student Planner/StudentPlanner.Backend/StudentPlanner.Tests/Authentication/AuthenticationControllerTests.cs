@@ -11,17 +11,17 @@ using FluentAssertions;
 
 namespace StudentPlanner.Tests.Authentication;
 
-public class AccountControllerTests
+public class AuthenticationControllerTests
 {
     private readonly Mock<IAuthenticationService> _authServiceMock;
-    private readonly Mock<ILogger<AccountController>> _loggerMock;
-    private readonly AccountController _controller;
+    private readonly Mock<ILogger<AuthenticationController>> _loggerMock;
+    private readonly AuthenticationController _controller;
 
-    public AccountControllerTests()
+    public AuthenticationControllerTests()
     {
         _authServiceMock = new Mock<IAuthenticationService>();
-        _loggerMock = new Mock<ILogger<AccountController>>();
-        _controller = new AccountController(_authServiceMock.Object, _loggerMock.Object)
+        _loggerMock = new Mock<ILogger<AuthenticationController>>();
+        _controller = new AuthenticationController(_authServiceMock.Object, _loggerMock.Object)
         {
             ControllerContext = new ControllerContext
             {

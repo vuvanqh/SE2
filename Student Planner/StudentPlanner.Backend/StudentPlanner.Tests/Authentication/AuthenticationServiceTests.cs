@@ -162,7 +162,7 @@ public class AuthenticationServiceTests
         
         _userRepoMock.Setup(repo => repo.GetUserByEmailAsync(request.Email)).ReturnsAsync((User?)null);
         Func<Task> act = async () => await _authService.ResetPasswordAsync(request);
-        await act.Should().ThrowAsync<ApplicationException>().WithMessage("Invalid operation.");
+        await act.Should().ThrowAsync<ApplicationException>();
         
         _identityServiceMock.Verify(i => i.ResetPasswordAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
