@@ -1,0 +1,1 @@
+Before running app rename .env.template into .env
