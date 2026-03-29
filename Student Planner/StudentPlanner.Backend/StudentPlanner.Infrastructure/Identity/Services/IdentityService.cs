@@ -84,11 +84,12 @@ public class IdentityService : IIdentityService
         ApplicationUser appUser = (await _userManager.FindByEmailAsync(user.Email)) ?? throw new ApplicationException("User not found");
         return await _userManager.GetRolesAsync(appUser);
     }
-    public async Task UpdateToken(string email, string tokenHash, DateTime expirationDate)
+    public async Task UpdateToken(string email, string tokenHash, DateTime expirationDate, DateTime issuedAt)
     {
         ApplicationUser user = (await _userManager.FindByEmailAsync(email)) ?? throw new ApplicationException("Invalid Operation");
         user.RefreshTokenHash = tokenHash;
         user.RefreshTokenExpirationDate = expirationDate;
+        user.RefreshTokenIssuedAt = issuedAt;
         await _userManager.UpdateAsync(user);
     }
 }

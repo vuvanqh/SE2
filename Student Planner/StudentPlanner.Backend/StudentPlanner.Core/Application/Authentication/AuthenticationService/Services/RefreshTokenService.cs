@@ -1,4 +1,4 @@
-﻿using StudentPlanner.Core.Domain.RepositoryContracts;
+using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Core.Entities;
 using System.Security.Cryptography;
 using System.Text;
@@ -51,7 +51,7 @@ public class RefreshTokenService : IRefreshTokenService
         RefreshTokenResult result = _tokenService.GenerateRefreshToken();
         var tokenHash = HashToken(result.RefreshToken);
         var expiratinoDate = result.ExpirationDate;
-        await _identityService.UpdateToken(user.Email, tokenHash, expiratinoDate);
+        await _identityService.UpdateToken(user.Email, tokenHash, expiratinoDate, user.RefreshTokenIssuedAt);
 
         return result;
     }

@@ -102,7 +102,7 @@ public class RefreshTokenServiceTests
             .Returns(7.0);
 
         _mockIdentityService
-            .Setup(x => x.UpdateToken(user.Email, It.IsAny<string>(), It.IsAny<DateTime>()))
+            .Setup(x => x.UpdateToken(user.Email, It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -113,7 +113,7 @@ public class RefreshTokenServiceTests
         result.Item2.Should().Be(newRefreshTokenResult);
 
         _mockIdentityService.Verify(
-            x => x.UpdateToken(user.Email, It.IsAny<string>(), newRefreshTokenResult.ExpirationDate),
+            x => x.UpdateToken(user.Email, It.IsAny<string>(), newRefreshTokenResult.ExpirationDate, It.IsAny<DateTime>()),
             Times.Once);
     }
 
@@ -201,7 +201,7 @@ public class RefreshTokenServiceTests
             .Returns(expectedRefreshTokenResult);
 
         _mockIdentityService
-            .Setup(x => x.UpdateToken(user.Email, It.IsAny<string>(), expectedRefreshTokenResult.ExpirationDate))
+            .Setup(x => x.UpdateToken(user.Email, It.IsAny<string>(), expectedRefreshTokenResult.ExpirationDate, It.IsAny<DateTime>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -212,7 +212,7 @@ public class RefreshTokenServiceTests
         user.RefreshTokenIssuedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
 
         _mockIdentityService.Verify(
-            x => x.UpdateToken(user.Email, It.IsAny<string>(), expectedRefreshTokenResult.ExpirationDate),
+            x => x.UpdateToken(user.Email, It.IsAny<string>(), expectedRefreshTokenResult.ExpirationDate, It.IsAny<DateTime>()),
             Times.Once);
     }
 

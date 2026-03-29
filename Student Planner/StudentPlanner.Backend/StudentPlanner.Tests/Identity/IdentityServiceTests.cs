@@ -185,7 +185,7 @@ public class IdentityServiceTests
         _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync(appUser);
         
         var expiration = DateTime.UtcNow.AddDays(7);
-        Func<Task> act = async () => await _identityService.UpdateToken("test@pw.edu.pl", "token-hash", expiration);
+        Func<Task> act = async () => await _identityService.UpdateToken("test@pw.edu.pl", "token-hash", expiration, DateTime.UtcNow);
 
         await act.Should().NotThrowAsync();
         
@@ -200,7 +200,7 @@ public class IdentityServiceTests
     {
         _userManagerMock.Setup(x => x.FindByEmailAsync("ghost@pw.edu.pl")).ReturnsAsync((ApplicationUser?)null);
 
-        Func<Task> act = async () => await _identityService.UpdateToken("ghost@pw.edu.pl", "hash", DateTime.UtcNow);
+        Func<Task> act = async () => await _identityService.UpdateToken("ghost@pw.edu.pl", "hash", DateTime.UtcNow, DateTime.UtcNow);
 
         await act.Should().ThrowAsync<ApplicationException>().WithMessage("Invalid Operation");
     }

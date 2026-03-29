@@ -59,7 +59,7 @@ public class AuthenticationController : ControllerBase
                 return BadRequest(ex.Message);
             }
 
-            return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error during user creation");
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.ToString());
         }
     }
 
