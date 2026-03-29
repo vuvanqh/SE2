@@ -7,7 +7,7 @@ public record LoginResponseDto
 {
     //session
     public string Token { get; set; } = null!;
-    public DateTime ExpiresAt { get; set; }
+    public string UserRole { get; set; } = null!;
 
     //data
     public string FirstName { get; set; } = null!;

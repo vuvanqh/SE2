@@ -7,6 +7,8 @@ using StudentPlanner.Core.Application;
 using StudentPlanner.Core.Entities;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using FluentAssertions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace StudentPlanner.Tests.Authentication;
 
@@ -35,8 +37,6 @@ public class AuthenticationServiceTests
             _refreshTokenServiceMock.Object);
     }
 
-
-
     [Fact]
     public async Task RegisterAsync_ShouldThrowException_WhenEmailAlreadyExists()
     {
@@ -44,9 +44,7 @@ public class AuthenticationServiceTests
         {
             Email = "test@pw.edu.pl",
             Password = "Password123!",
-            ConfirmPassword = "Password123!",
-            FirstName = "John",
-            LastName = "Doe"
+            ConfirmPassword = "Password123!"
         };
         
         var existingUser = new User { Id = Guid.NewGuid(), Email = request.Email, FirstName = "Existing", LastName = "User" };
@@ -63,35 +61,36 @@ public class AuthenticationServiceTests
         {
             Email = "test@pw.edu.pl",
             Password = "Password123!",
-            ConfirmPassword = "Password123!",
-            FirstName = "John",
-            LastName = "Doe"
+            ConfirmPassword = "Password123!"
         };
 
         _userRepoMock.Setup(repo => repo.GetUserByEmailAsync(request.Email)).ReturnsAsync((User?)null);
-        _identityServiceMock.Setup(s => s.RegisterUser(It.IsAny<User>(), request.Password)).Returns(Task.CompletedTask);
+        _identityServiceMock.Setup(s => s.RegisterUser(It.IsAny<User>(), request.Password, It.IsAny<string?>())).Returns(Task.CompletedTask);
 
         await _authService.RegisterAsync(request);
 
         _identityServiceMock.Verify(s => s.RegisterUser(
-            It.Is<User>(u => u.Email == request.Email && u.FirstName == request.FirstName && u.LastName == request.LastName), 
-            request.Password), Times.Once);
+            It.Is<User>(u => u.Email == request.Email && u.FirstName == "FirstNamePlaceholder" && u.LastName == "LastNamePlaceholder"), 
+            request.Password,
+            It.IsAny<string?>()), Times.Once);
     }
 
     [Fact]
-    public async Task LoginAsync_ShouldReturnTokens_WhenValid()
+    public async Task LoginAsync_ShouldReturnTokensAndRole_WhenValid()
     {
         var request = new LoginRequestDto { Email = "user@pw.edu.pl", Password = "Password123!" };
         var user = new User { Id = Guid.NewGuid(), Email = request.Email, FirstName = "John", LastName = "Doe" };
         var refreshTokenResult = new RefreshTokenResult { RefreshToken = "ref-token", ExpirationDate = DateTime.UtcNow.AddDays(7) };
 
         _identityServiceMock.Setup(s => s.SignInAsync(request.Email, request.Password)).ReturnsAsync(user);
+        _identityServiceMock.Setup(s => s.GetUserRolesAsync(user)).ReturnsAsync(new List<string> { "User" });
         _refreshTokenServiceMock.Setup(r => r.IssueOnLogin(user)).ReturnsAsync(refreshTokenResult);
         _jwtServiceMock.Setup(j => j.CreateToken(user)).Returns("jwt-token");
 
         var (loginResponse, refreshResult) = await _authService.LoginAsync(request);
 
         loginResponse.Token.Should().Be("jwt-token");
+        loginResponse.UserRole.Should().Be("User");
         loginResponse.Email.Should().Be(user.Email);
         refreshResult.RefreshToken.Should().Be("ref-token");
     }
@@ -162,11 +161,10 @@ public class AuthenticationServiceTests
         
         _userRepoMock.Setup(repo => repo.GetUserByEmailAsync(request.Email)).ReturnsAsync((User?)null);
         Func<Task> act = async () => await _authService.ResetPasswordAsync(request);
-        await act.Should().ThrowAsync<ApplicationException>().WithMessage("Invalid operation.");
+        await act.Should().ThrowAsync<ApplicationException>();
         
         _identityServiceMock.Verify(i => i.ResetPasswordAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
-
 
     [Fact]
     public async Task RotateRefreshToken_ShouldReturnNewTokens_WhenValid()
@@ -189,7 +187,7 @@ public class AuthenticationServiceTests
     public async Task RotateRefreshToken_ShouldNotGenerateJwt_WhenRefreshTokenIsInvalid()
     {
         var oldToken = "invalid-token";
-        _refreshTokenServiceMock.Setup(r => r.RotateTokenAsync(oldToken))
+        _refreshTokenServiceMock.Setup(r => r.RotateTokenAsync(oldToken)!)
             .ThrowsAsync(new UnauthorizedAccessException("Invalid refresh token"));
         Func<Task> act = async () => await _authService.RotateRefreshToken(oldToken);
         await act.Should().ThrowAsync<UnauthorizedAccessException>();

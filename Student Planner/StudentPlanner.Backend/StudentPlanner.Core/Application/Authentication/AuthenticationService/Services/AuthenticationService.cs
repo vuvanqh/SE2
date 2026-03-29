@@ -26,11 +26,14 @@ public class AuthenticationService : IAuthenticationService
     public async Task<(LoginResponseDto, RefreshTokenResult)> LoginAsync(LoginRequestDto request)
     {
         var user = await _identityService.SignInAsync(request.Email, request.Password);
+        var roles = await _identityService.GetUserRolesAsync(user);
+        var role = roles.FirstOrDefault() ?? UserRoleOptions.User.ToString();
+
         RefreshTokenResult refreshTokenResult = await _refreshTokenService.IssueOnLogin(user);
         return (new LoginResponseDto
         {
             Token = _jwtService.CreateToken(user),
-            ExpiresAt = DateTime.UtcNow.AddHours(2),
+            UserRole = role,
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email
@@ -50,11 +53,10 @@ public class AuthenticationService : IAuthenticationService
         {
             Id = Guid.NewGuid(),
             Email = request.Email,
-            FirstName = request.FirstName,
-            LastName = request.LastName
+            FirstName = "FirstNamePlaceholder",
+            LastName = "LastNamePlaceholder"
         };
-        //todo role
-        await _identityService.RegisterUser(user, request.Password);    
+        await _identityService.RegisterUser(user, request.Password, UserRoleOptions.User.ToString());
     }
 
     public async Task ForgotPasswordAsync(ForgotPasswordRequestDto request)
@@ -73,7 +75,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task ResetPasswordAsync(ResetPasswordRequestDto request)
     {
-        User user = (await _userRepo.GetUserByEmailAsync(request.Email))?? throw new ApplicationException("Invalid operation.");
+        User user = (await _userRepo.GetUserByEmailAsync(request.Email))?? throw new ApplicationException("User not found.");
  
         await _identityService.ResetPasswordAsync(user.Email, request.Token, request.NewPassword);
     }

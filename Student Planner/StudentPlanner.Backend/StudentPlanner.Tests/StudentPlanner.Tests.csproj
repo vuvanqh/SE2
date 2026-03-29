@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -16,10 +16,14 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
     <PackageReference Include="xunit.v3" Version="3.2.2" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\StudentPlanner.Core\StudentPlanner.Core.csproj" />
     <ProjectReference Include="..\StudentPlanner.Infrastructure\StudentPlanner.Infrastructure.csproj" />
+    <ProjectReference Include="..\StudentPlanner.UI\StudentPlanner.UI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>

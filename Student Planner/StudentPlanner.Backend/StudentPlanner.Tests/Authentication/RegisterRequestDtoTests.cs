@@ -15,9 +15,7 @@ public class RegisterRequestDtoTests
         {
             Email = "test@gmail.com",
             Password = "Password123!",
-            ConfirmPassword = "Password123!",
-            FirstName = "John",
-            LastName = "Doe"
+            ConfirmPassword = "Password123!"
         };
         var context = new ValidationContext(request);
         var results = new List<ValidationResult>();
@@ -35,9 +33,7 @@ public class RegisterRequestDtoTests
         {
             Email = "test@pw.edu.pl",
             Password = "Password123!",
-            ConfirmPassword = "DifferentPassword123!",
-            FirstName = "John",
-            LastName = "Doe"
+            ConfirmPassword = "DifferentPassword123!"
         };
 
         var context = new ValidationContext(request);

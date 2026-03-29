@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Core.Entities;
 using StudentPlanner.Infrastructure.IdentityEntities;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.AspNetCore.Identity;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace StudentPlanner.Infrastructure.Repositories;
 
@@ -13,11 +13,10 @@ namespace StudentPlanner.Infrastructure.Repositories;
 public class UserRepository : IUserRepository
 {
     private readonly ApplicationDbContext _context;
-    public UserRepository(ApplicationDbContext context) => _context = context;
 
-    public Task CreateUserAsync(User user, string role)
+    public UserRepository(ApplicationDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
 
     public Task DeleteUserAsync(User user)
