@@ -1,7 +1,10 @@
-import type { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../../hooks/authHooks";
 
-export default function ProtectedRoute({children}:{children: ReactNode}){
+export default function ProtectedRoute(){
+    //const {isAuthenticated} = useAuth();
     const isAuthenticated = true;
-    return isAuthenticated?children:<Navigate to="/login" replace/>
+    if(!isAuthenticated)
+        return <Navigate to="/login" replace/>
+    return <Outlet/>
 }

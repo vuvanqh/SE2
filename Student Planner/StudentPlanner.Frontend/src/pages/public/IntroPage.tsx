@@ -1,7 +1,6 @@
 import { Outlet, useNavigate } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar'
 import IntroSection from '../../components/sections/IntroSection';
-import Footer from '../../components/layout/Footer';
 import AuthorsCard from '../../components/common/AuthorsCard';
 import {images} from "../../assets/index";
 

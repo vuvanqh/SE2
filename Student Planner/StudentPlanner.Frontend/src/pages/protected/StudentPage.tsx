@@ -2,7 +2,7 @@ import { Outlet, useNavigate } from "react-router-dom"
 import Navbar from "../../components/layout/Navbar"
 import Calendar from "../../components/calendar/Calendar";
 
-export default function MainPage(){
+export default function StudentPage(){
     const navigate = useNavigate();
 
     return <>
