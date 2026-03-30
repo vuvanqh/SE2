@@ -18,10 +18,10 @@ jobs:
           dotnet-version: "10.0.x"
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore StudentPlanner.Backend/StudentPlanner.Backend.slnx
 
       - name: Check format
-        run: dotnet format --verify-no-changes
+        run: dotnet format StudentPlanner.Backend/StudentPlanner.Backend.slnx --verify-no-changes
 
       - name: Build and analyze
         run: dotnet build StudentPlanner.Backend/StudentPlanner.Backend.slnx -c Release /p:TreatWarningsAsErrors=true
