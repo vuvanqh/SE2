@@ -1,0 +1,150 @@
+
+.img-fluid {
+  display: block;
+}
+
+.rounded-circle {
+  width: clamp(200px, 22vw, 260px);
+  height: clamp(200px, 22vw, 260px);
+
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 30%; 
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+
+  transition: transform 250ms ease;
+}
+
+.img-us {
+  object-position: 0%;
+}
+
+.img-section1 {
+  object-position: 0%;
+}
+
+.img-section2 {
+  object-position: 100%;
+}
+
+.rounded-circle:hover {
+  transform: scale(1.04);
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  width: 100%;
+  padding: 0 clamp(2rem, 15vw, 16rem);
+}
+
+/* ===== ROW ===== */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(2rem, 4vw, 4rem);
+}
+
+/* ===== COLUMNS (FIXED) ===== */
+.col {
+  flex: 1;              /* 🔥 allow proper distribution */
+  min-width: 0;         /* 🔥 prevents overflow bugs */
+}
+
+/* ===== IMAGE ===== */
+.rounded-circle {
+  width: clamp(240px, 24vw, 320px);
+  height: clamp(240px, 24vw, 320px);
+
+  border-radius: 50%;
+  object-fit: cover;
+
+  box-shadow:
+    0 12px 30px rgba(0,0,0,0.2),
+    0 0 20px rgba(220, 38, 38, 0.08);
+}
+
+/* ===== TEXT (FIXED) ===== */
+.col:last-child {
+  max-width: 100ch;
+}
+
+/* ALWAYS left-align text (critical) */
+.intro-left .col:last-child,
+.intro-right .col:last-child {
+  text-align: left;
+}
+
+/* ===== ORDER ===== */
+.intro-left .row {
+  flex-direction: row;
+}
+
+.intro-right .row {
+  flex-direction: row-reverse; /* 🔥 correct mirroring */
+}
+
+/* ===== TYPOGRAPHY ===== */
+.display-4 {
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  margin-bottom: 0.5rem;
+  color: #111;
+}
+
+section p {
+  font-size: clamp(1.1rem, 1.2vw, 1.25rem);  
+  line-height: 1.75;  
+  color: #444;
+}
+
+/* ===== SECTION ===== */
+section {
+  padding: clamp(2rem, 5vw, 3rem) 0;
+  scroll-margin-top: 80px; 
+}
+
+.intro-left .col:first-child {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.intro-right .col:first-child {
+  display: flex;
+  justify-content: flex-end;
+}
+
+section::after {
+  content: "";
+  display: block;
+
+  width: 60%;
+  height: 2px;
+
+  margin: 2.5rem auto 0 auto;
+
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--navy),
+    transparent
+  );
+
+  opacity: 0.4;
+}
+
+.display-4 {
+  animation: fadeUp 400ms ease both;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
