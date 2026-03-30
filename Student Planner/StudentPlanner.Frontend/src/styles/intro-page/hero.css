@@ -1,0 +1,104 @@
+.hero {
+  position: relative;
+  height: 65vh;
+
+  background-image: url("../../assets/us.jpg"); /* change image */
+  background-size: cover;
+  background-position: center 60%;
+  background-repeat: no-repeat;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  /* 🔵 navy + subtle red blend */
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.75),
+      rgba(15, 23, 42, 0.55)
+    ),
+    radial-gradient(
+      circle at 70% 30%,
+      rgba(220, 38, 38, 0.15),
+      transparent 60%
+    );
+
+  backdrop-filter: blur(2px);
+  z-index: 0;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+
+  text-align: center;
+  color: white;
+
+  max-width: 700px;
+  padding: 0 20px;
+
+  animation: heroFade 600ms ease-out both;
+}
+
+.hero-content h1 {
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+
+  margin-bottom: 1rem;
+
+  text-shadow:
+    0 4px 20px rgba(0,0,0,0.5),
+    0 0 20px rgba(220, 38, 38, 0.2);
+}
+
+.hero-content p {
+  font-size: 1.3rem;
+  font-weight: 400;
+  opacity: 0.9;
+
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+
+.hero-content a {
+  display: inline-block;
+
+  padding: 0.8rem 2.2rem;
+  border-radius: 999px;
+
+  background: rgba(220, 38, 38, 0.85);
+  color: white;
+
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+
+  text-decoration: none;
+
+  border: 1px solid rgba(255,255,255,0.2);
+
+  backdrop-filter: blur(6px);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+/* 🔵 navy hover (consistent with navbar buttons) */
+.hero-content a:hover {
+  background: var(--navy);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+}
