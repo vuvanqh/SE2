@@ -1,8 +1,3 @@
-// import React, { useState } from 'react'
-// import { Link } from 'react-router-dom'
-// import { useLocation, useNavigate } from 'react-router-dom';
-// import Modal from '../../components/modals/Modal';
-
 import { useActionState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Modal from '../../components/modals/Modal'
@@ -22,10 +17,10 @@ const initial_state = {
   errors: null
 }
 
-const mockUsers = [{
-    email: "hehe@pw.edu.pl",
-    password: "qwerty1234"
-}]
+// const mockUsers = [{
+//     email: "hehe@pw.edu.pl",
+//     password: "qwerty1234"
+// }]
 
 //TO-DO: Handle login and Registeration code duplication after discussion
 export default function LoginPage() {
