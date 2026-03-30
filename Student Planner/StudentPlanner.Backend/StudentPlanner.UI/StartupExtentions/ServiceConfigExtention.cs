@@ -8,7 +8,7 @@ using StudentPlanner.Infrastructure.Identity;
 using StudentPlanner.Infrastructure.Repositories;
 using StudentPlanner.Infrastructure.Services;
 
-namespace StudentPlanner.UI;
+namespace StudentPlanner.Backend;
 
 public static class ServiceConfigExtention
 {

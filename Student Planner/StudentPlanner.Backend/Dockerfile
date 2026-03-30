@@ -6,6 +6,7 @@ COPY *.sln* .
 COPY StudentPlanner.Core/*.csproj StudentPlanner.Core/
 COPY StudentPlanner.Infrastructure/*.csproj StudentPlanner.Infrastructure/
 COPY StudentPlanner.UI/*.csproj StudentPlanner.UI/
+COPY StudentPlanner.Tests/*.csproj StudentPlanner.Tests/
 
 RUN dotnet restore
 

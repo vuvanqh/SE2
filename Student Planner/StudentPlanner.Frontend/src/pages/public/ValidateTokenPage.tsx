@@ -23,8 +23,8 @@ const initial_state = {
   errors: null
 }
 
-function handleAction(prev: stateType, formData: FormData): Promise<stateType>{
-  return new Promise((resolve, reject)=>prev)
+function handleAction(prev: stateType, _: FormData): Promise<stateType>{
+  return new Promise((_, _reject)=>prev)
 }
 
 export default function ValidateTokenPage() {

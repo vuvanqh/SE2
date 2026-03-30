@@ -167,3 +167,13 @@ WHERE [a].[NormalizedEmail] = @normalizedEmail
 2026-03-29 13:46:40.070 +02:00 [INF] Executed action StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) in 518.1572ms
 2026-03-29 13:46:40.074 +02:00 [INF] Executed endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
 2026-03-29 13:46:40.078 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5049/api/auth/login - 400 null application/json; charset=utf-8 555.1952ms
+2026-03-30 19:52:38.891 +02:00 [INF] User profile is available. Using 'C:\Users\Hoang\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-30 19:52:39.120 +02:00 [INF] Now listening on: http://localhost:5049
+2026-03-30 19:52:39.158 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 19:52:39.162 +02:00 [INF] Hosting environment: Development
+2026-03-30 19:52:39.166 +02:00 [INF] Content root path: C:\Users\Hoang\Desktop\Uni\Semester 6\SE2\Student Planner\StudentPlanner.Backend\StudentPlanner.UI
+2026-03-30 20:04:26.282 +02:00 [INF] User profile is available. Using 'C:\Users\Hoang\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-30 20:04:26.456 +02:00 [INF] Now listening on: http://localhost:5049
+2026-03-30 20:04:26.502 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 20:04:26.504 +02:00 [INF] Hosting environment: Development
+2026-03-30 20:04:26.506 +02:00 [INF] Content root path: C:\Users\Hoang\Desktop\Uni\Semester 6\SE2\Student Planner\StudentPlanner.Backend\StudentPlanner.UI
