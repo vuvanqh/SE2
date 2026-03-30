@@ -1,0 +1,17 @@
+bin/
+obj/
+*.user
+*.suo
+*.log
+.git
+.gitignore
+docker-compose*
+Dockerfile*
+.vs/
+.vscode/
+.DS_Store
+Thumbs.db
+.env
+.env.*
+
+/StudentPlanner.Backend/StudentPlanner.UI/logs/*

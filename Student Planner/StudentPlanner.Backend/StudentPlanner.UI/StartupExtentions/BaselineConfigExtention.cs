@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
 using StudentPlanner.Infrastructure;
 using StudentPlanner.Infrastructure.IdentityEntities;
 using System.Text.Json.Serialization;
 
-namespace StudentPlanner.UI;
+namespace StudentPlanner.Backend;
 
 public static class BaselineConfigExtention
 {
@@ -40,11 +41,6 @@ public static class BaselineConfigExtention
             options.Filters.Add(new AuthorizeFilter(policy));
             options.Filters.Add(new ProducesAttribute("application/json"));
             options.Filters.Add(new ConsumesAttribute("application/json"));
-        }).AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.Converters.Add(
-                new JsonStringEnumConverter()
-            );
         });
 
         //dbContext
@@ -53,12 +49,12 @@ public static class BaselineConfigExtention
             options.UseSqlServer(config.GetConnectionString("Default"), sqlOptions =>
             {
                 sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-
                 sqlOptions.EnableRetryOnFailure(
                     maxRetryCount: 5,
                     maxRetryDelay: TimeSpan.FromSeconds(5),
                     errorNumbersToAdd: null);
             });
+            options.EnableSensitiveDataLogging();
 
         });
 
@@ -88,6 +84,25 @@ public static class BaselineConfigExtention
             };
         });
 
+        services.AddSwaggerGen(options =>
+        {
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "StudentPlanner.UI.xml"));
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "StudentPlanner API",
+                Version = "v1",
+                Description = "API for managing university schedule and social events."
+            });
+            options.UseAllOfForInheritance();
+            options.UseOneOfForPolymorphism();
+        }); 
+
+        //json
+        services.Configure<JsonOptions>(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
+        
         //authorization
         services.AddAuthorization();
     }

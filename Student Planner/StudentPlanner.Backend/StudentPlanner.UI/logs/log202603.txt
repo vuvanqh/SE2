@@ -1,0 +1,179 @@
+2026-03-29 13:01:05.955 +02:00 [INF] User profile is available. Using 'C:\Users\Hoang\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-29 13:01:07.295 +02:00 [INF] Now listening on: http://localhost:5049
+2026-03-29 13:01:07.825 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-29 13:01:07.850 +02:00 [INF] Hosting environment: Development
+2026-03-29 13:01:07.871 +02:00 [INF] Content root path: C:\Users\Hoang\Desktop\Uni\Semester 6\SE2\Student Planner\StudentPlanner.Backend\StudentPlanner.UI
+2026-03-29 13:01:22.155 +02:00 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - null null
+2026-03-29 13:01:22.522 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:01:22.561 +02:00 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - 204 null null 422.6611ms
+2026-03-29 13:01:22.595 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5049/api/auth/login - application/json 50
+2026-03-29 13:01:22.625 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:01:22.635 +02:00 [INF] Executing endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:01:22.690 +02:00 [INF] Route matched with {action = "LogIn", controller = "Authentication"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] LogIn(StudentPlanner.Core.Application.Authentication.LoginRequestDto) on controller StudentPlanner.UI.Controllers.AuthenticationController (StudentPlanner.UI).
+2026-03-29 13:01:23.290 +02:00 [INF] Executing action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) - Validation state: "Valid"
+2026-03-29 13:01:26.457 +02:00 [INF] Executed DbCommand (234ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[RefreshTokenExpirationDate], [a].[RefreshTokenHash], [a].[RefreshTokenIssuedAt], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-03-29 13:01:27.081 +02:00 [INF] Executed action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI), returned result Microsoft.AspNetCore.Mvc.UnauthorizedObjectResult in 3780.206ms.
+2026-03-29 13:01:27.109 +02:00 [INF] Executing UnauthorizedObjectResult, writing value of type 'System.String'.
+2026-03-29 13:01:27.136 +02:00 [INF] Executed action StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) in 4435.8738ms
+2026-03-29 13:01:27.144 +02:00 [INF] Executed endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:01:27.170 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5049/api/auth/login - 401 null application/json; charset=utf-8 4575.6655ms
+2026-03-29 13:01:27.179 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5049/api/auth/refreshtoken - null 0
+2026-03-29 13:01:27.196 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:01:27.200 +02:00 [INF] Executing endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI)'
+2026-03-29 13:01:27.212 +02:00 [INF] Route matched with {action = "RefreshToken", controller = "Authentication"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] RefreshToken() on controller StudentPlanner.UI.Controllers.AuthenticationController (StudentPlanner.UI).
+2026-03-29 13:01:27.325 +02:00 [INF] Executing action method StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI) - Validation state: "Valid"
+2026-03-29 13:01:27.336 +02:00 [INF] Executed action method StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI), returned result Microsoft.AspNetCore.Mvc.UnauthorizedObjectResult in 6.5677ms.
+2026-03-29 13:01:27.339 +02:00 [INF] Executing UnauthorizedObjectResult, writing value of type 'System.String'.
+2026-03-29 13:01:27.342 +02:00 [INF] Executed action StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI) in 121.5018ms
+2026-03-29 13:01:27.345 +02:00 [INF] Executed endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI)'
+2026-03-29 13:01:27.347 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5049/api/auth/refreshtoken - 401 null application/json; charset=utf-8 167.9986ms
+2026-03-29 13:21:47.061 +02:00 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - null null
+2026-03-29 13:21:47.162 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:21:47.186 +02:00 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - 204 null null 139.5058ms
+2026-03-29 13:21:47.231 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5049/api/auth/login - application/json 50
+2026-03-29 13:21:47.255 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:21:47.264 +02:00 [INF] Executing endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:21:47.294 +02:00 [INF] Route matched with {action = "LogIn", controller = "Authentication"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] LogIn(StudentPlanner.Core.Application.Authentication.LoginRequestDto) on controller StudentPlanner.UI.Controllers.AuthenticationController (StudentPlanner.UI).
+2026-03-29 13:21:47.746 +02:00 [INF] Executing action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) - Validation state: "Valid"
+2026-03-29 13:21:49.224 +02:00 [INF] Executed DbCommand (18ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[RefreshTokenExpirationDate], [a].[RefreshTokenHash], [a].[RefreshTokenIssuedAt], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-03-29 13:21:49.651 +02:00 [INF] Executed action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI), returned result Microsoft.AspNetCore.Mvc.UnauthorizedObjectResult in 1898.8581ms.
+2026-03-29 13:21:49.655 +02:00 [INF] Executing UnauthorizedObjectResult, writing value of type 'System.String'.
+2026-03-29 13:21:49.661 +02:00 [INF] Executed action StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) in 2363.8914ms
+2026-03-29 13:21:49.663 +02:00 [INF] Executed endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:21:49.666 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5049/api/auth/login - 401 null application/json; charset=utf-8 2435.2454ms
+2026-03-29 13:21:49.679 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5049/api/auth/refreshtoken - null 0
+2026-03-29 13:21:49.685 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:21:49.687 +02:00 [INF] Executing endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI)'
+2026-03-29 13:21:49.689 +02:00 [INF] Route matched with {action = "RefreshToken", controller = "Authentication"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] RefreshToken() on controller StudentPlanner.UI.Controllers.AuthenticationController (StudentPlanner.UI).
+2026-03-29 13:21:49.717 +02:00 [INF] Executing action method StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI) - Validation state: "Valid"
+2026-03-29 13:21:49.720 +02:00 [INF] Executed action method StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI), returned result Microsoft.AspNetCore.Mvc.UnauthorizedObjectResult in 1.245ms.
+2026-03-29 13:21:49.723 +02:00 [INF] Executing UnauthorizedObjectResult, writing value of type 'System.String'.
+2026-03-29 13:21:49.725 +02:00 [INF] Executed action StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI) in 33.3006ms
+2026-03-29 13:21:49.728 +02:00 [INF] Executed endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI)'
+2026-03-29 13:21:49.730 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5049/api/auth/refreshtoken - 401 null application/json; charset=utf-8 50.5298ms
+2026-03-29 13:30:46.934 +02:00 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - null null
+2026-03-29 13:30:47.030 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:30:47.045 +02:00 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - 204 null null 140.7793ms
+2026-03-29 13:30:47.053 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5049/api/auth/login - application/json 49
+2026-03-29 13:30:47.073 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:30:47.081 +02:00 [INF] Executing endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:30:47.100 +02:00 [INF] Route matched with {action = "LogIn", controller = "Authentication"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] LogIn(StudentPlanner.Core.Application.Authentication.LoginRequestDto) on controller StudentPlanner.UI.Controllers.AuthenticationController (StudentPlanner.UI).
+2026-03-29 13:30:47.491 +02:00 [INF] Executing action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) - Validation state: "Valid"
+2026-03-29 13:30:48.040 +02:00 [INF] Executed DbCommand (145ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[RefreshTokenExpirationDate], [a].[RefreshTokenHash], [a].[RefreshTokenIssuedAt], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-03-29 13:30:48.495 +02:00 [INF] Executed action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI), returned result Microsoft.AspNetCore.Mvc.UnauthorizedObjectResult in 991.7992ms.
+2026-03-29 13:30:48.505 +02:00 [INF] Executing UnauthorizedObjectResult, writing value of type 'System.String'.
+2026-03-29 13:30:48.516 +02:00 [INF] Executed action StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) in 1412.0703ms
+2026-03-29 13:30:48.523 +02:00 [INF] Executed endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:30:48.529 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5049/api/auth/login - 401 null application/json; charset=utf-8 1475.0145ms
+2026-03-29 13:30:48.546 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5049/api/auth/refreshtoken - null 0
+2026-03-29 13:30:48.555 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:30:48.559 +02:00 [INF] Executing endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI)'
+2026-03-29 13:30:48.562 +02:00 [INF] Route matched with {action = "RefreshToken", controller = "Authentication"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] RefreshToken() on controller StudentPlanner.UI.Controllers.AuthenticationController (StudentPlanner.UI).
+2026-03-29 13:30:48.632 +02:00 [INF] Executing action method StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI) - Validation state: "Valid"
+2026-03-29 13:30:48.636 +02:00 [INF] Executed action method StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI), returned result Microsoft.AspNetCore.Mvc.UnauthorizedObjectResult in 0.363ms.
+2026-03-29 13:30:48.638 +02:00 [INF] Executing UnauthorizedObjectResult, writing value of type 'System.String'.
+2026-03-29 13:30:48.642 +02:00 [INF] Executed action StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI) in 74.1873ms
+2026-03-29 13:30:48.645 +02:00 [INF] Executed endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI)'
+2026-03-29 13:30:48.647 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5049/api/auth/refreshtoken - 401 null application/json; charset=utf-8 101.1675ms
+2026-03-29 13:31:01.909 +02:00 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - null null
+2026-03-29 13:31:01.927 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:31:01.930 +02:00 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - 204 null null 20.9737ms
+2026-03-29 13:31:01.941 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5049/api/auth/login - application/json 49
+2026-03-29 13:31:01.949 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:31:01.952 +02:00 [INF] Executing endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:31:01.955 +02:00 [INF] Route matched with {action = "LogIn", controller = "Authentication"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] LogIn(StudentPlanner.Core.Application.Authentication.LoginRequestDto) on controller StudentPlanner.UI.Controllers.AuthenticationController (StudentPlanner.UI).
+2026-03-29 13:31:02.040 +02:00 [INF] Executing action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) - Validation state: "Valid"
+2026-03-29 13:31:02.100 +02:00 [INF] Executed DbCommand (31ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[RefreshTokenExpirationDate], [a].[RefreshTokenHash], [a].[RefreshTokenIssuedAt], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-03-29 13:31:02.349 +02:00 [INF] Executed action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI), returned result Microsoft.AspNetCore.Mvc.UnauthorizedObjectResult in 302.7708ms.
+2026-03-29 13:31:02.357 +02:00 [INF] Executing UnauthorizedObjectResult, writing value of type 'System.String'.
+2026-03-29 13:31:02.361 +02:00 [INF] Executed action StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) in 400.2339ms
+2026-03-29 13:31:02.366 +02:00 [INF] Executed endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:31:02.369 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5049/api/auth/login - 401 null application/json; charset=utf-8 428.6098ms
+2026-03-29 13:31:02.382 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5049/api/auth/refreshtoken - null 0
+2026-03-29 13:31:02.388 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:31:02.389 +02:00 [INF] Executing endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI)'
+2026-03-29 13:31:02.391 +02:00 [INF] Route matched with {action = "RefreshToken", controller = "Authentication"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] RefreshToken() on controller StudentPlanner.UI.Controllers.AuthenticationController (StudentPlanner.UI).
+2026-03-29 13:31:02.419 +02:00 [INF] Executing action method StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI) - Validation state: "Valid"
+2026-03-29 13:31:02.422 +02:00 [INF] Executed action method StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI), returned result Microsoft.AspNetCore.Mvc.UnauthorizedObjectResult in 0.0482ms.
+2026-03-29 13:31:02.426 +02:00 [INF] Executing UnauthorizedObjectResult, writing value of type 'System.String'.
+2026-03-29 13:31:02.429 +02:00 [INF] Executed action StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI) in 31.7883ms
+2026-03-29 13:31:02.433 +02:00 [INF] Executed endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.RefreshToken (StudentPlanner.UI)'
+2026-03-29 13:31:02.435 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5049/api/auth/refreshtoken - 401 null application/json; charset=utf-8 53.1647ms
+2026-03-29 13:36:28.399 +02:00 [INF] User profile is available. Using 'C:\Users\Hoang\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-29 13:36:28.958 +02:00 [INF] Now listening on: http://localhost:5049
+2026-03-29 13:36:29.107 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-29 13:36:29.113 +02:00 [INF] Hosting environment: Development
+2026-03-29 13:36:29.115 +02:00 [INF] Content root path: C:\Users\Hoang\Desktop\Uni\Semester 6\SE2\Student Planner\StudentPlanner.Backend\StudentPlanner.UI
+2026-03-29 13:38:15.765 +02:00 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - null null
+2026-03-29 13:38:16.059 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:38:16.088 +02:00 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - 204 null null 354.6674ms
+2026-03-29 13:38:16.138 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5049/api/auth/login - application/json 49
+2026-03-29 13:38:16.178 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:38:16.201 +02:00 [INF] Executing endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:38:16.284 +02:00 [INF] Route matched with {action = "LogIn", controller = "Authentication"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] LogIn(StudentPlanner.Core.Application.Authentication.LoginRequestDto) on controller StudentPlanner.UI.Controllers.AuthenticationController (StudentPlanner.UI).
+2026-03-29 13:38:17.076 +02:00 [INF] Executing action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) - Validation state: "Valid"
+2026-03-29 13:38:20.251 +02:00 [INF] Executed DbCommand (178ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[RefreshTokenExpirationDate], [a].[RefreshTokenHash], [a].[RefreshTokenIssuedAt], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-03-29 13:38:20.715 +02:00 [INF] Executed action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI), returned result Microsoft.AspNetCore.Mvc.BadRequestObjectResult in 3623.893ms.
+2026-03-29 13:38:20.735 +02:00 [INF] Executing BadRequestObjectResult, writing value of type 'System.String'.
+2026-03-29 13:38:20.754 +02:00 [INF] Executed action StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) in 4454.1444ms
+2026-03-29 13:38:20.762 +02:00 [INF] Executed endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:38:20.782 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5049/api/auth/login - 400 null application/json; charset=utf-8 4645.7295ms
+2026-03-29 13:44:39.642 +02:00 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - null null
+2026-03-29 13:44:39.759 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:44:39.776 +02:00 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - 204 null null 152.6591ms
+2026-03-29 13:44:39.839 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5049/api/auth/login - application/json 50
+2026-03-29 13:44:39.860 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:44:39.866 +02:00 [INF] Executing endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:44:39.885 +02:00 [INF] Route matched with {action = "LogIn", controller = "Authentication"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] LogIn(StudentPlanner.Core.Application.Authentication.LoginRequestDto) on controller StudentPlanner.UI.Controllers.AuthenticationController (StudentPlanner.UI).
+2026-03-29 13:44:40.161 +02:00 [INF] Executing action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) - Validation state: "Valid"
+2026-03-29 13:44:40.574 +02:00 [INF] Executed DbCommand (105ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[RefreshTokenExpirationDate], [a].[RefreshTokenHash], [a].[RefreshTokenIssuedAt], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-03-29 13:44:40.980 +02:00 [INF] Executed action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI), returned result Microsoft.AspNetCore.Mvc.BadRequestObjectResult in 813.7562ms.
+2026-03-29 13:44:40.986 +02:00 [INF] Executing BadRequestObjectResult, writing value of type 'System.String'.
+2026-03-29 13:44:40.996 +02:00 [INF] Executed action StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) in 1106.8938ms
+2026-03-29 13:44:40.999 +02:00 [INF] Executed endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:44:41.005 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5049/api/auth/login - 400 null application/json; charset=utf-8 1165.4413ms
+2026-03-29 13:46:39.499 +02:00 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - null null
+2026-03-29 13:46:39.509 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:46:39.512 +02:00 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5049/api/auth/login - 204 null null 13.7806ms
+2026-03-29 13:46:39.524 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5049/api/auth/login - application/json 48
+2026-03-29 13:46:39.531 +02:00 [INF] CORS policy execution successful.
+2026-03-29 13:46:39.534 +02:00 [INF] Executing endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:46:39.540 +02:00 [INF] Route matched with {action = "LogIn", controller = "Authentication"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] LogIn(StudentPlanner.Core.Application.Authentication.LoginRequestDto) on controller StudentPlanner.UI.Controllers.AuthenticationController (StudentPlanner.UI).
+2026-03-29 13:46:39.720 +02:00 [INF] Executing action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) - Validation state: "Valid"
+2026-03-29 13:46:39.836 +02:00 [INF] Executed DbCommand (24ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[RefreshTokenExpirationDate], [a].[RefreshTokenHash], [a].[RefreshTokenIssuedAt], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-03-29 13:46:40.060 +02:00 [INF] Executed action method StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI), returned result Microsoft.AspNetCore.Mvc.BadRequestObjectResult in 336.4782ms.
+2026-03-29 13:46:40.066 +02:00 [INF] Executing BadRequestObjectResult, writing value of type 'System.String'.
+2026-03-29 13:46:40.070 +02:00 [INF] Executed action StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI) in 518.1572ms
+2026-03-29 13:46:40.074 +02:00 [INF] Executed endpoint 'StudentPlanner.UI.Controllers.AuthenticationController.LogIn (StudentPlanner.UI)'
+2026-03-29 13:46:40.078 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5049/api/auth/login - 400 null application/json; charset=utf-8 555.1952ms
+2026-03-30 19:52:38.891 +02:00 [INF] User profile is available. Using 'C:\Users\Hoang\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-30 19:52:39.120 +02:00 [INF] Now listening on: http://localhost:5049
+2026-03-30 19:52:39.158 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 19:52:39.162 +02:00 [INF] Hosting environment: Development
+2026-03-30 19:52:39.166 +02:00 [INF] Content root path: C:\Users\Hoang\Desktop\Uni\Semester 6\SE2\Student Planner\StudentPlanner.Backend\StudentPlanner.UI
+2026-03-30 20:04:26.282 +02:00 [INF] User profile is available. Using 'C:\Users\Hoang\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-30 20:04:26.456 +02:00 [INF] Now listening on: http://localhost:5049
+2026-03-30 20:04:26.502 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 20:04:26.504 +02:00 [INF] Hosting environment: Development
+2026-03-30 20:04:26.506 +02:00 [INF] Content root path: C:\Users\Hoang\Desktop\Uni\Semester 6\SE2\Student Planner\StudentPlanner.Backend\StudentPlanner.UI
