@@ -14,6 +14,7 @@ function initDb() {
       last_name TEXT NOT NULL,
       faculty_id TEXT NOT NULL,
       university_email TEXT NOT NULL UNIQUE,
+      password TEXT NOT NULL,
       status TEXT NOT NULL,
       FOREIGN KEY (faculty_id) REFERENCES faculties(faculty_id)
     );
@@ -109,8 +110,8 @@ function seed() {
 
     const insertStudent = db.prepare(`
       INSERT OR IGNORE INTO students
-      (student_id, first_name, last_name, faculty_id, university_email, status)
-      VALUES (?, ?, ?, ?, ?, ?)
+      (student_id, first_name, last_name, faculty_id, university_email, password, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `);
 
     const insertCourse = db.prepare(`
@@ -157,27 +158,27 @@ function seed() {
     ];
 
     const students = [
-      ['1', 'Jan', 'Kowalski', 'MINI', 'jan.kowalski@pw.edu.pl', 'ACTIVE'],
-      ['2', 'Anna', 'Nowak', 'MINI', 'anna.nowak@pw.edu.pl', 'ACTIVE'],
-      ['3', 'Piotr', 'Wiśniewski', 'MINI', 'piotr.wisniewski@pw.edu.pl', 'ACTIVE'],
-      ['4', 'Katarzyna', 'Wójcik', 'MINI', 'katarzyna.wojcik@pw.edu.pl', 'ACTIVE'],
-      ['5', 'Michał', 'Kamiński', 'MINI', 'michal.kaminski@pw.edu.pl', 'ACTIVE'],
-      ['6', 'Zofia', 'Lewandowska', 'MINI', 'zofia.lewandowska@pw.edu.pl', 'ACTIVE'],
-      ['7', 'Tomasz', 'Zieliński', 'MINI', 'tomasz.zielinski@pw.edu.pl', 'ACTIVE'],
-      ['8', 'Julia', 'Szymańska', 'MINI', 'julia.szymanska@pw.edu.pl', 'ACTIVE'],
-      ['9', 'Paweł', 'Woźniak', 'MINI', 'pawel.wozniak@pw.edu.pl', 'ACTIVE'],
-      ['10', 'Maria', 'Dąbrowska', 'MINI', 'maria.dabrowska@pw.edu.pl', 'ACTIVE'],
+      ['1', 'Jan', 'Kowalski', 'MINI', 'jan.kowalski@pw.edu.pl', 'Jan12345', 'ACTIVE'],
+      ['2', 'Anna', 'Nowak', 'MINI', 'anna.nowak@pw.edu.pl', 'Anna12345', 'ACTIVE'],
+      ['3', 'Piotr', 'Wiśniewski', 'MINI', 'piotr.wisniewski@pw.edu.pl', 'Piotr12345', 'ACTIVE'],
+      ['4', 'Katarzyna', 'Wójcik', 'MINI', 'katarzyna.wojcik@pw.edu.pl', 'Kasia12345', 'ACTIVE'],
+      ['5', 'Michał', 'Kamiński', 'MINI', 'michal.kaminski@pw.edu.pl', 'Michal12345', 'ACTIVE'],
+      ['6', 'Zofia', 'Lewandowska', 'MINI', 'zofia.lewandowska@pw.edu.pl', 'Zofia12345', 'ACTIVE'],
+      ['7', 'Tomasz', 'Zieliński', 'MINI', 'tomasz.zielinski@pw.edu.pl', 'Tomasz12345', 'ACTIVE'],
+      ['8', 'Julia', 'Szymańska', 'MINI', 'julia.szymanska@pw.edu.pl', 'Julia12345', 'ACTIVE'],
+      ['9', 'Paweł', 'Woźniak', 'MINI', 'pawel.wozniak@pw.edu.pl', 'Pawel12345', 'ACTIVE'],
+      ['10', 'Maria', 'Dąbrowska', 'MINI', 'maria.dabrowska@pw.edu.pl', 'Maria12345', 'ACTIVE'],
 
-      ['11', 'Adam', 'Kozłowski', 'WEiTI', 'adam.kozlowski@pw.edu.pl', 'ACTIVE'],
-      ['12', 'Natalia', 'Jankowska', 'WEiTI', 'natalia.jankowska@pw.edu.pl', 'ACTIVE'],
-      ['13', 'Krzysztof', 'Mazur', 'WEiTI', 'krzysztof.mazur@pw.edu.pl', 'ACTIVE'],
-      ['14', 'Aleksandra', 'Krawczyk', 'WEiTI', 'aleksandra.krawczyk@pw.edu.pl', 'ACTIVE'],
-      ['15', 'Mateusz', 'Piotrowski', 'WEiTI', 'mateusz.piotrowski@pw.edu.pl', 'ACTIVE'],
-      ['16', 'Wiktoria', 'Grabowska', 'WEiTI', 'wiktoria.grabowska@pw.edu.pl', 'ACTIVE'],
-      ['17', 'Jakub', 'Pawłowski', 'WEiTI', 'jakub.pawlowski@pw.edu.pl', 'ACTIVE'],
-      ['18', 'Martyna', 'Michalska', 'WEiTI', 'martyna.michalska@pw.edu.pl', 'ACTIVE'],
-      ['19', 'Damian', 'Król', 'WEiTI', 'damian.krol@pw.edu.pl', 'ACTIVE'],
-      ['20', 'Oliwia', 'Wieczorek', 'WEiTI', 'oliwia.wieczorek@pw.edu.pl', 'ACTIVE']
+      ['11', 'Adam', 'Kozłowski', 'WEiTI', 'adam.kozlowski@pw.edu.pl', 'Adam12345', 'ACTIVE'],
+      ['12', 'Natalia', 'Jankowska', 'WEiTI', 'natalia.jankowska@pw.edu.pl', 'Natalia12345', 'ACTIVE'],
+      ['13', 'Krzysztof', 'Mazur', 'WEiTI', 'krzysztof.mazur@pw.edu.pl', 'Krzysztof12345', 'ACTIVE'],
+      ['14', 'Aleksandra', 'Krawczyk', 'WEiTI', 'aleksandra.krawczyk@pw.edu.pl', 'Ala12345', 'ACTIVE'],
+      ['15', 'Mateusz', 'Piotrowski', 'WEiTI', 'mateusz.piotrowski@pw.edu.pl', 'Mateusz12345', 'ACTIVE'],
+      ['16', 'Wiktoria', 'Grabowska', 'WEiTI', 'wiktoria.grabowska@pw.edu.pl', 'Wiktoria12345', 'ACTIVE'],
+      ['17', 'Jakub', 'Pawłowski', 'WEiTI', 'jakub.pawlowski@pw.edu.pl', 'Jakub12345', 'ACTIVE'],
+      ['18', 'Martyna', 'Michalska', 'WEiTI', 'martyna.michalska@pw.edu.pl', 'Martyna12345', 'ACTIVE'],
+      ['19', 'Damian', 'Król', 'WEiTI', 'damian.krol@pw.edu.pl', 'Damian12345', 'ACTIVE'],
+      ['20', 'Oliwia', 'Wieczorek', 'WEiTI', 'oliwia.wieczorek@pw.edu.pl', 'Oliwia12345', 'ACTIVE']
     ];
 
     const courses = [
@@ -229,13 +230,13 @@ function seed() {
     ];
 
     const scheduleEvents = [
-  ['100', '1', 'Lecture', 'Computer Graphics - Lecture 1', '2025Z', '2025-10-02 10:00:00', '2025-10-02 12:00:00', 'R1', 0],
-  ['101', '1', 'Laboratory', 'Algorithms - Lab 1', '2025Z', '2025-10-03 12:15:00', '2025-10-03 14:00:00', 'R2', 0],
-  ['103', '1', 'Lecture', 'Databases - Lecture 1', '2025L', '2026-03-04 08:15:00', '2026-03-04 10:00:00', 'R3', 0],
-  ['200', '1', 'Lecture', 'Digital Circuits - Lecture 1', '2025Z', '2025-10-06 09:00:00', '2025-10-06 11:00:00', 'R1', 0],
-  ['201', '1', 'Laboratory', 'Computer Networks - Lab 1', '2025L', '2026-03-10 14:15:00', '2026-03-10 16:00:00', 'R4', 0],
-  ['202', '1', 'Laboratory', 'Embedded Systems - Lab 1', '2025L', '2026-03-12 10:15:00', '2026-03-12 12:00:00', 'R4', 0]
-  ];
+      ['100', '1', 'Lecture', 'Computer Graphics - Lecture 1', '2025Z', '2025-10-02 10:00:00', '2025-10-02 12:00:00', 'R1', 0],
+      ['101', '1', 'Laboratory', 'Algorithms - Lab 1', '2025Z', '2025-10-03 12:15:00', '2025-10-03 14:00:00', 'R2', 0],
+      ['103', '1', 'Lecture', 'Databases - Lecture 1', '2025L', '2026-03-04 08:15:00', '2026-03-04 10:00:00', 'R3', 0],
+      ['200', '1', 'Lecture', 'Digital Circuits - Lecture 1', '2025Z', '2025-10-06 09:00:00', '2025-10-06 11:00:00', 'R1', 0],
+      ['201', '1', 'Laboratory', 'Computer Networks - Lab 1', '2025L', '2026-03-10 14:15:00', '2026-03-10 16:00:00', 'R4', 0],
+      ['202', '1', 'Laboratory', 'Embedded Systems - Lab 1', '2025L', '2026-03-12 10:15:00', '2026-03-12 12:00:00', 'R4', 0]
+    ];
 
     faculties.forEach(f => insertFaculty.run(...f));
     students.forEach(s => insertStudent.run(...s));
@@ -246,7 +247,6 @@ function seed() {
     rooms.forEach(r => insertRoom.run(...r));
     scheduleEvents.forEach(e => insertScheduleEvent.run(...e));
 
-    // MINI students 1-10
     const miniEnrollments = {
       '1': [
         ['100', '1', 'Lecture', '2025Z'],
@@ -296,7 +296,6 @@ function seed() {
       ]
     };
 
-    // WEiTI students 11-20
     const weitiEnrollments = {
       '11': [
         ['200', '1', 'Lecture', '2025Z'],
