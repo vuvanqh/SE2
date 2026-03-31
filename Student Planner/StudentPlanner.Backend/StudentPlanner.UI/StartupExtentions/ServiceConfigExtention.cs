@@ -25,6 +25,9 @@ public static class ServiceConfigExtention
         //mail
         services.AddTransient<ISmtpClient, SmtpClient>();
 
+        //config
+        services.Configure<UsosApiSettings>(config.GetSection("UsosApi"));
+
         //services
         services.AddScoped<IPersonalEventService, PersonalEventService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
@@ -33,7 +36,7 @@ public static class ServiceConfigExtention
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.Configure<EmailSettings>(config.GetSection("EmailSettings"));
         services.AddScoped<IEmailService, MailtrapEmailService>();
-
+        services.AddHttpClient<IUsosAuthService, UsosAuthService>();
         //repo
         services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();
         services.AddScoped<IUserRepository, UserRepository>();

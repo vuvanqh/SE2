@@ -158,27 +158,27 @@ function seed() {
     ];
 
     const students = [
-      ['1', 'Jan', 'Kowalski', 'MINI', 'jan.kowalski@pw.edu.pl', 'Jan12345', 'ACTIVE'],
+      ['1', 'Jan', 'Kowalski', 'MINI', 'jan.kowalski@pw.edu.pl', 'Jan12345!', 'ACTIVE'],
       ['2', 'Anna', 'Nowak', 'MINI', 'anna.nowak@pw.edu.pl', 'Anna12345', 'ACTIVE'],
-      ['3', 'Piotr', 'Wiśniewski', 'MINI', 'piotr.wisniewski@pw.edu.pl', 'Piotr12345', 'ACTIVE'],
-      ['4', 'Katarzyna', 'Wójcik', 'MINI', 'katarzyna.wojcik@pw.edu.pl', 'Kasia12345', 'ACTIVE'],
-      ['5', 'Michał', 'Kamiński', 'MINI', 'michal.kaminski@pw.edu.pl', 'Michal12345', 'ACTIVE'],
-      ['6', 'Zofia', 'Lewandowska', 'MINI', 'zofia.lewandowska@pw.edu.pl', 'Zofia12345', 'ACTIVE'],
-      ['7', 'Tomasz', 'Zieliński', 'MINI', 'tomasz.zielinski@pw.edu.pl', 'Tomasz12345', 'ACTIVE'],
-      ['8', 'Julia', 'Szymańska', 'MINI', 'julia.szymanska@pw.edu.pl', 'Julia12345', 'ACTIVE'],
-      ['9', 'Paweł', 'Woźniak', 'MINI', 'pawel.wozniak@pw.edu.pl', 'Pawel12345', 'ACTIVE'],
-      ['10', 'Maria', 'Dąbrowska', 'MINI', 'maria.dabrowska@pw.edu.pl', 'Maria12345', 'ACTIVE'],
+      ['3', 'Piotr', 'Wiśniewski', 'MINI', 'piotr.wisniewski@pw.edu.pl', 'Piotr12345!', 'ACTIVE'],
+      ['4', 'Katarzyna', 'Wójcik', 'MINI', 'katarzyna.wojcik@pw.edu.pl', 'Kasia12345!', 'ACTIVE'],
+      ['5', 'Michał', 'Kamiński', 'MINI', 'michal.kaminski@pw.edu.pl', 'Michal12345!', 'ACTIVE'],
+      ['6', 'Zofia', 'Lewandowska', 'MINI', 'zofia.lewandowska@pw.edu.pl', 'Zofia12345!', 'ACTIVE'],
+      ['7', 'Tomasz', 'Zieliński', 'MINI', 'tomasz.zielinski@pw.edu.pl', 'Tomasz12345!', 'ACTIVE'],
+      ['8', 'Julia', 'Szymańska', 'MINI', 'julia.szymanska@pw.edu.pl', 'Julia12345!', 'ACTIVE'],
+      ['9', 'Paweł', 'Woźniak', 'MINI', 'pawel.wozniak@pw.edu.pl', 'Pawel12345!', 'ACTIVE'],
+      ['10', 'Maria', 'Dąbrowska', 'MINI', 'maria.dabrowska@pw.edu.pl', 'Maria12345!', 'ACTIVE'],
 
       ['11', 'Adam', 'Kozłowski', 'WEiTI', 'adam.kozlowski@pw.edu.pl', 'Adam12345', 'ACTIVE'],
-      ['12', 'Natalia', 'Jankowska', 'WEiTI', 'natalia.jankowska@pw.edu.pl', 'Natalia12345', 'ACTIVE'],
-      ['13', 'Krzysztof', 'Mazur', 'WEiTI', 'krzysztof.mazur@pw.edu.pl', 'Krzysztof12345', 'ACTIVE'],
-      ['14', 'Aleksandra', 'Krawczyk', 'WEiTI', 'aleksandra.krawczyk@pw.edu.pl', 'Ala12345', 'ACTIVE'],
-      ['15', 'Mateusz', 'Piotrowski', 'WEiTI', 'mateusz.piotrowski@pw.edu.pl', 'Mateusz12345', 'ACTIVE'],
-      ['16', 'Wiktoria', 'Grabowska', 'WEiTI', 'wiktoria.grabowska@pw.edu.pl', 'Wiktoria12345', 'ACTIVE'],
-      ['17', 'Jakub', 'Pawłowski', 'WEiTI', 'jakub.pawlowski@pw.edu.pl', 'Jakub12345', 'ACTIVE'],
-      ['18', 'Martyna', 'Michalska', 'WEiTI', 'martyna.michalska@pw.edu.pl', 'Martyna12345', 'ACTIVE'],
+      ['12', 'Natalia', 'Jankowska', 'WEiTI', 'natalia.jankowska@pw.edu.pl', 'Natalia12345!', 'ACTIVE'],
+      ['13', 'Krzysztof', 'Mazur', 'WEiTI', 'krzysztof.mazur@pw.edu.pl', 'Krzysztof12345!', 'ACTIVE'],
+      ['14', 'Aleksandra', 'Krawczyk', 'WEiTI', 'aleksandra.krawczyk@pw.edu.pl', 'Ala12345!', 'ACTIVE'],
+      ['15', 'Mateusz', 'Piotrowski', 'WEiTI', 'mateusz.piotrowski@pw.edu.pl', 'Mateusz12345!', 'ACTIVE'],
+      ['16', 'Wiktoria', 'Grabowska', 'WEiTI', 'wiktoria.grabowska@pw.edu.pl', 'Wiktoria12345!', 'ACTIVE'],
+      ['17', 'Jakub', 'Pawłowski', 'WEiTI', 'jakub.pawlowski@pw.edu.pl', 'Jakub12345!', 'ACTIVE'],
+      ['18', 'Martyna', 'Michalska', 'WEiTI', 'martyna.michalska@pw.edu.pl', 'Martyna12345!', 'ACTIVE'],
       ['19', 'Damian', 'Król', 'WEiTI', 'damian.krol@pw.edu.pl', 'Damian12345', 'ACTIVE'],
-      ['20', 'Oliwia', 'Wieczorek', 'WEiTI', 'oliwia.wieczorek@pw.edu.pl', 'Oliwia12345', 'ACTIVE']
+      ['20', 'Oliwia', 'Wieczorek', 'WEiTI', 'oliwia.wieczorek@pw.edu.pl', 'Oliwia12345!', 'ACTIVE']
     ];
 
     const courses = [
