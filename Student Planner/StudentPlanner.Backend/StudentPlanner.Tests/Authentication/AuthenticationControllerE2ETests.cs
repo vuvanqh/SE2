@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Mvc.Testing;
 using StudentPlanner.Backend;
 using StudentPlanner.Core.Application.Authentication;
 using System.Net;
@@ -13,7 +13,7 @@ namespace StudentPlanner.Tests.Authentication;
 
 public class AuthenticationControllerE2ETests : IntegrationTestBase
 {
-    public AuthenticationControllerE2ETests(WebApplicationFactory<Program> factory) : base(factory)
+    public AuthenticationControllerE2ETests(StudentPlannerWebApplicationFactory factory) : base(factory)
     {
     }
 

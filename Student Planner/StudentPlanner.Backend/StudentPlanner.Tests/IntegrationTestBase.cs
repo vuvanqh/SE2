@@ -1,60 +1,27 @@
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using StudentPlanner.Backend;
 using StudentPlanner.Core.Application.Authentication;
 using Moq;
-using Microsoft.Extensions.Configuration;
 using Xunit;
-using Microsoft.EntityFrameworkCore;
-using StudentPlanner.Infrastructure;
-using System.Collections.Generic;
-using System;
 using System.Net.Http;
+using System;
 
 namespace StudentPlanner.Tests;
 
-public class IntegrationTestBase : IClassFixture<WebApplicationFactory<Program>>
+/// <summary>
+/// Base class for all integration tests, providing a shared SQL Server environment.
+/// </summary>
+public class IntegrationTestBase : IClassFixture<StudentPlannerWebApplicationFactory>, IAsyncLifetime
 {
-    protected readonly WebApplicationFactory<Program> _factory;
+    protected readonly StudentPlannerWebApplicationFactory _factory;
     protected readonly HttpClient _client;
-    protected readonly Mock<IEmailService> _emailServiceMock = new();
+    protected readonly Mock<IEmailService> _emailServiceMock;
 
-    private readonly string _dbName;
-
-    public IntegrationTestBase(WebApplicationFactory<Program> factory)
+    public IntegrationTestBase(StudentPlannerWebApplicationFactory factory)
     {
-        _dbName = Guid.NewGuid().ToString();
-        Environment.SetEnvironmentVariable("USE_IN_MEMORY_DATABASE", "true");
-        Environment.SetEnvironmentVariable("IN_MEMORY_DATABASE_NAME", _dbName);
-
-        _factory = factory.WithWebHostBuilder(builder =>
-        {
-            builder.UseEnvironment("Testing");
-            builder.ConfigureAppConfiguration((context, configBuilder) =>
-            {
-                configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["UseInMemoryDatabase"] = "true",
-                    ["InMemoryDatabaseName"] = _dbName,
-                    ["Jwt:Issuer"] = "StudentPlanner",
-                    ["Jwt:Audience"] = "StudentPlanner",
-                    ["Jwt:Key"] = "SuperSecretKeyWhichIsVeryLongAndSecure123!",
-                    ["Jwt:SecretKey"] = "SuperSecretKeyWhichIsVeryLongAndSecure123!",
-                    ["Jwt:Expiration_Minutes"] = "60",
-                    ["RefreshToken:expiration_minutes"] = "1440",
-                    ["RefreshToken:max_session_lifetime_days"] = "7"
-                });
-            });
-
-            builder.ConfigureServices(services =>
-            {
-                //isolate database for each test - now handled by BaselineConfigExtention via UseInMemoryDatabase flag
-                services.RemoveAll<IEmailService>();
-                services.AddScoped<IEmailService>(_ => _emailServiceMock.Object);
-            });
-        });
+        _factory = factory;
+        _emailServiceMock = factory.EmailServiceMock;
 
         _client = _factory.CreateClient(new WebApplicationFactoryClientOptions
         {
@@ -63,4 +30,8 @@ public class IntegrationTestBase : IClassFixture<WebApplicationFactory<Program>>
             BaseAddress = new Uri("https://localhost")
         });
     }
+
+    public ValueTask InitializeAsync() => ValueTask.CompletedTask;
+
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

@@ -34,8 +34,9 @@ public static class BaselineConfigExtention
             options.AddPolicy("AllowFrontend",
                 policy =>
                 {
+                    var origins = config.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
                     policy
-                        .WithOrigins(config.GetSection("AllowedOrigins").Get<string[]>()!)
+                        .WithOrigins(origins)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
@@ -89,6 +90,7 @@ public static class BaselineConfigExtention
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options =>
         {
+            var secretKey = config["Jwt:SecretKey"] ?? "default_secret_key_for_testing_purposes_only_1234567890";
             options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -98,14 +100,18 @@ public static class BaselineConfigExtention
                 ValidIssuer = config["Jwt:Issuer"],
                 ValidAudience = config["Jwt:Audience"],
                 IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                    System.Text.Encoding.UTF8.GetBytes(config["Jwt:SecretKey"]!)),
+                    System.Text.Encoding.UTF8.GetBytes(secretKey)),
                 //ClockSkew = TimeSpan.Zero
             };
         });
 
         services.AddSwaggerGen(options =>
         {
-            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "StudentPlanner.UI.xml"));
+            var xmlFile = Path.Combine(AppContext.BaseDirectory, "StudentPlanner.UI.xml");
+            if (File.Exists(xmlFile))
+            {
+                options.IncludeXmlComments(xmlFile);
+            }
             options.SwaggerDoc("v1", new OpenApiInfo
             {
                 Title = "StudentPlanner API",

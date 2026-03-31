@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using StudentPlanner.Core.Application;
 using StudentPlanner.Core.Application.Authentication;
@@ -20,7 +20,8 @@ public class JwtService : IJwtService
 
     public string CreateToken(User user)
     {
-        DateTime expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_config["Jwt:Expiration_Minutes"]));
+        var expirationMinutes = _config["Jwt:ExpirationMinutes"] ?? _config["RefreshToken:expiration_minutes"] ?? "60";
+        DateTime expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(expirationMinutes));
         Claim[] claims = new Claim[] {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()), //token subject identifier
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), //token identifier
@@ -28,7 +29,7 @@ public class JwtService : IJwtService
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
         };
 
-        SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!)); //secret key
+        SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:SecretKey"]!)); //secret key
         SigningCredentials signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         JwtSecurityToken tokenGenerator = new JwtSecurityToken(

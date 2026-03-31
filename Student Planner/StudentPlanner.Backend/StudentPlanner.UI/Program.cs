@@ -5,7 +5,7 @@ namespace StudentPlanner.Backend;
 /// <summary>
 /// Entry point for the StudentPlanner application.
 /// </summary>
-public class Program
+public partial class Program
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Program"/> class.
