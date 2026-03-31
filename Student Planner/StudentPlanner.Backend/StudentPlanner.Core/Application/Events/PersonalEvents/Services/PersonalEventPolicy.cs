@@ -5,9 +5,10 @@ using System.Text;
 
 namespace StudentPlanner.Core.Application.PersonalEvents;
 
-public class PersonalEventPolicy
+public static class PersonalEventPolicy
 {
-    public static void EnsureValidEvent(PersonalEvent e){
+    public static void EnsureValidEvent(PersonalEvent e)
+    {
         if (e.EventDetails.Title == string.Empty)
             throw new ArgumentException("The title cannot be empty.");
         if (e.EventDetails.StartTime < DateTime.UtcNow.AddMinutes(-1))

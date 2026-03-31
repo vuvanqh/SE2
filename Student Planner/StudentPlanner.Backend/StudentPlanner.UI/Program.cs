@@ -2,8 +2,20 @@ using Serilog;
 
 namespace StudentPlanner.Backend;
 
+/// <summary>
+/// Entry point for the StudentPlanner application.
+/// </summary>
 public class Program
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Program"/> class.
+    /// </summary>
+    protected Program() { }
+
+    /// <summary>
+    /// The main entry point of the application.
+    /// </summary>
+    /// <param name="args">Arguments passed to the application.</param>
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +24,8 @@ public class Program
         builder.Services.ConfigureServices(builder.Configuration);
 
 
-        builder.Host.UseSerilog((HostBuilderContext context, IServiceProvider services, LoggerConfiguration loggerConfiguration) => {
+        builder.Host.UseSerilog((HostBuilderContext context, IServiceProvider services, LoggerConfiguration loggerConfiguration) =>
+        {
             loggerConfiguration.ReadFrom.Configuration(context.Configuration)
                                .ReadFrom.Services(services);
         });
@@ -20,8 +33,6 @@ public class Program
         var app = builder.Build();
 
         app.UseRouting();
-
-        //app.UseHttpsRedirection();
 
         app.UseAuthorization();
 

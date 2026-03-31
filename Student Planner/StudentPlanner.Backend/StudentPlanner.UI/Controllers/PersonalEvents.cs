@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace StudentPlanner.UI.Controllers
+namespace StudentPlanner.UI.Controllers;
+
+/// <summary>
+/// Controller for managing personal events.
+/// </summary>
+[Route("api/[controller]")]
+[ApiController]
+public class PersonalEvents : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PersonalEvents : ControllerBase
-    {
-    }
 }

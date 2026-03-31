@@ -22,7 +22,8 @@ public class PersonalEventTests
 
     #region Create Personal Event Tests
     [Fact]
-    public async Task CreatePersonalEvent_ShouldCreateEvent_WhenRequestIsValid() {
+    public async Task CreatePersonalEvent_ShouldCreateEvent_WhenRequestIsValid()
+    {
         PersonalEvent? result = null;
         CreatePersonalEventRequest request = _fixture.Build<CreatePersonalEventRequest>()
             .With(t => t.StartTime, DateTime.UtcNow)
@@ -35,7 +36,7 @@ public class PersonalEventTests
             .Callback<PersonalEvent>(e => result = e);
 
         PersonalEventService personalEventService = new PersonalEventService(_personalEventRepo);
-        Guid eventId = await personalEventService.CreatePersonalEventAsync(dummyUser, request);
+        await personalEventService.CreatePersonalEventAsync(dummyUser, request);
 
         Assert.NotNull(result);
         Assert.Equal(request.Title, result.EventDetails.Title);
@@ -50,11 +51,12 @@ public class PersonalEventTests
             .With(t => t.StartTime, DateTime.UtcNow)
             .With(t => t.EndTime, DateTime.UtcNow.AddDays(-1))
             .Create();
-        
-        Exception exception = await Assert.ThrowsAsync<ArgumentException>(()=> personalEventService.CreatePersonalEventAsync(Guid.NewGuid(), request));
+
+        await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.CreatePersonalEventAsync(Guid.NewGuid(), request));
     }
     [Fact]
-    public async Task CreatePersonalEvent_ShouldThrow_WhenTitleIsEmpty() {
+    public async Task CreatePersonalEvent_ShouldThrow_WhenTitleIsEmpty()
+    {
         PersonalEventService personalEventService = new PersonalEventService(_personalEventRepo);
 
         CreatePersonalEventRequest request = _fixture.Build<CreatePersonalEventRequest>()
@@ -63,10 +65,11 @@ public class PersonalEventTests
             .With(t => t.Title, string.Empty)
             .Create();
 
-        Exception exception = await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.CreatePersonalEventAsync(Guid.NewGuid(), request));
+        await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.CreatePersonalEventAsync(Guid.NewGuid(), request));
     }
     [Fact]
-    public async Task CreatePersonalEvent_ShouldThrow_WhenStartDateInPast() {
+    public async Task CreatePersonalEvent_ShouldThrow_WhenStartDateInPast()
+    {
         PersonalEventService personalEventService = new PersonalEventService(_personalEventRepo);
 
         CreatePersonalEventRequest request = _fixture.Build<CreatePersonalEventRequest>()
@@ -74,7 +77,7 @@ public class PersonalEventTests
             .With(t => t.EndTime, DateTime.UtcNow.AddDays(1))
             .Create();
 
-        Exception exception = await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.CreatePersonalEventAsync(Guid.NewGuid(), request));
+        await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.CreatePersonalEventAsync(Guid.NewGuid(), request));
     }
     #endregion
 
@@ -90,8 +93,8 @@ public class PersonalEventTests
             Id = eventId,
             UserId = dummyUser,
             EventDetails = _fixture.Build<EventDetails>()
-                .With(t=>t.StartTime, DateTime.UtcNow)
-                .With(t=>t.EndTime, DateTime.UtcNow.AddDays(1))
+                .With(t => t.StartTime, DateTime.UtcNow)
+                .With(t => t.EndTime, DateTime.UtcNow.AddDays(1))
                 .Create<EventDetails>()
         };
 
@@ -106,7 +109,7 @@ public class PersonalEventTests
         PersonalEventService personalEventService = new PersonalEventService(_personalEventRepo);
         await personalEventService.UpdatePersonalEventAsync(dummyUser, eventId, request);
 
-        PersonalEvent updatedEvent = request.ToPersonalEvent(dummyUser, eventId);
+        request.ToPersonalEvent(dummyUser, eventId);
 
         _personalEventRepoMock.Verify(r => r.UpdateAsync(It.IsAny<PersonalEvent>()), Times.Once);
     }
@@ -174,7 +177,7 @@ public class PersonalEventTests
             .With(t => t.Title, string.Empty)
             .Create();
 
-        Exception exception = await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.UpdatePersonalEventAsync(dummyUser, Guid.NewGuid(), request));
+        await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.UpdatePersonalEventAsync(dummyUser, Guid.NewGuid(), request));
     }
     [Fact]
     public async Task UpdatePersonalEvent_ShouldThrow_WhenStartDateInPast()
@@ -187,7 +190,7 @@ public class PersonalEventTests
             .With(t => t.EndTime, DateTime.UtcNow.AddDays(1))
             .Create();
 
-        Exception exception = await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.UpdatePersonalEventAsync(dummyUser, Guid.NewGuid(), request));
+        await Assert.ThrowsAsync<ArgumentException>(() => personalEventService.UpdatePersonalEventAsync(dummyUser, Guid.NewGuid(), request));
     }
     #endregion
 
@@ -275,7 +278,7 @@ public class PersonalEventTests
 
         PersonalEventService personalEventService = new PersonalEventService(_personalEventRepo);
         PersonalEventResponse? resp = await personalEventService.GetEventByIdAsync(dummyUser, eventId);
-      
+
         _personalEventRepoMock.Verify(r => r.GetEventByEventIdAsync(It.IsAny<Guid>()), Times.Once);
         Assert.True(resp != null);
     }
@@ -354,7 +357,7 @@ public class PersonalEventTests
         List<PersonalEventResponse> resp = await personalEventService.GetEventsAsync(dummyUser);
 
         _personalEventRepoMock.Verify(r => r.GetEventsByUserIdAsync(It.IsAny<Guid>()), Times.Once);
-        Assert.True(resp.Count>0);
+        Assert.True(resp.Count > 0);
         Assert.Equal(resp[0].Id, eventId);
     }
     #endregion

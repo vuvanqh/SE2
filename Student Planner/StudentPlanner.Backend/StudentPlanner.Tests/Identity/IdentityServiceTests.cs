@@ -26,7 +26,7 @@ public class IdentityServiceTests
     {
         var store = new Mock<IUserStore<ApplicationUser>>();
         _userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null!, null!, null!, null!, null!, null!, null!, null!);
-        
+
         var contextAccessor = new Mock<IHttpContextAccessor>();
         var claimsFactory = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
         _signInManagerMock = new Mock<SignInManager<ApplicationUser>>(_userManagerMock.Object, contextAccessor.Object, claimsFactory.Object, null!, null!, null!, null!);
@@ -52,7 +52,7 @@ public class IdentityServiceTests
     {
         var appUser = new ApplicationUser { Email = "test@pw.edu.pl", UserName = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
         _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync(appUser);
-        
+
         _signInManagerMock.Setup(s => s.PasswordSignInAsync(appUser, "WrongPassword!", false, true))
             .ReturnsAsync(SignInResult.Failed);
 
@@ -66,7 +66,7 @@ public class IdentityServiceTests
     {
         var appUser = new ApplicationUser { Id = Guid.NewGuid(), Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
         _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync(appUser);
-        
+
         _signInManagerMock.Setup(s => s.PasswordSignInAsync(appUser, "Password123!", false, true))
             .ReturnsAsync(SignInResult.Success);
 
@@ -86,12 +86,12 @@ public class IdentityServiceTests
             new IdentityError { Description = "Password too weak!" },
             new IdentityError { Description = "Password requires uppercase." }
         );
-        
+
         _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), "password")).ReturnsAsync(failedResult);
 
         Func<Task> act = async () => await _identityService.RegisterUser(user, "password");
 
-        await act.Should().ThrowAsync<ApplicationException>()
+        await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Password too weak!, Password requires uppercase.");
     }
 
@@ -118,14 +118,14 @@ public class IdentityServiceTests
         token.Should().Be("mocked-token");
     }
 
-      [Fact]
+    [Fact]
     public async Task GeneratePasswordResetTokenAsync_ShouldThrowException_WhenUserDoesNotExist()
     {
         _userManagerMock.Setup(x => x.FindByEmailAsync("ghost@pw.edu.pl")).ReturnsAsync((ApplicationUser?)null);
 
         Func<Task> act = async () => await _identityService.GeneratePasswordResetTokenAsync("ghost@pw.edu.pl");
 
-        await act.Should().ThrowAsync<ApplicationException>().WithMessage("Invalid Operation");
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Invalid Operation");
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class IdentityServiceTests
 
         Func<Task> act = async () => await _identityService.ResetPasswordAsync("ghost@pw.edu.pl", "token", "NewPassword123!");
 
-        await act.Should().ThrowAsync<ApplicationException>().WithMessage("Invalid Operation");
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Invalid Operation");
     }
 
     [Fact]
@@ -155,13 +155,13 @@ public class IdentityServiceTests
     {
         var appUser = new ApplicationUser { Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
         _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync(appUser);
-        
+
         var failedResult = IdentityResult.Failed(new IdentityError { Description = "Invalid token." });
         _userManagerMock.Setup(x => x.ResetPasswordAsync(appUser, "invalid-token", "NewPassword123!")).ReturnsAsync(failedResult);
 
         Func<Task> act = async () => await _identityService.ResetPasswordAsync("test@pw.edu.pl", "invalid-token", "NewPassword123!");
 
-        await act.Should().ThrowAsync<ApplicationException>().WithMessage("Invalid token.");
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Invalid token.");
     }
 
     [Fact]
@@ -169,13 +169,13 @@ public class IdentityServiceTests
     {
         var appUser = new ApplicationUser { Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
         _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync(appUser);
-        
+
         var failedResult = IdentityResult.Failed(new IdentityError { Description = "Password too weak!" });
         _userManagerMock.Setup(x => x.ResetPasswordAsync(appUser, "valid-token", "weak")).ReturnsAsync(failedResult);
 
         Func<Task> act = async () => await _identityService.ResetPasswordAsync("test@pw.edu.pl", "valid-token", "weak");
 
-        await act.Should().ThrowAsync<ApplicationException>().WithMessage("Password too weak!");
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Password too weak!");
     }
 
     [Fact]
@@ -183,12 +183,12 @@ public class IdentityServiceTests
     {
         var appUser = new ApplicationUser { Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
         _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync(appUser);
-        
+
         var expiration = DateTime.UtcNow.AddDays(7);
         Func<Task> act = async () => await _identityService.UpdateToken("test@pw.edu.pl", "token-hash", expiration, DateTime.UtcNow);
 
         await act.Should().NotThrowAsync();
-        
+
         appUser.RefreshTokenHash.Should().Be("token-hash");
         appUser.RefreshTokenExpirationDate.Should().Be(expiration);
         _userManagerMock.Verify(x => x.UpdateAsync(appUser), Times.Once);
@@ -202,6 +202,6 @@ public class IdentityServiceTests
 
         Func<Task> act = async () => await _identityService.UpdateToken("ghost@pw.edu.pl", "hash", DateTime.UtcNow, DateTime.UtcNow);
 
-        await act.Should().ThrowAsync<ApplicationException>().WithMessage("Invalid Operation");
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Invalid Operation");
     }
 }

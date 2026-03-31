@@ -46,12 +46,12 @@ public class AuthenticationServiceTests
             Password = "Password123!",
             ConfirmPassword = "Password123!"
         };
-        
+
         var existingUser = new User { Id = Guid.NewGuid(), Email = request.Email, FirstName = "Existing", LastName = "User" };
-        
+
         _userRepoMock.Setup(repo => repo.GetUserByEmailAsync(request.Email)).ReturnsAsync(existingUser);
         Func<Task> act = async () => await _authService.RegisterAsync(request);
-        await act.Should().ThrowAsync<ApplicationException>().WithMessage("A user with this email already exists.");
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("A user with this email already exists.");
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class AuthenticationServiceTests
         await _authService.RegisterAsync(request);
 
         _identityServiceMock.Verify(s => s.RegisterUser(
-            It.Is<User>(u => u.Email == request.Email && u.FirstName == "FirstNamePlaceholder" && u.LastName == "LastNamePlaceholder"), 
+            It.Is<User>(u => u.Email == request.Email && u.FirstName == "FirstNamePlaceholder" && u.LastName == "LastNamePlaceholder"),
             request.Password,
             It.IsAny<string?>()), Times.Once);
     }
@@ -103,7 +103,7 @@ public class AuthenticationServiceTests
             .ThrowsAsync(new UnauthorizedAccessException("Invalid Credentials"));
         Func<Task> act = async () => await _authService.LoginAsync(request);
         await act.Should().ThrowAsync<UnauthorizedAccessException>();
-        
+
         _jwtServiceMock.Verify(j => j.CreateToken(It.IsAny<User>()), Times.Never);
         _refreshTokenServiceMock.Verify(r => r.IssueOnLogin(It.IsAny<User>()), Times.Never);
     }
@@ -121,7 +121,7 @@ public class AuthenticationServiceTests
 
         _emailServiceMock.Verify(x => x.SendPasswordResetEmailAsync(request.Email, "mocked-token"), Times.Once);
     }
-    
+
     [Fact]
     public async Task ForgotPasswordAsync_ShouldNotSendEmail_WhenUserDoesNotExist()
     {
@@ -158,11 +158,11 @@ public class AuthenticationServiceTests
     public async Task ResetPasswordAsync_ShouldThrowException_WhenUserDoesNotExist()
     {
         var request = new ResetPasswordRequestDto { Email = "ghost@pw.edu.pl", Token = "tok", NewPassword = "New" };
-        
+
         _userRepoMock.Setup(repo => repo.GetUserByEmailAsync(request.Email)).ReturnsAsync((User?)null);
         Func<Task> act = async () => await _authService.ResetPasswordAsync(request);
-        await act.Should().ThrowAsync<ApplicationException>();
-        
+        await act.Should().ThrowAsync<InvalidOperationException>();
+
         _identityServiceMock.Verify(i => i.ResetPasswordAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 

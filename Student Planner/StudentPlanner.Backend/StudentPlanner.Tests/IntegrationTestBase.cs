@@ -21,10 +21,14 @@ public class IntegrationTestBase : IClassFixture<WebApplicationFactory<Program>>
     protected readonly HttpClient _client;
     protected readonly Mock<IEmailService> _emailServiceMock = new();
 
-    private readonly string _dbName = Guid.NewGuid().ToString();
+    private readonly string _dbName;
 
     public IntegrationTestBase(WebApplicationFactory<Program> factory)
     {
+        _dbName = Guid.NewGuid().ToString();
+        Environment.SetEnvironmentVariable("USE_IN_MEMORY_DATABASE", "true");
+        Environment.SetEnvironmentVariable("IN_MEMORY_DATABASE_NAME", _dbName);
+
         _factory = factory.WithWebHostBuilder(builder =>
         {
             builder.UseEnvironment("Testing");
@@ -33,6 +37,7 @@ public class IntegrationTestBase : IClassFixture<WebApplicationFactory<Program>>
                 configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     ["UseInMemoryDatabase"] = "true",
+                    ["InMemoryDatabaseName"] = _dbName,
                     ["Jwt:Issuer"] = "StudentPlanner",
                     ["Jwt:Audience"] = "StudentPlanner",
                     ["Jwt:Key"] = "SuperSecretKeyWhichIsVeryLongAndSecure123!",
@@ -45,13 +50,7 @@ public class IntegrationTestBase : IClassFixture<WebApplicationFactory<Program>>
 
             builder.ConfigureServices(services =>
             {
-                //isolate database for each test
-                services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
-                services.AddDbContext<ApplicationDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase(_dbName);
-                });
-
+                //isolate database for each test - now handled by BaselineConfigExtention via UseInMemoryDatabase flag
                 services.RemoveAll<IEmailService>();
                 services.AddScoped<IEmailService>(_ => _emailServiceMock.Object);
             });

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 using StudentPlanner.Backend;
 using StudentPlanner.Core.Application.Authentication;
 using System.Net;
@@ -21,20 +21,20 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
     public async Task Register_Success_201()
     {
 
-        var request = new RegisterRequestDto 
-        { 
-            Email = "newuser@pw.edu.pl", 
+        var request = new RegisterRequestDto
+        {
+            Email = "newuser@pw.edu.pl",
             Password = "Password123!",
             ConfirmPassword = "Password123!"
         };
 
-        
-        var response = await _client.PostAsJsonAsync("/api/auth/register", request);
 
-        
+        var response = await _client.PostAsJsonAsync("/api/auth/register", request, TestContext.Current.CancellationToken);
+
+
         if (response.StatusCode != HttpStatusCode.Created)
         {
-            var body = await response.Content.ReadAsStringAsync();
+            var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
             throw new Exception($"Expected Created but got {response.StatusCode}. Body: {body}");
         }
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -43,20 +43,20 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
     [Fact]
     public async Task Register_DuplicateEmail_409()
     {
-        var request = new RegisterRequestDto 
-        { 
-            Email = "duplicate@pw.edu.pl", 
+        var request = new RegisterRequestDto
+        {
+            Email = "duplicate@pw.edu.pl",
             Password = "Password123!",
             ConfirmPassword = "Password123!"
         };
-        var firstResponse = await _client.PostAsJsonAsync("/api/auth/register", request);
+        var firstResponse = await _client.PostAsJsonAsync("/api/auth/register", request, TestContext.Current.CancellationToken);
         firstResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var response = await _client.PostAsJsonAsync("/api/auth/register", request);
+        var response = await _client.PostAsJsonAsync("/api/auth/register", request, TestContext.Current.CancellationToken);
 
         if (response.StatusCode != HttpStatusCode.Conflict)
         {
-            var body = await response.Content.ReadAsStringAsync();
+            var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
             throw new Exception($"Expected Conflict but got {response.StatusCode}. Body: {body}");
         }
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);
@@ -67,19 +67,19 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
     {
         var email = "loginuser@pw.edu.pl";
         var password = "Password123!";
-        await _client.PostAsJsonAsync("/api/auth/register", new RegisterRequestDto 
-        { 
-            Email = email, 
+        await _client.PostAsJsonAsync("/api/auth/register", new RegisterRequestDto
+        {
+            Email = email,
             Password = password,
             ConfirmPassword = password
-        });
+        }, TestContext.Current.CancellationToken);
 
         var loginRequest = new LoginRequestDto { Email = email, Password = password };
 
-        var response = await _client.PostAsJsonAsync("/api/auth/login", loginRequest);
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginRequest, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponseDto>(TestContext.Current.CancellationToken);
         loginResponse.Should().NotBeNull();
         loginResponse!.Token.Should().NotBeNullOrEmpty();
         loginResponse.Email.Should().Be(email);
@@ -93,7 +93,7 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
     {
         var loginRequest = new LoginRequestDto { Email = "nonexistent@pw.edu.pl", Password = "WrongPassword" };
 
-        var response = await _client.PostAsJsonAsync("/api/auth/login", loginRequest);
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginRequest, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
@@ -103,7 +103,7 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
     {
         var request = new ForgotPasswordRequestDto { Email = "any@pw.edu.pl" };
 
-        var response = await _client.PostAsJsonAsync("/api/auth/reset-password", request);
+        var response = await _client.PostAsJsonAsync("/api/auth/reset-password", request, TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -112,24 +112,24 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
     {
         var email = "refresh@pw.edu.pl";
         var password = "Password123!";
-        await _client.PostAsJsonAsync("/api/auth/register", new RegisterRequestDto 
-        { 
-            Email = email, 
+        await _client.PostAsJsonAsync("/api/auth/register", new RegisterRequestDto
+        {
+            Email = email,
             Password = password,
             ConfirmPassword = password
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new LoginRequestDto { Email = email, Password = password });
-        
-        var response = await _client.PostAsync("/api/auth/refreshToken", null);
+        await _client.PostAsJsonAsync("/api/auth/login", new LoginRequestDto { Email = email, Password = password }, TestContext.Current.CancellationToken);
+
+        var response = await _client.PostAsync("/api/auth/refreshToken", null, TestContext.Current.CancellationToken);
 
         if (response.StatusCode != HttpStatusCode.OK)
         {
-            var body = await response.Content.ReadAsStringAsync();
+            var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
             throw new Exception($"Expected OK but got {response.StatusCode}. Body: {body}");
         }
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var newToken = await response.Content.ReadAsStringAsync();
+        var newToken = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         newToken.Should().NotBeNullOrEmpty();
     }
 
@@ -139,15 +139,15 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
         var email = "reset@pw.edu.pl";
         var password = "OldPassword123!";
         var newPassword = "NewPassword123!";
-        
-        await _client.PostAsJsonAsync("/api/auth/register", new RegisterRequestDto 
-        { 
-            Email = email, 
+
+        await _client.PostAsJsonAsync("/api/auth/register", new RegisterRequestDto
+        {
+            Email = email,
             Password = password,
             ConfirmPassword = password
-        });
+        }, TestContext.Current.CancellationToken);
 
-        await _client.PostAsJsonAsync("/api/auth/reset-password", new ForgotPasswordRequestDto { Email = email });
+        await _client.PostAsJsonAsync("/api/auth/reset-password", new ForgotPasswordRequestDto { Email = email }, TestContext.Current.CancellationToken);
 
         string token;
         using (var scope = _factory.Services.CreateScope())
@@ -157,24 +157,25 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
             token = await userManager.GeneratePasswordResetTokenAsync(user!);
         }
 
-        var resetRequest = new ResetPasswordRequestDto 
-        { 
-            Email = email, 
-            Token = token, 
+        var resetRequest = new ResetPasswordRequestDto
+        {
+            Email = email,
+            Token = token,
             NewPassword = newPassword,
             ConfirmNewPassword = newPassword
         };
 
-        var response = await _client.PostAsJsonAsync("/api/auth/verify-reset", resetRequest);
+        var response = await _client.PostAsJsonAsync("/api/auth/verify-reset", resetRequest, TestContext.Current.CancellationToken);
 
         if (response.StatusCode != HttpStatusCode.OK)
         {
-            var body = await response.Content.ReadAsStringAsync();
+            var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
             throw new Exception($"Expected OK but got {response.StatusCode}. Body: {body}");
         }
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new LoginRequestDto { Email = email, Password = newPassword });
+        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new LoginRequestDto { Email = email, Password = newPassword }, TestContext.Current.CancellationToken);
         loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }
+

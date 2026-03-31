@@ -37,18 +37,18 @@ public class AuthenticationService : IAuthenticationService
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email
-        },refreshTokenResult);
+        }, refreshTokenResult);
     }
 
     public async Task RegisterAsync(RegisterRequestDto request)
-    {   
+    {
         var existingUser = await _userRepo.GetUserByEmailAsync(request.Email);
-        
-        if (existingUser != null) 
+
+        if (existingUser != null)
         {
-            throw new ApplicationException("A user with this email already exists.");
+            throw new InvalidOperationException("A user with this email already exists.");
         }
-        // todo integrate usosApi
+        // add USOS
         var user = new User
         {
             Id = Guid.NewGuid(),
@@ -62,21 +62,21 @@ public class AuthenticationService : IAuthenticationService
     public async Task ForgotPasswordAsync(ForgotPasswordRequestDto request)
     {
         User? user = (await _userRepo.GetUserByEmailAsync(request.Email));
-        
-        if (user == null) 
+
+        if (user == null)
         {
-            return; 
+            return;
         }
 
         var token = await _identityService.GeneratePasswordResetTokenAsync(user.Email);
         await _emailService.SendPasswordResetEmailAsync(request.Email, token);
-        
+
     }
 
     public async Task ResetPasswordAsync(ResetPasswordRequestDto request)
     {
-        User user = (await _userRepo.GetUserByEmailAsync(request.Email))?? throw new ApplicationException("User not found.");
- 
+        User user = (await _userRepo.GetUserByEmailAsync(request.Email)) ?? throw new InvalidOperationException("User not found.");
+
         await _identityService.ResetPasswordAsync(user.Email, request.Token, request.NewPassword);
     }
 

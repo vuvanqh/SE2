@@ -10,8 +10,16 @@ using StudentPlanner.Infrastructure.Services;
 
 namespace StudentPlanner.Backend;
 
+/// <summary>
+/// Extension methods for application service registration in the DI container.
+/// </summary>
 public static class ServiceConfigExtention
 {
+    /// <summary>
+    /// Configures application services, repositories, and third-party integrations.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="config">The application configuration.</param>
     public static void ConfigureServices(this IServiceCollection services, IConfiguration config)
     {
         //mail

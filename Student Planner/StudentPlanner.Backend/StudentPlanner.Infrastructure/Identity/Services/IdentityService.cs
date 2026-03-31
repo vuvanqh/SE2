@@ -29,8 +29,8 @@ public class IdentityService : IIdentityService
         var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent: false, lockoutOnFailure: true);
         if (!result.Succeeded)
             throw new UnauthorizedAccessException("Invalid Credentials");
-        
-        return user.ToUser(); 
+
+        return user.ToUser();
     }
 
     public async Task RegisterUser(User user, string password, string? role = null)
@@ -49,7 +49,7 @@ public class IdentityService : IIdentityService
         if (!result.Succeeded)
         {
             var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            throw new ApplicationException(errors);
+            throw new InvalidOperationException(errors);
         }
 
         if (role != null)
@@ -64,29 +64,29 @@ public class IdentityService : IIdentityService
 
     public async Task<string> GeneratePasswordResetTokenAsync(string email)
     {
-        ApplicationUser user = (await _userManager.FindByEmailAsync(email))?? throw new ApplicationException("Invalid Operation");
+        ApplicationUser user = (await _userManager.FindByEmailAsync(email)) ?? throw new InvalidOperationException("Invalid Operation");
         return await _userManager.GeneratePasswordResetTokenAsync(user);
     }
 
     public async Task ResetPasswordAsync(string email, string token, string newPasswd)
     {
-        ApplicationUser user = (await _userManager.FindByEmailAsync(email)) ?? throw new ApplicationException("Invalid Operation");
+        ApplicationUser user = (await _userManager.FindByEmailAsync(email)) ?? throw new InvalidOperationException("Invalid Operation");
 
         var result = await _userManager.ResetPasswordAsync(user, token, newPasswd);
         if (!result.Succeeded)
         {
             var errors = string.Join("\n", result.Errors.Select(e => e.Description));
-            throw new ApplicationException(errors);
+            throw new InvalidOperationException(errors);
         }
     }
     public async Task<IList<string>> GetUserRolesAsync(User user)
     {
-        ApplicationUser appUser = (await _userManager.FindByEmailAsync(user.Email)) ?? throw new ApplicationException("User not found");
+        ApplicationUser appUser = (await _userManager.FindByEmailAsync(user.Email)) ?? throw new InvalidOperationException("User not found");
         return await _userManager.GetRolesAsync(appUser);
     }
     public async Task UpdateToken(string email, string tokenHash, DateTime expirationDate, DateTime issuedAt)
     {
-        ApplicationUser user = (await _userManager.FindByEmailAsync(email)) ?? throw new ApplicationException("Invalid Operation");
+        ApplicationUser user = (await _userManager.FindByEmailAsync(email)) ?? throw new InvalidOperationException("Invalid Operation");
         user.RefreshTokenHash = tokenHash;
         user.RefreshTokenExpirationDate = expirationDate;
         user.RefreshTokenIssuedAt = issuedAt;

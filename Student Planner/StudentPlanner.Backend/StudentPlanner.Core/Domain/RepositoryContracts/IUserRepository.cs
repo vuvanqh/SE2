@@ -11,5 +11,5 @@ public interface IUserRepository
     Task<List<User>> GetFacultyUsersAsync(Guid facultyId);
     Task<List<User>> GetUserByRoleAsync(string role);
     Task DeleteUserAsync(User user);
-    Task<User?> GetUserByRefreshToken(string token); 
+    Task<User?> GetUserByRefreshToken(string token);
 }

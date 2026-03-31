@@ -28,13 +28,13 @@ public class RefreshTokenService : IRefreshTokenService
         User? user = await _userRepository.GetUserByRefreshToken(HashToken(currentToken));
 
         if (user == null)
-            throw new ApplicationException("Invalid Token");
+            throw new InvalidOperationException("Invalid Token");
 
         if (user.RefreshTokenExpirationDate < DateTime.UtcNow)
-            throw new ApplicationException("Refresh token expired");
+            throw new InvalidOperationException("Refresh token expired");
 
         if (user.RefreshTokenIssuedAt.AddDays(_tokenService.GetMaxSessionLifetimeDays()) < DateTime.UtcNow)
-            throw new ApplicationException("Session Expired");
+            throw new InvalidOperationException("Session Expired");
 
         return (user, await IssueAndPersistChanges(user));
     }

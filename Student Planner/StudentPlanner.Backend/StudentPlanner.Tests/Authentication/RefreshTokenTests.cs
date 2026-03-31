@@ -118,7 +118,7 @@ public class RefreshTokenServiceTests
     }
 
     [Fact]
-    public async Task RotateTokenAsync_WithInvalidToken_ShouldThrowApplicationException()
+    public async Task RotateTokenAsync_WithInvalidToken_ShouldThrowInvalidOperationException()
     {
         // Arrange
         var invalidToken = "invalid-refresh-token";
@@ -129,14 +129,14 @@ public class RefreshTokenServiceTests
             .ReturnsAsync((User?)null);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<ApplicationException>(
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _sut.RotateTokenAsync(invalidToken));
 
         exception.Message.Should().Be("Invalid Token");
     }
 
     [Fact]
-    public async Task RotateTokenAsync_WithExpiredRefreshToken_ShouldThrowApplicationException()
+    public async Task RotateTokenAsync_WithExpiredRefreshToken_ShouldThrowInvalidOperationException()
     {
         // Arrange
         var currentToken = "expired-refresh-token";
@@ -151,14 +151,14 @@ public class RefreshTokenServiceTests
             .ReturnsAsync(user);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<ApplicationException>(
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _sut.RotateTokenAsync(currentToken));
 
         exception.Message.Should().Be("Refresh token expired");
     }
 
     [Fact]
-    public async Task RotateTokenAsync_WithExpiredSession_ShouldThrowApplicationException()
+    public async Task RotateTokenAsync_WithExpiredSession_ShouldThrowInvalidOperationException()
     {
         // Arrange
         var currentToken = "session-expired-token";
@@ -179,7 +179,7 @@ public class RefreshTokenServiceTests
             .Returns(maxSessionDays);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<ApplicationException>(
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _sut.RotateTokenAsync(currentToken));
 
         exception.Message.Should().Be("Session Expired");

@@ -15,6 +15,11 @@ public class AuthenticationController : ControllerBase
     private readonly IAuthenticationService _authenticationService;
     private readonly ILogger<AuthenticationController> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AuthenticationController"/> class.
+    /// </summary>
+    /// <param name="authenticationService">The authentication service.</param>
+    /// <param name="logger">The logger instance.</param>
     public AuthenticationController(IAuthenticationService authenticationService, ILogger<AuthenticationController> logger)
     {
         _authenticationService = authenticationService;
@@ -35,26 +40,26 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerRequest)
     {
         _logger.LogInformation("/authentication/register");
-        _logger.LogDebug($"{registerRequest.Email}");
+        _logger.LogDebug("{Email}", registerRequest.Email);
         try
         {
             await _authenticationService.RegisterAsync(registerRequest);
 
-            // todo: logic for USOS 
+            // potential usos integration
             _logger.LogInformation("User {Email} registered successfully. USOS OAuth redirection pending implementation.", registerRequest.Email);
 
             return StatusCode(StatusCodes.Status201Created);
         }
-        catch (ApplicationException ex) when (ex.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase))
+        catch (InvalidOperationException ex) when (ex.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase))
         {
-             _logger.LogError(ex, "Error during registration for user {Email} - user already exists", registerRequest.Email);
+            _logger.LogError(ex, "Error during registration for user {Email} - user already exists", registerRequest.Email);
             return Conflict(ex.Message);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during registration for user {Email}", registerRequest.Email);
-            
-            if (ex is ApplicationException)
+
+            if (ex is InvalidOperationException)
             {
                 return BadRequest(ex.Message);
             }
@@ -70,13 +75,13 @@ public class AuthenticationController : ControllerBase
     /// <returns>User data and JWT token on success.</returns>
     [AllowAnonymous]
     [HttpPost("login")]
-    [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)] 
-    [ProducesResponseType(StatusCodes.Status401Unauthorized, Description = "Invalid credentials")] 
+    [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized, Description = "Invalid credentials")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequest)
     {
 
         _logger.LogInformation("/authentication/login");
-        _logger.LogDebug($"{loginRequest.Email}");
+        _logger.LogDebug("{Email}", loginRequest.Email);
 
         if (User.Identity != null && User.Identity.IsAuthenticated)
             return Ok("User is already signed in.");
@@ -99,7 +104,7 @@ public class AuthenticationController : ControllerBase
             return Unauthorized(ex.Message);
         }
     }
-    
+
 
     /// <summary>
     /// Refreshes the access token using the refresh token stored in cookies.
@@ -112,7 +117,7 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> RefreshToken()
     {
         string? token = Request.Cookies["refreshToken"];
-        _logger.LogInformation(token);
+        _logger.LogInformation("{Token}", token);
         if (token != null)
         {
             try
@@ -150,13 +155,13 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
     {
         _logger.LogInformation("/authentication/reset-password");
-        _logger.LogDebug($"{request.Email}");
+        _logger.LogDebug("{Email}", request.Email);
         try
         {
-        await _authenticationService.ForgotPasswordAsync(request);
-        return Ok();
-    }
-        catch (ApplicationException ex) when (ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
+            await _authenticationService.ForgotPasswordAsync(request);
+            return Ok();
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
         {
             return NotFound(ex.Message);
         }
@@ -175,16 +180,16 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto request)
     {
         _logger.LogInformation("/authentication/verify-reset");
-        _logger.LogDebug($"{request.Email}");
+        _logger.LogDebug("{Email}", request.Email);
         try
         {
             await _authenticationService.ResetPasswordAsync(request);
             return Ok();
         }
-        catch (ApplicationException ex) when (ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
+        catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
         {
-             _logger.LogWarning("Password reset attempt for non-existent email: {Email}", request.Email);
-             return NotFound(ex.Message);
+            _logger.LogWarning(ex, "Password reset attempt for non-existent email: {Email}", request.Email);
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {

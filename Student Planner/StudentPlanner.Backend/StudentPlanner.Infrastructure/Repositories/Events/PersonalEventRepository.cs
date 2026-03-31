@@ -26,13 +26,13 @@ public class PersonalEventRepository : IPersonalEventRepository
 
     public async Task<PersonalEvent?> GetEventByEventIdAsync(Guid eventId)
     {
-        PersonalEvent? e = await _context.PersonalEvents.FirstOrDefaultAsync( e => e.Id== eventId);
+        PersonalEvent? e = await _context.PersonalEvents.FirstOrDefaultAsync(e => e.Id == eventId);
         return e;
     }
 
     public async Task<List<PersonalEvent>> GetEventsByUserIdAsync(Guid userId)
     {
-        return await _context.PersonalEvents.Where(e=>e.UserId == userId).ToListAsync();
+        return await _context.PersonalEvents.Where(e => e.UserId == userId).ToListAsync();
     }
 
     public async Task UpdateAsync(PersonalEvent personalEvent)

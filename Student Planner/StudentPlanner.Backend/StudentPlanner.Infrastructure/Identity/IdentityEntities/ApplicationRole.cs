@@ -5,6 +5,6 @@ using System.Text;
 
 namespace StudentPlanner.Infrastructure;
 
-public class ApplicationRole: IdentityRole<Guid>
+public class ApplicationRole : IdentityRole<Guid>
 {
 }

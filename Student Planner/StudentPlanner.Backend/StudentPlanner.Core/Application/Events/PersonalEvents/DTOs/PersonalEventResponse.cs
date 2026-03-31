@@ -7,7 +7,7 @@ namespace StudentPlanner.Core.Application.PersonalEvents;
 
 public record PersonalEventResponse
 {
-    [Required] public Guid Id { get; set; } 
+    [Required] public Guid Id { get; set; }
     [Required] public string Title { get; set; } = null!;
     [Required] public string? Description { get; set; }
     [Required] public DateTime StartTime { get; set; }

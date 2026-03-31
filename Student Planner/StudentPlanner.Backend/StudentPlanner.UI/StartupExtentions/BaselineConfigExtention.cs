@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,8 +11,16 @@ using System.Text.Json.Serialization;
 
 namespace StudentPlanner.Backend;
 
+/// <summary>
+/// Extension methods for configuring baseline services in the DI container.
+/// </summary>
 public static class BaselineConfigExtention
 {
+    /// <summary>
+    /// Configures core baseline services including routing, CORS, controllers, DB context, identity, and authentication.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="config">The application configuration.</param>
     public static void ConfigureBaseline(this IServiceCollection services, IConfiguration config)
     {
         services.AddRouting(options =>
@@ -44,19 +52,30 @@ public static class BaselineConfigExtention
         });
 
         //dbContext
-        services.AddDbContext<ApplicationDbContext>(options =>
+        if (Environment.GetEnvironmentVariable("USE_IN_MEMORY_DATABASE") == "true")
         {
-            options.UseSqlServer(config.GetConnectionString("Default"), sqlOptions =>
+            services.AddDbContext<ApplicationDbContext>(options =>
             {
-                sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                sqlOptions.EnableRetryOnFailure(
-                    maxRetryCount: 5,
-                    maxRetryDelay: TimeSpan.FromSeconds(5),
-                    errorNumbersToAdd: null);
+                var dbName = Environment.GetEnvironmentVariable("IN_MEMORY_DATABASE_NAME") ?? "StudentPlanner";
+                options.UseInMemoryDatabase(dbName);
             });
-            options.EnableSensitiveDataLogging();
+        }
+        else
+        {
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(config.GetConnectionString("Default"), sqlOptions =>
+                {
+                    sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(5),
+                        errorNumbersToAdd: null);
+                });
+                options.EnableSensitiveDataLogging();
 
-        });
+            });
+        }
 
         //identity
         services.AddIdentity<ApplicationUser, ApplicationRole>()
@@ -95,14 +114,14 @@ public static class BaselineConfigExtention
             });
             options.UseAllOfForInheritance();
             options.UseOneOfForPolymorphism();
-        }); 
+        });
 
         //json
         services.Configure<JsonOptions>(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
-        
+
         //authorization
         services.AddAuthorization();
     }

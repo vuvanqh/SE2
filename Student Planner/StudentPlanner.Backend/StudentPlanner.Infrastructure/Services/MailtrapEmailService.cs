@@ -49,8 +49,8 @@ public class MailtrapEmailService : IEmailService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to send password reset email to {Email}", email);
-            //rethrow ApplicationException
-            throw new ApplicationException("Could not send password reset email. Please try again later.", ex);
+            //rethrow InvalidOperationException
+            throw new InvalidOperationException("Could not send password reset email. Please try again later.", ex);
         }
     }
 }

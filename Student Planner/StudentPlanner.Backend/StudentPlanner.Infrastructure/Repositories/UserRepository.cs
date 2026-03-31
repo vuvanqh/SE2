@@ -38,7 +38,7 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetUserByRefreshToken(string token)
     {
-        return (await _context.Users.FirstOrDefaultAsync(u=>u.RefreshTokenHash==token))?.ToUser();
+        return (await _context.Users.FirstOrDefaultAsync(u => u.RefreshTokenHash == token))?.ToUser();
     }
 
     public Task<List<User>> GetUserByRoleAsync(string role)

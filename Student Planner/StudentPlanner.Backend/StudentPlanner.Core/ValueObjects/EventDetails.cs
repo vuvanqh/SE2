@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace StudentPlanner.Core;
 
-public class EventDetails: IEquatable<EventDetails> //represents a final validated data that is to be passed as a response so shouldnt be mutable?
+public sealed class EventDetails : IEquatable<EventDetails> //represents a final validated data that is to be passed as a response so shouldnt be mutable?
 {
     [StringLength(50)]
     public string Title { get; set; } = null!;
@@ -14,7 +14,7 @@ public class EventDetails: IEquatable<EventDetails> //represents a final validat
 
     public bool Equals(EventDetails? other)
     {
-        return other!= null &&
+        return other != null &&
             Title == other.Title &&
             StartTime == other.StartTime &&
             EndTime == other.EndTime &&
