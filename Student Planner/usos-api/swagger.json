@@ -1,0 +1,361 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "University API",
+    "version": "1.0.0",
+    "description": "API documentation with examples only"
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/services/login": {
+      "post": {
+        "summary": "Get token for a student",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "student_id": "12345"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns token",
+            "content": {
+              "application/json": {
+                "example": {
+                  "token": "a1b2c3d4e5f6..."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid student",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Invalid student"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/tt/user": {
+      "get": {
+        "summary": "Get user timetable",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "user_id", "required": true, "schema": {"type": "string", "example": "12345"}},
+          {"in": "query", "name": "start", "schema": {"type": "string", "example": "2026-03-30"}},
+          {"in": "query", "name": "days", "schema": {"type": "integer", "example": 7}}
+        ],
+        "responses": {
+          "200": {
+            "description": "User timetable",
+            "content": {
+              "application/json": {
+                "example": {
+                  "user_id": "12345",
+                  "groups": {
+                    "2026L": [
+                      {
+                        "course_id": "100",
+                        "group_number": "1",
+                        "class_type": "Lecture"
+                      }
+                    ]
+                  },
+                  "terms": ["2026L"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing user_id",
+            "content": {
+              "application/json": {
+                "example": {"error": "user_id required"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/tt/room": {
+      "get": {
+        "summary": "Get room timetable",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "room_id", "required": true, "schema": {"type": "string", "example": "R101"}},
+          {"in": "query", "name": "start", "schema": {"type": "string", "example": "2026-03-30"}},
+          {"in": "query", "name": "days", "schema": {"type": "integer", "example": 7}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Room timetable",
+            "content": {
+              "application/json": {
+                "example": {
+                  "room_id": "R101",
+                  "schedule": [
+                    {"course_id": "100", "group_number": "1", "class_type": "Lecture", "start": "10:00"}
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing room_id",
+            "content": {
+              "application/json": {
+                "example": {"error": "room_id required"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/tt/course": {
+      "get": {
+        "summary": "Get course timetable",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "course_id", "required": true, "schema": {"type": "string", "example": "100"}},
+          {"in": "query", "name": "term_id", "required": true, "schema": {"type": "string", "example": "2026L"}},
+          {"in": "query", "name": "start", "schema": {"type": "string", "example": "2026-03-30"}},
+          {"in": "query", "name": "days", "schema": {"type": "integer", "example": 7}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Course timetable",
+            "content": {
+              "application/json": {
+                "example": {
+                  "course_id": "100",
+                  "term_id": "2026L",
+                  "schedule": [
+                    {"group_number": "1", "class_type": "Lecture", "start": "10:00"}
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing course_id or term_id",
+            "content": {
+              "application/json": {
+                "example": {"error": "course_id and term_id required"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/groups/user": {
+      "get": {
+        "summary": "Get user's groups",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "user_id", "required": true, "schema": {"type": "string", "example": "12345"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "User's groups and terms",
+            "content": {
+              "application/json": {
+                "example": {
+                  "user_id": "12345",
+                  "groups": {"2026L": [{"course_id":"100","group_number":"1","class_type":"Lecture"}]},
+                  "terms": ["2026L"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/groups/group": {
+      "get": {
+        "summary": "Get a specific group",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "course_id", "required": true, "schema": {"type": "string","example":"100"}},
+          {"in": "query", "name": "group_number", "required": true, "schema": {"type": "string","example":"1"}},
+          {"in": "query", "name": "class_type", "required": true, "schema": {"type": "string","example":"Lecture"}},
+          {"in": "query", "name": "term_id", "required": true, "schema": {"type": "string","example":"2026L"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Group info",
+            "content": {
+              "application/json": {
+                "example": {
+                  "course_id": "100",
+                  "group_number": "1",
+                  "class_type": "Lecture",
+                  "term_id": "2026L",
+                  "participants":[{"student_id":"12345","student_name":"John Doe"}]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group not found",
+            "content": {
+              "application/json": {"example":{"error":"Group not found"}}
+            }
+          }
+        }
+      }
+    },
+    "/services/groups/participants": {
+      "get": {
+        "summary": "Get participants of a group",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "course_id", "required": true, "schema": {"type": "string","example":"100"}},
+          {"in": "query", "name": "group_number", "required": true, "schema": {"type": "string","example":"1"}},
+          {"in": "query", "name": "class_type", "required": true, "schema": {"type": "string","example":"Lecture"}},
+          {"in": "query", "name": "term_id", "required": true, "schema": {"type": "string","example":"2026L"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "List of participants",
+            "content": {
+              "application/json": {
+                "example":[{"student_id":"12345","student_name":"John Doe"}]
+              }
+            }
+          },
+          "400": {
+            "description":"Missing params",
+            "content":{"application/json":{"example":{"error":"missing params"}}}
+          }
+        }
+      }
+    },
+    "/services/groups/is-participant": {
+        "get": {
+            "summary": "Check if user is participant of a group",
+            "security": [{"bearerAuth": []}],
+            "parameters": [
+            {"in":"query","name":"user_id","required":true,"schema":{"type":"string"},"example":"12345"},
+            {"in":"query","name":"course_id","required":true,"schema":{"type":"string"},"example":"100"},
+            {"in":"query","name":"group_number","required":true,"schema":{"type":"string"},"example":"1"},
+            {"in":"query","name":"class_type","required":true,"schema":{"type":"string"},"example":"Lecture"},
+            {"in":"query","name":"term_id","required":true,"schema":{"type":"string"},"example":"2026L"}
+            ],
+            "responses": {
+            "200": {
+                "description": "true if user is participant, false otherwise",
+                "content": {
+                "application/json": {
+                    "example": true
+                }
+                }
+            },
+            "400": {
+                "description": "Missing params",
+                "content": {
+                "application/json": {
+                    "example": {"error": "missing params"}
+                }
+                }
+            }
+            }
+        }
+    },
+    "/services/faculties": {
+      "get": {
+        "summary":"Get all faculties",
+        "security":[{"bearerAuth":[]}],
+        "responses": {
+          "200": {
+            "description":"List of faculties",
+            "content": {
+              "application/json": {
+                "example":[
+                  {"faculty_id":"MINI","faculty_name":"Mathematics and Information Science","faculty_code":"MINI01"},
+                  {"faculty_id":"WEiTI","faculty_name":"Electronics and IT","faculty_code":"WEiTI01"}
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/users/{student_id}": {
+      "get": {
+        "summary": "Get student by ID",
+        "security": [{"bearerAuth":[]}],
+        "parameters":[
+          {"in":"path","name":"student_id","required":true,"schema":{"type":"string","example":"12345"}}
+        ],
+        "responses":{
+          "200":{
+            "description":"Student info",
+            "content":{
+              "application/json":{
+                "example":{"student_id":"12345","student_name":"John Doe","faculty_id":"MINI"}
+              }
+            }
+          },
+          "404":{
+            "description":"Student not found",
+            "content":{"application/json":{"example":{"error":"Student not found"}}}
+          }
+        }
+      }
+    },
+    "/services/users/faculty/{faculty_id}": {
+      "get": {
+        "summary":"Get all students in a faculty",
+        "security":[{"bearerAuth":[]}],
+        "parameters":[
+          {"in":"path","name":"faculty_id","required":true,"schema":{"type":"string","example":"MINI"}}
+        ],
+        "responses":{
+          "200":{
+            "description":"List of students",
+            "content":{
+              "application/json":{
+                "example":[{"student_id":"12345","student_name":"John Doe"}]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/users/course/{course_id}": {
+      "get": {
+        "summary":"Get all students in a course",
+        "security":[{"bearerAuth":[]}],
+        "parameters":[
+          {"in":"path","name":"course_id","required":true,"schema":{"type":"string","example":"100"}}
+        ],
+        "responses":{
+          "200":{
+            "description":"List of students",
+            "content":{
+              "application/json":{
+                "example":[{"student_id":"12345","student_name":"John Doe"}]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
