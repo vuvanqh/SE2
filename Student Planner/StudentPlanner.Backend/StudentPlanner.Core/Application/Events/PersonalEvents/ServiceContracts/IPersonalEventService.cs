@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace StudentPlanner.Core.Application.PersonalEvents;
+
 public interface IPersonalEventService
 {
     Task<PersonalEventResponse?> GetEventByIdAsync(Guid userId, Guid eventId);
