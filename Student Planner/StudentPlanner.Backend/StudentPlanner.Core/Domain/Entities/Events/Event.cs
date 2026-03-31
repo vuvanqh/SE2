@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using StudentPlanner.Core;
 
 namespace StudentPlanner.Core.Domain;
 

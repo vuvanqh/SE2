@@ -1,7 +1,5 @@
 ﻿using StudentPlanner.Core.Domain;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using StudentPlanner.Core;
 
 namespace StudentPlanner.Core.Application.PersonalEvents;
 

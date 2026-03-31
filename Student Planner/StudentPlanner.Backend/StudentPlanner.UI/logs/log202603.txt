@@ -177,3 +177,8 @@ WHERE [a].[NormalizedEmail] = @normalizedEmail
 2026-03-30 20:04:26.502 +02:00 [INF] Application started. Press Ctrl+C to shut down.
 2026-03-30 20:04:26.504 +02:00 [INF] Hosting environment: Development
 2026-03-30 20:04:26.506 +02:00 [INF] Content root path: C:\Users\Hoang\Desktop\Uni\Semester 6\SE2\Student Planner\StudentPlanner.Backend\StudentPlanner.UI
+2026-03-31 17:54:49.397 +02:00 [INF] User profile is available. Using 'C:\Users\Hoang\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-31 17:54:50.107 +02:00 [INF] Now listening on: http://localhost:5049
+2026-03-31 17:54:50.821 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-31 17:54:50.829 +02:00 [INF] Hosting environment: Development
+2026-03-31 17:54:50.835 +02:00 [INF] Content root path: C:\Users\Hoang\Desktop\Uni\Semester 6\SE2\Student Planner\StudentPlanner.Backend\StudentPlanner.UI
