@@ -41,7 +41,7 @@ public class UserRepository : IUserRepository
         return (await _context.Users.FirstOrDefaultAsync(u => u.RefreshTokenHash == token))?.ToUser();
     }
 
-    public Task<List<User>> GetUserByRoleAsync(string role)
+    public async Task<List<User>> GetUserByRoleAsync(string role)
     {
         throw new NotImplementedException();
     }
