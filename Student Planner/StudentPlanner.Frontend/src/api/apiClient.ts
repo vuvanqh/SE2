@@ -26,7 +26,7 @@ apiClient.interceptors.response.use(response => response,
     async error => {
         const request = error.config;
 
-        if(error.response?.status !=401 || request._retry)
+        if(error.response?.status != 401 || request._retry || request.url?.includes("login") )
             return Promise.reject(error);
 
         request._retry = true;

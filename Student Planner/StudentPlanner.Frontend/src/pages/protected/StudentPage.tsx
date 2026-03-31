@@ -22,4 +22,4 @@ export default function StudentPage(){
         </main>
         <Outlet/>
     </>
-}
+} 

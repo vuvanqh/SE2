@@ -27,7 +27,7 @@ public class AuthenticationService : IAuthenticationService
     {
         var user = await _identityService.SignInAsync(request.Email, request.Password);
         var roles = await _identityService.GetUserRolesAsync(user);
-        var role = roles.FirstOrDefault() ?? UserRoleOptions.User.ToString();
+        var role = roles.FirstOrDefault() ?? UserRoleOptions.Student.ToString();
 
         RefreshTokenResult refreshTokenResult = await _refreshTokenService.IssueOnLogin(user);
         return (new LoginResponseDto
@@ -56,7 +56,7 @@ public class AuthenticationService : IAuthenticationService
             FirstName = "FirstNamePlaceholder",
             LastName = "LastNamePlaceholder"
         };
-        await _identityService.RegisterUser(user, request.Password, UserRoleOptions.User.ToString());
+        await _identityService.RegisterUser(user, request.Password, UserRoleOptions.Student.ToString());
     }
 
     public async Task ForgotPasswordAsync(ForgotPasswordRequestDto request)
