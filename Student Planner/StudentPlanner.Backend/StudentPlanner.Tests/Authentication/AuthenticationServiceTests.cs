@@ -21,6 +21,7 @@ public class AuthenticationServiceTests
     private readonly Mock<IRefreshTokenService> _refreshTokenServiceMock;
     private readonly IAuthenticationService _authService;
 
+    private readonly Mock<IUsosAuthService> _usosAuthServiceMock;
     public AuthenticationServiceTests()
     {
         _identityServiceMock = new Mock<IIdentityService>();
@@ -28,13 +29,15 @@ public class AuthenticationServiceTests
         _jwtServiceMock = new Mock<IJwtService>();
         _userRepoMock = new Mock<IUserRepository>();
         _refreshTokenServiceMock = new Mock<IRefreshTokenService>();
-
+        _usosAuthServiceMock = new Mock<IUsosAuthService>();
         _authService = new AuthenticationService(
             _identityServiceMock.Object,
             _emailServiceMock.Object,
             _jwtServiceMock.Object,
             _userRepoMock.Object,
-            _refreshTokenServiceMock.Object);
+            _refreshTokenServiceMock.Object,
+            _usosAuthServiceMock.Object
+            );
     }
 
     [Fact]
@@ -66,7 +69,7 @@ public class AuthenticationServiceTests
 
         _userRepoMock.Setup(repo => repo.GetUserByEmailAsync(request.Email)).ReturnsAsync((User?)null);
         _identityServiceMock.Setup(s => s.RegisterUser(It.IsAny<User>(), request.Password, It.IsAny<string?>())).Returns(Task.CompletedTask);
-
+        _usosAuthServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password)).ReturnsAsync(true);
         await _authService.RegisterAsync(request);
 
         _identityServiceMock.Verify(s => s.RegisterUser(

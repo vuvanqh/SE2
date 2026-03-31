@@ -44,7 +44,8 @@ describe('auth middleware', () => {
 
   test('returns 401 when student is not found', () => {
     req.headers.authorization = 'Bearer validtoken';
-    getSessionByToken.mockReturnValue({ student_id: '1' });
+    getSessionByToken.mockReturnValue({ student_email: 'jan@example.com',
+  password: 'secret'});
     getStudentById.mockReturnValue(null);
 
     authMiddleware(req, res, next);

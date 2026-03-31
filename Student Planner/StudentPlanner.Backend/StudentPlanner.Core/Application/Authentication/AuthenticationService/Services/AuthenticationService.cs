@@ -7,19 +7,21 @@ namespace StudentPlanner.Core.Application.Authentication;
 
 public class AuthenticationService : IAuthenticationService
 {
+    private readonly IUsosAuthService _usosAuthService;
     private readonly IIdentityService _identityService;
     private readonly IEmailService _emailService;
     private readonly IJwtService _jwtService;
     private readonly IUserRepository _userRepo;
     private readonly IRefreshTokenService _refreshTokenService;
     public AuthenticationService(IIdentityService identityService, IEmailService emailService, IJwtService jwtService,
-        IUserRepository userRepo, IRefreshTokenService refreshTokenService)
+        IUserRepository userRepo, IRefreshTokenService refreshTokenService, IUsosAuthService usosAuthService)
     {
         _identityService = identityService;
         _emailService = emailService;
         _jwtService = jwtService;
         _userRepo = userRepo;
         _refreshTokenService = refreshTokenService;
+        _usosAuthService = usosAuthService;
     }
 
 
@@ -49,6 +51,11 @@ public class AuthenticationService : IAuthenticationService
             throw new InvalidOperationException("A user with this email already exists.");
         }
         // add USOS
+        var usosLoginSucceeded = await _usosAuthService.LoginAsync(request.Email, request.Password);
+        if (!usosLoginSucceeded)
+        {
+            throw new InvalidOperationException("Invalid USOS credentials.");
+        }
         var user = new User
         {
             Id = Guid.NewGuid(),
