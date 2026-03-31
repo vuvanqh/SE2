@@ -25,10 +25,15 @@ public class StudentPlannerWebApplicationFactory : WebApplicationFactory<Program
     /// Gets the mock for the IEmailService.
     /// </summary>
     public Mock<IEmailService> EmailServiceMock { get; } = new();
+    /// <summary>
+    /// Gets the mock for the IUsosAuthService.
+    /// </summary>
+    public Mock<IUsosAuthService> UsosAuthServiceMock { get; } = new();
 
     public StudentPlannerWebApplicationFactory()
     {
         _dbName = "StudentPlanner_Test_" + Guid.NewGuid().ToString("N");
+        UsosAuthServiceMock.Setup(s => s.LoginAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
     }
 
     /// <summary>
@@ -67,6 +72,10 @@ public class StudentPlannerWebApplicationFactory : WebApplicationFactory<Program
             // Replace real email service with mock
             services.RemoveAll<IEmailService>();
             services.AddScoped<IEmailService>(_ => EmailServiceMock.Object);
+
+            // Replace real USOS service with mock
+            services.RemoveAll<IUsosAuthService>();
+            services.AddScoped<IUsosAuthService>(_ => UsosAuthServiceMock.Object);
         });
     }
 

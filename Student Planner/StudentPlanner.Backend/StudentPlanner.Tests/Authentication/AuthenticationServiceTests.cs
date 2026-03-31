@@ -71,11 +71,31 @@ public class AuthenticationServiceTests
         _identityServiceMock.Setup(s => s.RegisterUser(It.IsAny<User>(), request.Password, It.IsAny<string?>())).Returns(Task.CompletedTask);
         _usosAuthServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password)).ReturnsAsync(true);
         await _authService.RegisterAsync(request);
-
+ 
         _identityServiceMock.Verify(s => s.RegisterUser(
             It.Is<User>(u => u.Email == request.Email && u.FirstName == "FirstNamePlaceholder" && u.LastName == "LastNamePlaceholder"),
             request.Password,
             It.IsAny<string?>()), Times.Once);
+        _usosAuthServiceMock.Verify(s => s.LoginAsync(request.Email, request.Password), Times.Once);
+    }
+
+    [Fact]
+    public async Task RegisterAsync_ShouldThrowException_WhenUsosLoginFails()
+    {
+        var request = new RegisterRequestDto
+        {
+            Email = "test@pw.edu.pl",
+            Password = "WrongPassword!",
+            ConfirmPassword = "WrongPassword!"
+        };
+
+        _userRepoMock.Setup(repo => repo.GetUserByEmailAsync(request.Email)).ReturnsAsync((User?)null);
+        _usosAuthServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password)).ReturnsAsync(false);
+
+        Func<Task> act = async () => await _authService.RegisterAsync(request);
+
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Invalid USOS credentials.");
+        _identityServiceMock.Verify(s => s.RegisterUser(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string?>()), Times.Never);
     }
 
     [Fact]
