@@ -20,8 +20,7 @@ public class JwtService : IJwtService
 
     public string CreateToken(User user)
     {
-        var expirationMinutes = _config["Jwt:ExpirationMinutes"] ?? _config["RefreshToken:expiration_minutes"] ?? "60";
-        DateTime expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(expirationMinutes));
+        DateTime expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_config["Jwt:Expiration_Minutes"]));
         Claim[] claims = new Claim[] {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()), //token subject identifier
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), //token identifier

@@ -46,8 +46,7 @@ public class AuthenticationServiceTests
         var request = new RegisterRequestDto
         {
             Email = "test@pw.edu.pl",
-            Password = "Password123!",
-            ConfirmPassword = "Password123!"
+            Password = "Password123!"
         };
 
         var existingUser = new User { Id = Guid.NewGuid(), Email = request.Email, FirstName = "Existing", LastName = "User" };
@@ -63,8 +62,7 @@ public class AuthenticationServiceTests
         var request = new RegisterRequestDto
         {
             Email = "test@pw.edu.pl",
-            Password = "Password123!",
-            ConfirmPassword = "Password123!"
+            Password = "Password123!"
         };
 
         _userRepoMock.Setup(repo => repo.GetUserByEmailAsync(request.Email)).ReturnsAsync((User?)null);
@@ -85,8 +83,7 @@ public class AuthenticationServiceTests
         var request = new RegisterRequestDto
         {
             Email = "test@pw.edu.pl",
-            Password = "WrongPassword!",
-            ConfirmPassword = "WrongPassword!"
+            Password = "WrongPassword!"
         };
 
         _userRepoMock.Setup(repo => repo.GetUserByEmailAsync(request.Email)).ReturnsAsync((User?)null);

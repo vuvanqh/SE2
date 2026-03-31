@@ -16,7 +16,4 @@ public record RegisterRequestDto
     [Required]
     public string Password { get; set; } = null!;
 
-    [Required]
-    [Compare("Password", ErrorMessage = "Passwords do not match")]
-    public string ConfirmPassword { get; set; } = null!;
 }

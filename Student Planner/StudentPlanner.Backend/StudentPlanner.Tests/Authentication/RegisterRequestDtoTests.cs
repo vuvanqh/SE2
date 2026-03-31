@@ -14,8 +14,7 @@ public class RegisterRequestDtoTests
         var request = new RegisterRequestDto
         {
             Email = "test@gmail.com",
-            Password = "Password123!",
-            ConfirmPassword = "Password123!"
+            Password = "Password123!"
         };
         var context = new ValidationContext(request);
         var results = new List<ValidationResult>();
@@ -26,22 +25,5 @@ public class RegisterRequestDtoTests
         results.Should().Contain(x => x.ErrorMessage != null && x.ErrorMessage.Contains("@pw.edu.pl"));
     }
 
-    [Fact]
-    public void RegisterRequestDto_ShouldFailValidation_WhenPasswordsDoNotMatch()
-    {
-        var request = new RegisterRequestDto
-        {
-            Email = "test@pw.edu.pl",
-            Password = "Password123!",
-            ConfirmPassword = "DifferentPassword123!"
-        };
 
-        var context = new ValidationContext(request);
-        var results = new List<ValidationResult>();
-
-        var isValid = Validator.TryValidateObject(request, context, results, true);
-
-        isValid.Should().BeFalse();
-        results.Should().Contain(x => x.ErrorMessage != null && x.ErrorMessage.Contains("match"));
-    }
 }

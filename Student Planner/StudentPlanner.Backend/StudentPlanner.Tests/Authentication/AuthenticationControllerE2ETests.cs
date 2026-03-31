@@ -31,8 +31,7 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
         var request = new RegisterRequestDto
         {
             Email = "newuser@pw.edu.pl",
-            Password = "Password123!",
-            ConfirmPassword = "Password123!"
+            Password = "Password123!"
         };
 
 
@@ -53,8 +52,7 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
         var request = new RegisterRequestDto
         {
             Email = "duplicate@pw.edu.pl",
-            Password = "Password123!",
-            ConfirmPassword = "Password123!"
+            Password = "Password123!"
         };
         var firstResponse = await _client.PostAsJsonAsync("/api/auth/register", request, TestContext.Current.CancellationToken);
         firstResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -75,8 +73,7 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
         var request = new RegisterRequestDto
         {
             Email = "invalidpass@pw.edu.pl",
-            Password = "1", // too short, should fail identity rules
-            ConfirmPassword = "1"
+            Password = "1" // too short, should fail identity rules
         };
         var response = await _client.PostAsJsonAsync("/api/auth/register", request, TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -92,8 +89,7 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
         var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", new RegisterRequestDto
         {
             Email = email,
-            Password = password,
-            ConfirmPassword = password
+            Password = password
         }, TestContext.Current.CancellationToken);
         if (!registerResponse.IsSuccessStatusCode)
         {
@@ -150,8 +146,7 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
         var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", new RegisterRequestDto
         {
             Email = email,
-            Password = password,
-            ConfirmPassword = password
+            Password = password
         }, TestContext.Current.CancellationToken);
         if (!registerResponse.IsSuccessStatusCode)
         {
@@ -216,8 +211,7 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
         var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", new RegisterRequestDto
         {
             Email = email,
-            Password = password,
-            ConfirmPassword = password
+            Password = password
         }, TestContext.Current.CancellationToken);
         if (!registerResponse.IsSuccessStatusCode)
         {
@@ -244,8 +238,7 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
         var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", new RegisterRequestDto
         {
             Email = email,
-            Password = password,
-            ConfirmPassword = password
+            Password = password
         }, TestContext.Current.CancellationToken);
         if (!registerResponse.IsSuccessStatusCode)
         {
