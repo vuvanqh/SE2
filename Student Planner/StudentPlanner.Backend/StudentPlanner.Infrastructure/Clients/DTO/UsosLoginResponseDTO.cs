@@ -1,12 +1,12 @@
-﻿using StudentPlanner.Core.Application;
+using StudentPlanner.Core.Application;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace StudentPlanner.Infrastructure.Clients;
+namespace StudentPlanner.Infrastructure.Clients.DTO;
 
-public record UsosLoginResponseDTO
+public record UsosLoginResponseDto
 {
     [Required] public string token { get; set; } = null!;
     [Required] public string firstName { get; set; } = null!;

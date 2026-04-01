@@ -44,7 +44,7 @@ public class UsosClient : IUsosClient
             throw new UsosException($"USOS login failed for email {email}. Status code: {response.StatusCode}");
         }
 
-        UsosLoginResponseDTO? resp = await response.Content.ReadFromJsonAsync<UsosLoginResponseDTO>();
+        UsosLoginResponseDto? resp = await response.Content.ReadFromJsonAsync<UsosLoginResponseDto>();
         if (resp == null)
         {
             _logger.LogCritical("USOS  returned an empty login response for email: {Email}", email);
