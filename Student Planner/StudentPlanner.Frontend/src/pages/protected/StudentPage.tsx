@@ -1,15 +1,16 @@
 import { Outlet, useNavigate } from "react-router-dom"
 import Navbar from "../../components/layout/Navbar"
 import Calendar from "../../components/calendar/Calendar";
+import { queryClient } from "../../api/queryClient";
 
 export default function StudentPage(){
     const navigate = useNavigate();
-
+    const user = queryClient.getQueryData(['user']);
     return <>
         <Navbar>
                 <div>
                     <div>
-                        <h1>Student Planner</h1>
+                        <h1>Welcome {user.firstName} {user.lastName}</h1>
                     </div>
                 </div>
                 <div>
@@ -22,4 +23,4 @@ export default function StudentPage(){
         </main>
         <Outlet/>
     </>
-}
+} 

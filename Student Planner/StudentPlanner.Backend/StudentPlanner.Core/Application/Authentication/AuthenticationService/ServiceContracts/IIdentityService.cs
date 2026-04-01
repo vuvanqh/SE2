@@ -8,7 +8,7 @@ namespace StudentPlanner.Core.Application.Authentication;
 public interface IIdentityService
 {
     Task<User> SignInAsync(string email, string password);
-    Task RegisterUser(User user, string password, string? role = null);
+    Task RegisterUser(User user, string password, Guid? facultyId, string? role = null);
     Task<string> GeneratePasswordResetTokenAsync(string email);
     Task ResetPasswordAsync(string email, string token, string newPasswd);
     Task<IList<string>> GetUserRolesAsync(User user);

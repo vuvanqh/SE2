@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StudentPlanner.Core.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,4 +14,7 @@ public class User
     public string? RefreshTokenHash { get; set; }
     public DateTime RefreshTokenExpirationDate { get; set; }
     public DateTime RefreshTokenIssuedAt { get; set; }
+    public string? UsosToken { get; set; }
+
+    public Faculty? Faculty { get; set; }
 }

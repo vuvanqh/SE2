@@ -25,24 +25,24 @@ export const router = createBrowserRouter([{
             }
         ]},
         {
-            path: "main",
+            path: "",
             element: <ProtectedRoute/>,
             children: [
                 {
                     path: "student",
-                    element: <RoleRoute allowed={["student"]}>
+                    element: <RoleRoute allowed={["Student"]}>
                         <StudentPage/>
                     </RoleRoute>
                 },
                 {
                     path: "manager",
-                    element: <RoleRoute allowed={["manager"]}>
+                    element: <RoleRoute allowed={["Manager"]}>
                         <StudentPage/>
                     </RoleRoute>
                 },
                 {
                     path: "admin",
-                    element: <RoleRoute allowed={["admin"]}>
+                    element: <RoleRoute allowed={["Admin"]}>
                         <StudentPage/>
                     </RoleRoute>
                 }

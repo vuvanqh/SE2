@@ -12,20 +12,29 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using StudentPlanner.Core.Entities;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace StudentPlanner.Tests.Identity;
 
-public class IdentityServiceTests
+public class IdentityServiceTests : IDisposable
 {
     private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
     private readonly Mock<SignInManager<ApplicationUser>> _signInManagerMock;
     private readonly Mock<RoleManager<ApplicationRole>> _roleManagerMock;
+    private readonly ApplicationDbContext _context;
     private readonly IIdentityService _identityService;
 
     public IdentityServiceTests()
     {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+        _context = new ApplicationDbContext(options);
+
         var store = new Mock<IUserStore<ApplicationUser>>();
         _userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null!, null!, null!, null!, null!, null!, null!, null!);
+
+        _userManagerMock.Setup(m => m.Users).Returns(_context.Users);
 
         var contextAccessor = new Mock<IHttpContextAccessor>();
         var claimsFactory = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
@@ -40,8 +49,6 @@ public class IdentityServiceTests
     [Fact]
     public async Task SignInAsync_ShouldThrowException_WhenUserNotFound()
     {
-        _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync((ApplicationUser?)null);
-
         Func<Task> act = async () => await _identityService.SignInAsync("test@pw.edu.pl", "Password123!");
 
         await act.Should().ThrowAsync<UnauthorizedAccessException>().WithMessage("Invalid Credentials");
@@ -51,9 +58,10 @@ public class IdentityServiceTests
     public async Task SignInAsync_ShouldThrowException_WhenPasswordIsIncorrect()
     {
         var appUser = new ApplicationUser { Email = "test@pw.edu.pl", UserName = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
-        _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync(appUser);
+        _context.Users.Add(appUser);
+        await _context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        _signInManagerMock.Setup(s => s.PasswordSignInAsync(appUser, "WrongPassword!", false, true))
+        _signInManagerMock.Setup(s => s.PasswordSignInAsync(It.IsAny<ApplicationUser>(), "WrongPassword!", false, true))
             .ReturnsAsync(SignInResult.Failed);
 
         Func<Task> act = async () => await _identityService.SignInAsync("test@pw.edu.pl", "WrongPassword!");
@@ -64,10 +72,11 @@ public class IdentityServiceTests
     [Fact]
     public async Task SignInAsync_ShouldReturnUser_WhenCredentialsAreValid()
     {
-        var appUser = new ApplicationUser { Id = Guid.NewGuid(), Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
-        _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync(appUser);
+        var appUser = new ApplicationUser { Id = Guid.NewGuid(), Email = "test@pw.edu.pl", UserName = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
+        _context.Users.Add(appUser);
+        await _context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        _signInManagerMock.Setup(s => s.PasswordSignInAsync(appUser, "Password123!", false, true))
+        _signInManagerMock.Setup(s => s.PasswordSignInAsync(It.IsAny<ApplicationUser>(), "Password123!", false, true))
             .ReturnsAsync(SignInResult.Success);
 
         var user = await _identityService.SignInAsync("test@pw.edu.pl", "Password123!");
@@ -82,6 +91,7 @@ public class IdentityServiceTests
     public async Task RegisterUser_ShouldThrowException_WhenUserManagerFails()
     {
         var user = new User { Id = Guid.NewGuid(), Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
+        var facultyId = Guid.NewGuid();
         var failedResult = IdentityResult.Failed(
             new IdentityError { Description = "Password too weak!" },
             new IdentityError { Description = "Password requires uppercase." }
@@ -89,7 +99,7 @@ public class IdentityServiceTests
 
         _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), "password")).ReturnsAsync(failedResult);
 
-        Func<Task> act = async () => await _identityService.RegisterUser(user, "password");
+        Func<Task> act = async () => await _identityService.RegisterUser(user, "password", facultyId);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Password too weak!, Password requires uppercase.");
@@ -99,9 +109,10 @@ public class IdentityServiceTests
     public async Task RegisterUser_ShouldSucceed_WhenUserManagerSucceeds()
     {
         var user = new User { Id = Guid.NewGuid(), Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
+        var facultyId = Guid.NewGuid();
         _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), "password")).ReturnsAsync(IdentityResult.Success);
 
-        Func<Task> act = async () => await _identityService.RegisterUser(user, "password");
+        Func<Task> act = async () => await _identityService.RegisterUser(user, "password", facultyId);
 
         await act.Should().NotThrowAsync();
     }
@@ -109,7 +120,7 @@ public class IdentityServiceTests
     [Fact]
     public async Task GeneratePasswordResetTokenAsync_ShouldReturnToken_WhenUserExists()
     {
-        var appUser = new ApplicationUser { Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
+        var appUser = new ApplicationUser { Email = "test@pw.edu.pl", UserName = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
         _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync(appUser);
         _userManagerMock.Setup(x => x.GeneratePasswordResetTokenAsync(appUser)).ReturnsAsync("mocked-token");
 
@@ -141,7 +152,7 @@ public class IdentityServiceTests
     [Fact]
     public async Task ResetPasswordAsync_ShouldSucceed_WhenValid()
     {
-        var appUser = new ApplicationUser { Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
+        var appUser = new ApplicationUser { Email = "test@pw.edu.pl", UserName = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
         _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync(appUser);
         _userManagerMock.Setup(x => x.ResetPasswordAsync(appUser, "mocked-token", "NewPassword123!")).ReturnsAsync(IdentityResult.Success);
 
@@ -153,7 +164,7 @@ public class IdentityServiceTests
     [Fact]
     public async Task ResetPasswordAsync_ShouldThrowException_WhenTokenIsInvalid()
     {
-        var appUser = new ApplicationUser { Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
+        var appUser = new ApplicationUser { Email = "test@pw.edu.pl", UserName = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
         _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync(appUser);
 
         var failedResult = IdentityResult.Failed(new IdentityError { Description = "Invalid token." });
@@ -165,35 +176,21 @@ public class IdentityServiceTests
     }
 
     [Fact]
-    public async Task ResetPasswordAsync_ShouldThrowException_WhenPasswordIsWeak()
-    {
-        var appUser = new ApplicationUser { Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
-        _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync(appUser);
-
-        var failedResult = IdentityResult.Failed(new IdentityError { Description = "Password too weak!" });
-        _userManagerMock.Setup(x => x.ResetPasswordAsync(appUser, "valid-token", "weak")).ReturnsAsync(failedResult);
-
-        Func<Task> act = async () => await _identityService.ResetPasswordAsync("test@pw.edu.pl", "valid-token", "weak");
-
-        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Password too weak!");
-    }
-
-    [Fact]
     public async Task UpdateToken_ShouldUpdateUser_WhenUserExists()
     {
-        var appUser = new ApplicationUser { Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
+        var appUser = new ApplicationUser { Email = "test@pw.edu.pl", UserName = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
         _userManagerMock.Setup(x => x.FindByEmailAsync("test@pw.edu.pl")).ReturnsAsync(appUser);
 
         var expiration = DateTime.UtcNow.AddDays(7);
-        Func<Task> act = async () => await _identityService.UpdateToken("test@pw.edu.pl", "token-hash", expiration, DateTime.UtcNow);
+        var issuedAt = DateTime.UtcNow;
 
-        await act.Should().NotThrowAsync();
+        await _identityService.UpdateToken("test@pw.edu.pl", "token-hash", expiration, issuedAt);
 
         appUser.RefreshTokenHash.Should().Be("token-hash");
         appUser.RefreshTokenExpirationDate.Should().Be(expiration);
+        appUser.RefreshTokenIssuedAt.Should().Be(issuedAt);
         _userManagerMock.Verify(x => x.UpdateAsync(appUser), Times.Once);
     }
-
 
     [Fact]
     public async Task UpdateToken_ShouldThrowException_WhenUserDoesNotExist()
@@ -203,5 +200,34 @@ public class IdentityServiceTests
         Func<Task> act = async () => await _identityService.UpdateToken("ghost@pw.edu.pl", "hash", DateTime.UtcNow, DateTime.UtcNow);
 
         await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Invalid Operation");
+    }
+
+    [Fact]
+    public async Task GetUserRolesAsync_ShouldReturnRoles_WhenUserExists()
+    {
+        var user = new User { Id = Guid.NewGuid(), Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
+        var appUser = new ApplicationUser { Email = "test@pw.edu.pl", UserName = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" };
+        var roles = new List<string> { "Student" };
+
+        _userManagerMock.Setup(x => x.FindByEmailAsync(user.Email)).ReturnsAsync(appUser);
+        _userManagerMock.Setup(x => x.GetRolesAsync(appUser)).ReturnsAsync(roles);
+
+        var result = await _identityService.GetUserRolesAsync(user);
+
+        result.Should().BeEquivalentTo(roles);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _context.Dispose();
+        }
     }
 }

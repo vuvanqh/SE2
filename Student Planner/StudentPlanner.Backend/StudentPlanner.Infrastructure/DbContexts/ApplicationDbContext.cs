@@ -2,9 +2,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using StudentPlanner.Core.Domain;
 using StudentPlanner.Infrastructure.IdentityEntities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace StudentPlanner.Infrastructure;
 
@@ -12,6 +9,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
     public virtual DbSet<PersonalEvent> PersonalEvents => Set<PersonalEvent>();
+    public virtual DbSet<AppFaculty> Faculties => Set<AppFaculty>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

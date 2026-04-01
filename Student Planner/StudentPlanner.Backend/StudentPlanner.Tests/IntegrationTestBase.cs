@@ -6,6 +6,7 @@ using Moq;
 using Xunit;
 using System.Net.Http;
 using System;
+using System.Threading.Tasks;
 
 namespace StudentPlanner.Tests;
 

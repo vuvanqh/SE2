@@ -36,9 +36,21 @@ public static class ServiceConfigExtention
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.Configure<EmailSettings>(config.GetSection("EmailSettings"));
         services.AddScoped<IEmailService, MailtrapEmailService>();
-        services.AddHttpClient<IUsosAuthService, UsosAuthService>();
+
+        var baseUrl = config["UsosApi:BaseUrl"];
+
+        Console.WriteLine($"DEBUG BaseUrl = {baseUrl}");
+
+        services.AddHttpClient<IUsosClient, UsosClient>(client =>
+        {
+            client.BaseAddress = new Uri(config["UsosApi:BaseUrl"]!);
+        });
         //repo
         services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IFacultyRepository, FacultyRepository>();
+
+        //hosted
+        services.AddHostedService<FacultyBootstrapService>();
     }
 }

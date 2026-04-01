@@ -8,6 +8,9 @@ using Xunit;
 using StudentPlanner.Infrastructure.IdentityEntities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System;
 
 namespace StudentPlanner.Tests.Authentication;
 
@@ -275,11 +278,6 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
     [Fact]
     public async Task RefreshToken_InvalidToken_401()
     {
-        var cookieContainer = new CookieContainer();
-        cookieContainer.Add(new Cookie("refreshToken", "invalid-token", "/api/auth", "localhost"));
-
-        using var handler = new HttpClientHandler { CookieContainer = cookieContainer };
-        using var tempClient = _factory.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://localhost") });
 
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refreshToken");
         request.Headers.Add("Cookie", "refreshToken=invalid-token");
@@ -290,4 +288,3 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
 
 
 }
-

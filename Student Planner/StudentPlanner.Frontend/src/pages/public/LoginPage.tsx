@@ -1,5 +1,5 @@
 import { useActionState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, NavLink } from 'react-router-dom'
 import Modal from '../../components/modals/Modal'
 import Input from '../../components/common/Input';
 import { useAuth } from '../../hooks/authHooks';
@@ -81,7 +81,6 @@ export default function LoginPage() {
         input.reportValidity();
   }
 
-  //TO-DO: DISABLE CREATE BUTTON WHILE IS PENDING
   return (
     <Modal open={isLoginOpen} className="register-page" onClose={()=>navigate("/")}>    
         <p>Welcome back to Student Planner</p>
@@ -91,6 +90,10 @@ export default function LoginPage() {
                 pattern="^[^@]+@pw\.edu\.pl$" onChange={emailValidator}/>
 
             <Input type="password" id="password" label="Password" defaultValue={state.password}/>
+
+
+            <NavLink to="/forgot-password">Forgot Password? - Do not use this yet</NavLink>
+
             {state.errors?.map(error => <small className="error-text" key={error}>{error}</small>)}
 
           <button disabled={isLoginPending}>Log In</button> 

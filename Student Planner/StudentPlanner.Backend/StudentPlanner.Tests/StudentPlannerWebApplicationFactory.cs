@@ -6,12 +6,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Configuration;
 using StudentPlanner.Backend;
+using StudentPlanner.Core.Application;
 using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Infrastructure;
 using System.Net.Http;
 using Moq;
+using System;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace StudentPlanner.Tests;
 
@@ -21,19 +24,42 @@ namespace StudentPlanner.Tests;
 public class StudentPlannerWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly string _dbName;
+
     /// <summary>
     /// Gets the mock for the IEmailService.
     /// </summary>
     public Mock<IEmailService> EmailServiceMock { get; } = new();
+
     /// <summary>
-    /// Gets the mock for the IUsosAuthService.
+    /// Gets the mock for the IUsosClient.
     /// </summary>
-    public Mock<IUsosAuthService> UsosAuthServiceMock { get; } = new();
+    public Mock<IUsosClient> UsosAuthServiceMock { get; } = new();
 
     public StudentPlannerWebApplicationFactory()
     {
         _dbName = "StudentPlanner_Test_" + Guid.NewGuid().ToString("N");
-        UsosAuthServiceMock.Setup(s => s.LoginAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+
+        // Default mock setup for USOS login
+        UsosAuthServiceMock.Setup(s => s.LoginAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(new UsosLoginResponse
+            {
+                FirstName = "Test",
+                LastName = "User",
+                FacultyId = "test-faculty",
+                UsosToken = "test-token"
+            });
+
+        UsosAuthServiceMock.Setup(s => s.GetFacultiesAsync())
+            .ReturnsAsync(new List<StudentPlanner.Core.Domain.Entities.Faculty>
+            {
+                new StudentPlanner.Core.Domain.Entities.Faculty
+                {
+                    FacultyId = "test-faculty",
+                    FacultyName = "Test Faculty",
+                    FacultyCode = "TF",
+                    Id = Guid.NewGuid()
+                }
+            });
     }
 
     /// <summary>
@@ -64,7 +90,7 @@ public class StudentPlannerWebApplicationFactory : WebApplicationFactory<Program
         builder.ConfigureLogging(logging =>
         {
             logging.ClearProviders();
-            logging.AddConfiguration(new ConfigurationBuilder().Build()); // Empty config for default logging
+            logging.AddConsole();
         });
 
         builder.ConfigureTestServices(services =>
@@ -74,22 +100,26 @@ public class StudentPlannerWebApplicationFactory : WebApplicationFactory<Program
             services.AddScoped<IEmailService>(_ => EmailServiceMock.Object);
 
             // Replace real USOS service with mock
-            services.RemoveAll<IUsosAuthService>();
-            services.AddScoped<IUsosAuthService>(_ => UsosAuthServiceMock.Object);
+            services.RemoveAll<IUsosClient>();
+            services.AddScoped<IUsosClient>(_ => UsosAuthServiceMock.Object);
         });
     }
 
     /// <summary>
     /// Ensures the database is created and migrated.
-    /// This is called explicitly by xUnit before tests run.
     /// </summary>
     public async ValueTask InitializeAsync()
     {
-        using var scope = Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        // migrate the database before the services
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseSqlServer(GetConnectionString())
+            .Options;
 
-        // Ensure the database is created and all migrations are applied
+        using var db = new ApplicationDbContext(options);
         await db.Database.MigrateAsync();
+
+        // ensures the services are available for tests
+        _ = Services;
     }
 
     /// <summary>
@@ -101,12 +131,15 @@ public class StudentPlannerWebApplicationFactory : WebApplicationFactory<Program
         try
         {
             using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            await db.Database.EnsureDeletedAsync();
+            var db = scope.ServiceProvider?.GetService<ApplicationDbContext>();
+            if (db != null)
+            {
+                await db.Database.EnsureDeletedAsync();
+            }
         }
         catch (ObjectDisposedException)
         {
-            // Silently ignore if already disposed during teardown
+            // ignore
         }
 
         await base.DisposeAsync();

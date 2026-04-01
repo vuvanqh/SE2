@@ -20,10 +20,14 @@ router.post('/', (req, res) => {
     return res.status(401).json({ error: 'Invalid student_id or password' });
   }
   const token = crypto.randomBytes(32).toString('hex');
-
   saveToken(student.student_id, token);
 
-  res.json({ token });
+  res.json({ 
+    token,
+    facultyId: student.faculty_id,
+    firstName: student.first_name,
+    lastName: student.last_name
+   });
 });
 
 module.exports = router;

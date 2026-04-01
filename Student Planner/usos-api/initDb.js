@@ -2,6 +2,21 @@ const db = require('./db');
 
 function initDb() {
   db.exec(`
+    PRAGMA foreign_keys = OFF;
+    DROP TABLE IF EXISTS enrollments;
+    DROP TABLE IF EXISTS usos_schedule_events;
+    DROP TABLE IF EXISTS usos_rooms;
+    DROP TABLE IF EXISTS usos_buildings;
+    DROP TABLE IF EXISTS usos_course_groups;
+    DROP TABLE IF EXISTS courses;
+    DROP TABLE IF EXISTS students;
+    DROP TABLE IF EXISTS faculties;
+    DROP TABLE IF EXISTS terms;
+    DROP TABLE IF EXISTS sessions;
+    PRAGMA foreign_keys = ON;
+  `);
+
+  db.exec(`
     CREATE TABLE IF NOT EXISTS faculties (
       faculty_id TEXT PRIMARY KEY,
       faculty_name TEXT NOT NULL,
@@ -95,10 +110,8 @@ function initDb() {
     );
   `);
 
-  const { count } = db.prepare('SELECT COUNT(*) AS count FROM faculties').get();
-  if (count === 0) {
-    seed();
-  }
+  seed();
+  
 }
 
 function seed() {

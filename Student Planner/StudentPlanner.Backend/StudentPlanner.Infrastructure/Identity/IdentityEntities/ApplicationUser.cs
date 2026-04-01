@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
+using StudentPlanner.Core.Domain;
+using StudentPlanner.Core.Domain.Entities;
 using StudentPlanner.Core.Entities;
 
 namespace StudentPlanner.Infrastructure.IdentityEntities;
@@ -13,7 +15,12 @@ public class ApplicationUser : IdentityUser<Guid>
     public string? RefreshTokenHash { get; set; }
     public DateTime RefreshTokenExpirationDate { get; set; }
     public DateTime RefreshTokenIssuedAt { get; set; }
+    public string? UsosToken { get; set; }
 
+
+    public Guid? FacultyId { get; set; }
+    public AppFaculty? Faculty { get; set; }
+    public ICollection<PersonalEvent> PersonalEvents { get; set; } = new List<PersonalEvent>();
 
     public User ToUser() => new User()
     {
@@ -23,6 +30,14 @@ public class ApplicationUser : IdentityUser<Guid>
         LastName = LastName,
         RefreshTokenHash = RefreshTokenHash,
         RefreshTokenExpirationDate = RefreshTokenExpirationDate,
-        RefreshTokenIssuedAt = RefreshTokenIssuedAt
+        RefreshTokenIssuedAt = RefreshTokenIssuedAt,
+        UsosToken = UsosToken,
+        Faculty = Faculty?.ToFaculty() != null ? new Faculty
+        {
+            Id = Faculty.Id,
+            FacultyCode = Faculty.FacultyCode,
+            FacultyName = Faculty.FacultyName,
+            FacultyId = Faculty.FacultyId
+        } : null,
     };
 }

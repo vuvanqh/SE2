@@ -2,7 +2,7 @@ namespace StudentPlanner.Core.Entities;
 
 public enum UserRoleOptions
 {
-    User,
+    Student,
     Manager,
     Admin
 }

@@ -7,6 +7,7 @@ const usersRoutes = require('./routes/users');
 const facultiesRoutes = require('./routes/faculties');
 const loginRoutes = require('./routes/login');
 const authMiddleware = require('./middleware/auth');
+const db = require('./db');
 const { initDb } = require('./initDb');
 // const {
 //   getUserTimetable,
@@ -20,7 +21,7 @@ const { initDb } = require('./initDb');
 // } = require('./data/groupsData'); 
 
 initDb();
-
+console.log("STUDENTS:", db.prepare("SELECT * FROM students").all());
 // console.log('--- USER 1 ---');
 // console.dir(getUserTimetable('1', '2025-10-01', 30), { depth: null });
 
@@ -72,7 +73,7 @@ app.use('/services/login', loginRoutes);
 app.use('/services/users', authMiddleware, usersRoutes);
 app.use('/services/groups', authMiddleware, groupsRoutes);
 app.use('/services/tt', authMiddleware, ttRoutes);
-app.use('/services/faculties', authMiddleware, facultiesRoutes);
+app.use('/services/faculties', facultiesRoutes);
 
 const PORT = process.env.PORT || 3000;
 if (require.main == module){

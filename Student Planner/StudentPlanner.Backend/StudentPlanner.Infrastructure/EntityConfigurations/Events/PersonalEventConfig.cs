@@ -18,7 +18,8 @@ public class PersonalEventConfig : IEntityTypeConfiguration<PersonalEvent>
 
         builder.HasOne<ApplicationUser>()
             .WithMany()
-            .HasForeignKey(e => e.UserId);
+            .HasForeignKey(e => e.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.OwnsOne(e => e.EventDetails);
 

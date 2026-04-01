@@ -53,30 +53,21 @@ public static class BaselineConfigExtention
         });
 
         //dbContext
-        if (Environment.GetEnvironmentVariable("USE_IN_MEMORY_DATABASE") == "true")
-        {
-            services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                var dbName = Environment.GetEnvironmentVariable("IN_MEMORY_DATABASE_NAME") ?? "StudentPlanner";
-                options.UseInMemoryDatabase(dbName);
-            });
-        }
-        else
-        {
-            services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseSqlServer(config.GetConnectionString("Default"), sqlOptions =>
-                {
-                    sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                    sqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 5,
-                        maxRetryDelay: TimeSpan.FromSeconds(5),
-                        errorNumbersToAdd: null);
-                });
-                options.EnableSensitiveDataLogging();
 
+        services.AddDbContext<ApplicationDbContext>(options =>
+        {
+            options.UseSqlServer(config.GetConnectionString("Default"), sqlOptions =>
+            {
+                sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(5),
+                    errorNumbersToAdd: null);
             });
-        }
+            options.EnableSensitiveDataLogging();
+
+        });
+
 
         //identity
         services.AddIdentity<ApplicationUser, ApplicationRole>()
