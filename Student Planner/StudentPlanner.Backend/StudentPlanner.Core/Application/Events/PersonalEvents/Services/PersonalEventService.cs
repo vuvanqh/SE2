@@ -44,7 +44,7 @@ public class PersonalEventService : IPersonalEventService
     public async Task UpdatePersonalEventAsync(Guid userId, Guid eventId, UpdatePersonalEventRequest request)
     {
         PersonalEvent? personalEvent = await _personalEventRepo.GetEventByEventIdAsync(eventId);
-        if(personalEvent==null)
+        if (personalEvent == null)
             throw new ArgumentException("Invalid Event.");
 
         PersonalEventPolicy.EnsureHasPermissions(userId, personalEvent);
