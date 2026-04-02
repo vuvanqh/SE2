@@ -2,7 +2,7 @@ import { useActionState } from 'react'
 import { useNavigate, useLocation, NavLink } from 'react-router-dom'
 import Modal from '../../components/modals/Modal'
 import Input from '../../components/common/Input';
-import { useAuth } from '../../hooks/authHooks';
+import { useAuth } from '../../global-hooks/authHooks';
 
 type stateType = {
   email: string,

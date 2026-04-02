@@ -1,9 +1,9 @@
 import { useContext } from "react";
 import { ModalContext } from "../../store/ModalContext";
-import CreateEventModal from "./CreateEventModal";
-import EventListModal from "./EventListModal";
-import EditEventModal from "./EditEventModal";
-import ViewEventModal from "./ViewEventModal";
+import CreateEventModal from "../../features/events/components/CreateEventModal";
+import EventListModal from "../../features/events/components/EventListModal";
+import EditEventModal from "../../features/events/components/EditEventModal";
+import ViewEventModal from "../../features/events/components/ViewEventModal";
 
 export default function ModalRoot(){
     const {state, close} = useContext(ModalContext);

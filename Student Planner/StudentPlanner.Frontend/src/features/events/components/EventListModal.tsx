@@ -1,7 +1,7 @@
-import Modal from "./Modal";
+import Modal from "../../../components/modals/Modal";
 import { useContext } from "react";
-import { ModalContext } from "../../store/ModalContext";
-import type { personalEventResponse } from "../../types/personalEventTypes";
+import { ModalContext } from "../../../store/ModalContext";
+import type { personalEventResponse } from "../../../types/personalEventTypes";
 
 export default function EventListModal({events}:{events: personalEventResponse[]}){
     const {close, open} = useContext(ModalContext);

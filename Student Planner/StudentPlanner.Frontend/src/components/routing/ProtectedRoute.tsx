@@ -1,5 +1,5 @@
 import { useNavigate, Outlet } from "react-router-dom";
-import { useAuth } from "../../hooks/authHooks";
+import { useAuth } from "../../global-hooks/authHooks";
 import ModalContextProvider from "../../store/ModalContext";
 import ModalRoot from "../modals/ModalRoot";
 import { useEffect } from "react";

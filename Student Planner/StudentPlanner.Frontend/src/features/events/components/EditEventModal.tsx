@@ -1,8 +1,8 @@
-import Modal from "./Modal";
-import { useGetPersonalEvent } from "../../hooks/personalEventHooks";
-import { extractErrors } from "../../api/helpers";
-import EventForm from "../common/EventForm";
-import type { createPersonalEventRequest } from "../../types/personalEventTypes";
+import Modal from "../../../components/modals/Modal";
+import { useGetPersonalEvent } from "../hooks/personalEventHooks";
+import { extractErrors } from "../../../api/helpers";
+import EventForm from "../../../components/common/EventForm";
+import type { createPersonalEventRequest } from "../../../types/personalEventTypes";
 
 type createEventProps = {
     requiresRole?: ("Student" | "Manager" | "Admin") [],
