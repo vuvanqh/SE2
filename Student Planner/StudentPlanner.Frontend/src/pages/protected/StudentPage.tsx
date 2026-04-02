@@ -1,9 +1,9 @@
 import { Outlet, useNavigate } from "react-router-dom"
 import Navbar from "../../components/layout/Navbar"
 import Calendar from "../../components/calendar/Calendar";
-import {useGetAllPersonalEvents} from "../../hooks/personalEventHooks"
+import {useGetAllPersonalEvents} from "../../features/events/hooks/personalEventHooks"
 import { useEffect } from "react";
-import { useUser } from "../../hooks/authHooks";
+import { useUser } from "../../global-hooks/authHooks";
 
 export default function StudentPage(){
     const navigate = useNavigate();

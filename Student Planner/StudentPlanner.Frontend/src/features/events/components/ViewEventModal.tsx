@@ -1,7 +1,7 @@
-import Modal from "./Modal";
-import { useGetPersonalEvent } from "../../hooks/personalEventHooks";
+import Modal from "../../../components/modals/Modal";
+import { useGetPersonalEvent } from "../hooks/personalEventHooks";
 import { useContext } from "react";
-import { ModalContext } from "../../store/ModalContext";
+import { ModalContext } from "../../../store/ModalContext";
 
 type createEventProps = {
     requiresRole?: ("Student" | "Manager" | "Admin") [],

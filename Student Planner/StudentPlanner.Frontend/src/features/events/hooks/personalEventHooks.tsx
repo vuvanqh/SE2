@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { createPersonalEvent, getPersonalEventById, getPersonalEvents, deletePersonalEvent, updatePersonalEvent } from "../api/personalEventClient";
-import type { personalEventResponse, updatePersonalEventRequest } from "../types/personalEventTypes";
-import { queryClient } from "../api/queryClient";
+import { createPersonalEvent, getPersonalEventById, getPersonalEvents, deletePersonalEvent, updatePersonalEvent } from "../../../api/personalEventClient";
+import type { personalEventResponse, updatePersonalEventRequest } from "../../../types/personalEventTypes";
+import { queryClient } from "../../../api/queryClient";
 
 export function useGetAllPersonalEvents(){
     const {data, isLoading} = useQuery<personalEventResponse[]>({
