@@ -5,3 +5,4 @@ obj/
 *.suo
 *.log
 .env
+StudentPlanner.Backend/StudentPlanner.UI/logs/
