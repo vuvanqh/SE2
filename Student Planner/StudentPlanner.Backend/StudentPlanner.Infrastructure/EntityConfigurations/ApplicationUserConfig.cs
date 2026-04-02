@@ -18,7 +18,6 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
             .HasForeignKey(u => u.FacultyId)
             .OnDelete(DeleteBehavior.Cascade);
 
-
         builder.HasIndex(u => u.Email).IsUnique();
     }
 }

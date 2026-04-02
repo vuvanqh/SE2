@@ -14,7 +14,7 @@ namespace StudentPlanner.UI.Controllers;
 /// The user identifier is extracted from JWT claims.
 /// </remarks>
 [Route("api/personal-event")]
-[Authorize("Student")]
+[Authorize(Roles = "Student")]
 [ApiController]
 public class PersonalEventController : ControllerBase
 {

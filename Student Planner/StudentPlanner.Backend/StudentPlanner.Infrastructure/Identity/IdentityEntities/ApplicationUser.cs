@@ -22,7 +22,7 @@ public class ApplicationUser : IdentityUser<Guid>
     public AppFaculty? Faculty { get; set; }
     public ICollection<PersonalEvent> PersonalEvents { get; set; } = new List<PersonalEvent>();
 
-    public User ToUser() => new User()
+    public User ToUser(string roleName) => new User()
     {
         Id = Id,
         Email = Email!,
@@ -32,6 +32,7 @@ public class ApplicationUser : IdentityUser<Guid>
         RefreshTokenExpirationDate = RefreshTokenExpirationDate,
         RefreshTokenIssuedAt = RefreshTokenIssuedAt,
         UsosToken = UsosToken,
+        Role = roleName,
         Faculty = Faculty?.ToFaculty() != null ? new Faculty
         {
             Id = Faculty.Id,

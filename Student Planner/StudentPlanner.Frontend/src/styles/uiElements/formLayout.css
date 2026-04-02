@@ -59,7 +59,7 @@ form {
 }
 
 /* ===== BUTTON ===== */
-form button {
+.auth-form button {
   align-self: flex-end; /* 🔥 key: not full width */
 
   padding: 0.5rem 1.2rem;
@@ -84,14 +84,29 @@ form button {
 }
 
 /* 🔵 NAVY HOVER */
-form button:hover {
+.auth-form button:hover {
   background: var(--navy);
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(0,0,0,0.25);
 }
 
 /* active */
-form button:active {
+.auth-form button:active {
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+
+.form-errors {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  padding: 0.5rem 0.6rem;
+  border-radius: 6px;
+
+  background: rgba(220, 38, 38, 0.08);
+  color: #b91c1c;
+
+  font-size: 0.8rem;
 }

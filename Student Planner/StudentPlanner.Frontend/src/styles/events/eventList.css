@@ -1,0 +1,58 @@
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.event-item {
+  width: 100%;
+  text-align: left;
+
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+
+  border: 1px solid transparent;
+  background: transparent;
+
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    transform 120ms ease,
+    border 180ms ease;
+}
+
+/* subtle default */
+.event-title {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.event-time {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* 🔥 YOUR REQUEST: navy glass hover */
+.event-item:hover {
+  background: rgba(30, 41, 59, 0.75);
+  backdrop-filter: blur(6px);
+
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+
+  transform: translateY(-1px);
+}
+
+.event-item:hover .event-title,
+.event-item:hover .event-time {
+  color: white;
+}

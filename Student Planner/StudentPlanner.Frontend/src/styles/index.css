@@ -4,7 +4,8 @@
 @import "./uiElements/input.css";
 @import "./uiElements/formLayout.css";
 @import "./userPage/calendar.css";
-
+@import "./events/eventList.css";
+@import "./events/viewEvent.css";
 
 *,
 *::before,
@@ -333,4 +334,92 @@ dialog[open] {
   width: calc(100% - 2rem);
 
   overflow: hidden;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* HEADER */
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+/* BODY */
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.modal-actions button {
+  padding: 0.5rem 1.2rem;
+  border-radius: 10px;
+
+  border: none;
+
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 120ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.btn-primary {
+  background: #991b1b;
+  color: white;
+
+  box-shadow: 0 4px 14px rgba(220,38,38,0.3);
+}
+
+.btn-primary:hover {
+  background: rgba(220,38,38,0.3) ;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+.btn-secondary {
+  background: var(--navy);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: var(--navy-hover);
+  transform: translateY(-1px);
+}
+
+/* active */
+.modal-actions button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.modal-divider {
+  border: none;
+  height: 1px;
+
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(0,0,0,0.15),
+    transparent
+  );
+
+  margin: 0.5rem 0 0.8rem 0;
 }

@@ -16,7 +16,6 @@ export type createPersonalEventRequest = {
 }
 
 export type updatePersonalEventRequest = {
-    id: string,
     title: string,
     description?: string,
     startTime: string,

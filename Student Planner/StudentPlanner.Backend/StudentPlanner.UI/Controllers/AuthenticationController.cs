@@ -128,7 +128,7 @@ public class AuthenticationController : ControllerBase
                 {
                     HttpOnly = true,
                     Secure = true,
-                    SameSite = SameSiteMode.Lax,
+                    SameSite = SameSiteMode.None,
                     Expires = resp.ExpirationDate,
                     Path = "/api/auth"
                 });

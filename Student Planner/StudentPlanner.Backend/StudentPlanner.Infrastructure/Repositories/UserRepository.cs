@@ -5,6 +5,7 @@ using StudentPlanner.Infrastructure.IdentityEntities;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client;
 
 namespace StudentPlanner.Infrastructure.Repositories;
 
@@ -13,9 +14,12 @@ namespace StudentPlanner.Infrastructure.Repositories;
 public class UserRepository : IUserRepository
 {
     private readonly ApplicationDbContext _context;
-    public UserRepository(ApplicationDbContext context)
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public UserRepository(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
 
     public Task DeleteUserAsync(User user)
@@ -31,17 +35,29 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetUserByEmailAsync(string email)
     {
         ApplicationUser? user = await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
-        return user?.ToUser();
+        return await GetUserWithRole(user);
 
     }
 
     public async Task<User?> GetUserByRefreshToken(string token)
     {
-        return (await _context.Users.FirstOrDefaultAsync(u => u.RefreshTokenHash == token))?.ToUser();
+        ApplicationUser? user = (await _context.Users.FirstOrDefaultAsync(u => u.RefreshTokenHash == token));
+
+        return await GetUserWithRole(user);
+
     }
 
     public async Task<List<User>> GetUserByRoleAsync(string role)
     {
         throw new NotImplementedException();
+    }
+
+    private async Task<User?> GetUserWithRole(ApplicationUser? user)
+    {
+        if (user == null)
+            return null;
+
+        var resp = await _userManager.GetRolesAsync(user);
+        return user.ToUser(resp[0]);
     }
 }

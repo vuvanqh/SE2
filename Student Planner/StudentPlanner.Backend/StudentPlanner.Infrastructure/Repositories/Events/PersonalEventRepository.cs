@@ -37,7 +37,6 @@ public class PersonalEventRepository : IPersonalEventRepository
 
     public async Task UpdateAsync(PersonalEvent personalEvent)
     {
-        _context.PersonalEvents.Update(personalEvent);
         await _context.SaveChangesAsync();
     }
 }

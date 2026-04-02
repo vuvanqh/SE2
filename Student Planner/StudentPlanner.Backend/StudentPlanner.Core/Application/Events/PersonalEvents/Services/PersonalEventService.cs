@@ -44,10 +44,21 @@ public class PersonalEventService : IPersonalEventService
     public async Task UpdatePersonalEventAsync(Guid userId, Guid eventId, UpdatePersonalEventRequest request)
     {
         PersonalEvent? personalEvent = await _personalEventRepo.GetEventByEventIdAsync(eventId);
+        if(personalEvent==null)
+            throw new ArgumentException("Invalid Event.");
+
         PersonalEventPolicy.EnsureHasPermissions(userId, personalEvent);
 
-        personalEvent = request.ToPersonalEvent(userId, eventId);
+        EventDetails details = new EventDetails()
+        {
+            Title = request.Title,
+            StartTime = request.StartTime,
+            EndTime = request.EndTime,
+            Description = request.Description,
+            Location = request.Location,
+        };
 
+        personalEvent.EventDetails = details;
         PersonalEventPolicy.EnsureValidEvent(personalEvent);
         await _personalEventRepo.UpdateAsync(personalEvent);
     }

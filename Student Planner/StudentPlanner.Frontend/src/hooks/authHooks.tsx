@@ -1,27 +1,29 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { login as loginApi, register } from "../api/authApi";
 import type { loginRequest, loginResponse } from "../types/authTypes";
 import { useNavigate } from "react-router-dom";
 import { queryClient } from "../api/queryClient";
 import { successMessage, errorMessage } from "../toast/toastNotifications";
 
-const loginFn = async(data: loginRequest) => {
-    const resp = (await loginApi(data)) as loginResponse;
-    localStorage.setItem("token",resp.token);
-    localStorage.setItem("role",resp.userRole);
-    queryClient.setQueryData(["user"], resp);
-    return resp;
-}
+
 
 
 export function useAuth(){
     const navigate = useNavigate();
 
     const {mutateAsync, isPending: isLoginPending} = useMutation({
-        mutationFn: loginFn,
-        onSuccess: () => {
+        mutationFn: async(data: loginRequest) => {
+            const resp = await loginApi(data);
+            console.log("LOGIN RESP:", resp);
+            return resp;
+        },
+        onSuccess: (data) => {
+            localStorage.setItem("token",data.token);
+            localStorage.setItem("role",data.userRole);
+            queryClient.setQueryData(["user"], data);
+
             successMessage("Logged in successfully!");
-            navigate(`/${localStorage.getItem("role")?.toLocaleLowerCase()}`)
+            navigate(`/${data.userRole.toLowerCase()}`);
         },
         onError: (error)=> {errorMessage(error.message)}
     })
@@ -37,8 +39,32 @@ export function useAuth(){
     return {
         login: mutateAsync, 
         registerUser,
-        isAuthenticated: !!localStorage.getItem("token"),
+        isAuthenticated: !!queryClient.getQueryData(["user"]),
         isLoginPending,
         isRegisterPending
     }
+}
+
+export function useUser(){
+    const {data} = useQuery({
+        queryKey: ["user"],
+        queryFn: getStoredUser,
+        initialData: () => queryClient.getQueryData(["user"]),
+        staleTime: Infinity,
+    })
+    return {
+        user: data
+    }
+}
+
+function getStoredUser(): loginResponse | undefined {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    if (!token || !role) return undefined;
+
+    return {
+        token,
+        userRole: role,
+    } as loginResponse;
 }

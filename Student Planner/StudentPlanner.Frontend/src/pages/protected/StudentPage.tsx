@@ -1,20 +1,23 @@
 import { Outlet, useNavigate } from "react-router-dom"
 import Navbar from "../../components/layout/Navbar"
 import Calendar from "../../components/calendar/Calendar";
-import { queryClient } from "../../api/queryClient";
-import type { loginResponse } from "../../types/authTypes";
 import {useGetAllPersonalEvents} from "../../hooks/personalEventHooks"
+import { useEffect } from "react";
+import { useUser } from "../../hooks/authHooks";
 
 export default function StudentPage(){
     const navigate = useNavigate();
-    const user: loginResponse | undefined = queryClient.getQueryData(['user']);
+    const {user} = useUser();
     const {events} = useGetAllPersonalEvents();
 
-    if(user===undefined)
-    {
-        navigate("/");
+    useEffect(()=>{
+        if(user===undefined)
+            navigate("/");
+        
+    },[user])
+
+    if(user==undefined)
         return null;
-    }
 
     return <>
         <Navbar>
@@ -24,8 +27,7 @@ export default function StudentPage(){
                     </div>
                 </div>
                 <div>
-                    <button onClick={()=>navigate("/register")}>Register</button>
-                    <button onClick={()=>navigate("/")}>Log out</button>
+                    <button onClick={()=>{navigate("/"); localStorage.clear()}}>Log out</button>
                 </div>
         </Navbar>
         <main className="main-content">

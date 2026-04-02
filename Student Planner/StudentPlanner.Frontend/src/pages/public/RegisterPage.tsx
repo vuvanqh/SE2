@@ -35,14 +35,6 @@ export default function RegisterPage() {
           confirmPassword: formData.get('confirmPassword') as string
       }
 
-      if(data.password!=data.confirmPassword){
-          return {
-            ...data,
-            success: false,
-            errors: ["Passwords don't match"]
-          }
-      }
-
       try{
         await registerUser(data);
         return {
@@ -82,14 +74,12 @@ export default function RegisterPage() {
     <Modal open={isRegisterOpen} className="register-page" onClose={()=>navigate("/")}>    
         <p>Join Student Planner today</p>
 
-        <form key={state.email + state.password} action={formAction}>
+        <form action={formAction} className="auth-form">
             <Input type="email" id="email" label="University Email" defaultValue={state.email}
                 pattern="^[^@]+@pw\.edu\.pl$" onChange={emailValidator}/>
 
-            <div className='form-row'>
-              <Input type="password" id="password" label="Password" defaultValue={state.password}/>
-              <Input type="password" id="confirmPassword" label="Confirm Password" defaultValue={state.password}/>
-            </div>
+            <Input type="password" id="password" label="Password" defaultValue={state.password}/>
+            
 
             {state.errors?.map(error => <small className="error-text" key={error}>{error}</small>)}
           <button type="submit" disabled={isRegisterPending}>Create Account</button> 

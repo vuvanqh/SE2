@@ -34,11 +34,12 @@ public class Program
 
         app.UseRouting();
 
+        app.UseCors("AllowFrontend");
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.UseSerilogRequestLogging();
 
-        app.UseCors("AllowFrontend");
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {

@@ -1,0 +1,52 @@
+.view-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem; /* slightly tighter */
+  margin-bottom: 0.6rem;
+}
+
+.view-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+
+  color: #64748b;
+}
+
+.view-content {
+  gap: 0.15rem; 
+  color: #1f2937;
+  font-size: 0.9rem;
+}
+
+.view-text {
+  gap: 0.15rem; 
+  font-size: 0.9rem;
+  color: #374151;
+  line-height: 1.4;
+}
+
+.modal {
+  border-radius: 16px;
+  padding: 1.8rem;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.9),
+      rgba(255,255,255,0.75)
+    );
+
+  backdrop-filter: blur(10px);
+
+  border: 1px solid var(--glass-border);
+
+  box-shadow:
+    0 25px 70px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+.view-section p {
+  margin: 0.5em 0;
+}

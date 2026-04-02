@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using StudentPlanner.Infrastructure.IdentityEntities;
 using System;
 using System.Collections.Generic;
 using System.Text;

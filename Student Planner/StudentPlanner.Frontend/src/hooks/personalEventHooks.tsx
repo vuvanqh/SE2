@@ -9,7 +9,7 @@ export function useGetAllPersonalEvents(){
         queryFn: getPersonalEvents
     })
 
-    const {mutate: createEvent} = useMutation({
+    const {mutateAsync: createEvent} = useMutation({
         mutationFn: createPersonalEvent,
         onSuccess: () => {
             invalidatePE();
@@ -23,19 +23,20 @@ export function useGetAllPersonalEvents(){
 }
 
 export function useGetPersonalEvent(eventId:string){
+    console.log("HOOK CALLED WITH:", eventId);
     const {data, isLoading} = useQuery<personalEventResponse>({
         queryKey: ["personal-event", eventId],
-        queryFn: () => getPersonalEventById(eventId)
+        queryFn: () => getPersonalEventById(eventId),
     })
 
-    const {mutate: updateEvent} = useMutation({
+    const {mutateAsync: updateEvent} = useMutation({
         mutationFn: (request: updatePersonalEventRequest) => updatePersonalEvent(eventId, request),
         onSuccess: () => {
             invalidatePE()
         }
     })
 
-    const {mutate: deleteEvent} = useMutation({
+    const {mutateAsync: deleteEvent} = useMutation({
         mutationFn: () => deletePersonalEvent(eventId),
         onSuccess: () => {
             invalidatePE()
@@ -43,7 +44,7 @@ export function useGetPersonalEvent(eventId:string){
     })
 
     return {
-        event: data,
+        event: data as personalEventResponse,
         isLoading,
         updateEvent,
         deleteEvent

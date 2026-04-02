@@ -25,6 +25,9 @@ apiClient.interceptors.request.use(config => {
 apiClient.interceptors.response.use(response => response,
     async error => {
         const request = error.config;
+        
+        console.log("INTERCEPTOR ERROR:", error.response);
+        console.log("STATUS:", error.response?.status);
 
         if(error.response?.status != 401 || request._retry || request.url?.includes("login") )
             return Promise.reject(error);
@@ -33,7 +36,7 @@ apiClient.interceptors.response.use(response => response,
 
         try {
             if(!refreshPromise){
-                refreshPromise = refreshClient.post("/auth/refreshtoken")
+                refreshPromise = refreshClient.post("/auth/refreshToken")
                 .then(res => {
                     const newToken = res.data;
                     localStorage.setItem("token", newToken);

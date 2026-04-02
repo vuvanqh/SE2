@@ -30,7 +30,9 @@ public class IdentityService : IIdentityService
         if (!result.Succeeded)
             throw new UnauthorizedAccessException("Invalid Credentials");
 
-        return user.ToUser();
+        var role = await _userManager.GetRolesAsync(user);
+
+        return user.ToUser(role[0]);
     }
 
     public async Task RegisterUser(User user, string password, Guid? facultyId, string? role = null)

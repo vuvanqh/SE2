@@ -85,7 +85,7 @@ export default function LoginPage() {
     <Modal open={isLoginOpen} className="register-page" onClose={()=>navigate("/")}>    
         <p>Welcome back to Student Planner</p>
 
-        <form action={formAction}>
+        <form action={formAction} className='auth-form'>
             <Input type="email" id="email" label="University Email" defaultValue={state.email}
                 pattern="^[^@]+@pw\.edu\.pl$" onChange={emailValidator}/>
 
