@@ -90,7 +90,7 @@ public class IdentityServiceTests : IDisposable
     [Fact]
     public async Task RegisterUser_ShouldThrowException_WhenUserManagerFails()
     {
-        var user = new User { Id = Guid.NewGuid(), Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe" , Role = "Student" };
+        var user = new User { Id = Guid.NewGuid(), Email = "test@pw.edu.pl", FirstName = "John", LastName = "Doe", Role = "Student" };
         var facultyId = Guid.NewGuid();
         var failedResult = IdentityResult.Failed(
             new IdentityError { Description = "Password too weak!" },
