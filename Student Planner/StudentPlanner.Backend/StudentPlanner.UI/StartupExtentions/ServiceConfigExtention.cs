@@ -3,6 +3,7 @@ using StudentPlanner.Core.Application;
 using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Infrastructure.Services.Settings;
 using StudentPlanner.Core.Application.PersonalEvents;
+using StudentPlanner.Core.Application.EventRequests;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Infrastructure.Identity;
 using StudentPlanner.Infrastructure.Repositories;
@@ -30,6 +31,7 @@ public static class ServiceConfigExtention
 
         //services
         services.AddScoped<IPersonalEventService, PersonalEventService>();
+        services.AddScoped<IEventRequestService, EventRequestService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddTransient<IJwtService, JwtService>();
         services.AddScoped<IIdentityService, IdentityService>();
@@ -47,6 +49,7 @@ public static class ServiceConfigExtention
         });
         //repo
         services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();
+        services.AddScoped<IEventRequestRepository, EventRequestRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFacultyRepository, FacultyRepository>();
 
