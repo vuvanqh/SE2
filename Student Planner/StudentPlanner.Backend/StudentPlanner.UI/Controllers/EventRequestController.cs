@@ -16,7 +16,6 @@ public class EventRequestController : ControllerBase
     {
         _eventRequestService = eventRequestService;
     }
-
     [HttpGet]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -30,7 +29,6 @@ public class EventRequestController : ControllerBase
         var response = await _eventRequestService.GetByManagerIdAsync(Guid.Parse(userId));
         return Ok(response);
     }
-    
     [HttpGet("all")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -44,7 +42,6 @@ public class EventRequestController : ControllerBase
         var response = await _eventRequestService.GetAllAsync();
         return Ok(response);
     }
-    
     [HttpGet("{requestId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -59,7 +56,6 @@ public class EventRequestController : ControllerBase
         var response = await _eventRequestService.GetByIdAsync(Guid.Parse(userId), requestId);
         return Ok(response);
     }
-    
     [HttpPost("create")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -75,7 +71,6 @@ public class EventRequestController : ControllerBase
         Guid requestId = await _eventRequestService.CreateAsync(Guid.Parse(userId), request);
         return Ok(new { EventRequestId = requestId, Message = "Success" });
     }
-    
     [HttpDelete("delete/{requestId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -91,7 +86,6 @@ public class EventRequestController : ControllerBase
         await _eventRequestService.DeleteAsync(Guid.Parse(userId), requestId);
         return Ok(new { Message = "Success" });
     }
-    
     [HttpPatch("approve/{requestId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -106,7 +100,6 @@ public class EventRequestController : ControllerBase
         await _eventRequestService.ApproveAsync(Guid.Parse(userId), requestId, request);
         return Ok(new { Message = "Success" });
     }
-    
     [HttpPatch("reject/{requestId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
