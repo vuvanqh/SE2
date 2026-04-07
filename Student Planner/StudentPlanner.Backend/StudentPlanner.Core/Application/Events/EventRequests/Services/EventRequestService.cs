@@ -43,7 +43,6 @@ public class EventRequestService : IEventRequestService
 
         if (eventRequest.Status != RequestStatus.Pending)
             throw new InvalidOperationException("Only pending event requests can be deleted.");
-        
         await _eventRequestRepository.DeleteAsync(requestId);
     }
 
