@@ -35,11 +35,6 @@ public class EventRequestConfig : IEntityTypeConfiguration<EventRequest>
             .WithMany()
             .HasForeignKey(e => e.ReviewedByAdminId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        // builder.HasOne(e => e.Event)
-        //     .WithMany()
-        //     .HasForeignKey(e => e.EventId)
-        //     .OnDelete(DeleteBehavior.Cascade);
     
         builder.HasIndex(e => e.FacultyId);
         builder.HasIndex(e => e.ManagerId);
