@@ -51,7 +51,6 @@ public class EventRequestRepository : IEventRequestRepository
 
     public async Task UpdateAsync(EventRequest eventRequest)
     {
-        // _context.EventRequests.Update(eventRequest);
         await _context.SaveChangesAsync();
     }
 
