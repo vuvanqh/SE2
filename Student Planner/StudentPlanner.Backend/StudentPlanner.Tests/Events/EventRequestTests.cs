@@ -1,4 +1,3 @@
-//using AutoFixture;
 using Moq;
 using StudentPlanner.Core.Application.EventRequests;
 using StudentPlanner.Core.Domain;
@@ -8,13 +7,11 @@ namespace StudentPlanner.Tests;
 
 public class EventRequestTests
 {
-    //private readonly IFixture _fixture;
     private readonly Mock<IEventRequestRepository> _eventRequestRepoMock;
     private readonly IEventRequestRepository _eventRequestRepo;
 
     public EventRequestTests()
     {
-        //_fixture = new Fixture();
         _eventRequestRepoMock = new Mock<IEventRequestRepository>();
         _eventRequestRepo = _eventRequestRepoMock.Object;
     }
@@ -112,8 +109,7 @@ public class EventRequestTests
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
             ReviewComment = null,
-            EventId = Guid.NewGuid(),
-            //Event = null!
+            EventId = Guid.NewGuid()
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -141,8 +137,7 @@ public class EventRequestTests
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
             ReviewComment = null,
-            EventId = Guid.NewGuid(),
-            //Event = null!
+            EventId = Guid.NewGuid()
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -170,8 +165,7 @@ public class EventRequestTests
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
             ReviewComment = null,
-            EventId = Guid.NewGuid(),
-            //Event = null!
+            EventId = Guid.NewGuid()
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -219,8 +213,7 @@ public class EventRequestTests
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
             ReviewComment = null,
-            EventId = Guid.NewGuid(),
-            //Event = null!
+            EventId = Guid.NewGuid()
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -249,8 +242,7 @@ public class EventRequestTests
                 CreatedAt = DateTime.UtcNow,
                 ReviewedAt = null,
                 ReviewComment = null,
-                EventId = Guid.NewGuid(),
-                //Event = null!
+                EventId = Guid.NewGuid()
             },
             new EventRequest
             {
@@ -263,8 +255,7 @@ public class EventRequestTests
                 CreatedAt = DateTime.UtcNow,
                 ReviewedAt = DateTime.UtcNow,
                 ReviewComment = "Rejected",
-                EventId = Guid.NewGuid(),
-                //Event = null!
+                EventId = Guid.NewGuid()
             }
         };
 
@@ -295,8 +286,7 @@ public class EventRequestTests
                 CreatedAt = DateTime.UtcNow,
                 ReviewedAt = null,
                 ReviewComment = null,
-                EventId = Guid.NewGuid(),
-                //Event = null!
+                EventId = Guid.NewGuid()
             },
             new EventRequest
             {
@@ -309,8 +299,7 @@ public class EventRequestTests
                 CreatedAt = DateTime.UtcNow,
                 ReviewedAt = DateTime.UtcNow,
                 ReviewComment = "Approved",
-                EventId = Guid.NewGuid(),
-                //Event = null!
+                EventId = Guid.NewGuid()
             }
         };
 
@@ -341,8 +330,7 @@ public class EventRequestTests
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
             ReviewComment = null,
-            EventId = Guid.NewGuid(),
-            //Event = null!
+            EventId = Guid.NewGuid()
         };
 
         ReviewEventRequestRequest request = new ReviewEventRequestRequest
@@ -401,8 +389,7 @@ public class EventRequestTests
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
             ReviewComment = null,
-            EventId = Guid.NewGuid(),
-            //Event = null!
+            EventId = Guid.NewGuid()
         };
 
         ReviewEventRequestRequest request = new ReviewEventRequestRequest
@@ -435,8 +422,7 @@ public class EventRequestTests
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
             ReviewComment = null,
-            EventId = Guid.NewGuid(),
-            //Event = null!
+            EventId = Guid.NewGuid()
         };
 
         ReviewEventRequestRequest request = new ReviewEventRequestRequest
@@ -495,8 +481,7 @@ public class EventRequestTests
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
             ReviewComment = null,
-            EventId = Guid.NewGuid(),
-            //Event = null!
+            EventId = Guid.NewGuid()
         };
 
         ReviewEventRequestRequest request = new ReviewEventRequestRequest
