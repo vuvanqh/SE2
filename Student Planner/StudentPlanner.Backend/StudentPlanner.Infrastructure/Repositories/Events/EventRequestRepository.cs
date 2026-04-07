@@ -54,7 +54,6 @@ public class EventRequestRepository : IEventRequestRepository
     {
         EventRequest? eventRequest = await _context.EventRequests
             .FirstOrDefaultAsync(e => e.Id == requestId);
-        
         if (eventRequest == null)
         {
             return;
