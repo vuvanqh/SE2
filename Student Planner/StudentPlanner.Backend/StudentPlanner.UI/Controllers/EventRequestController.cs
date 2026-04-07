@@ -6,16 +6,28 @@ using System.Security.Claims;
 
 namespace StudentPlanner.UI.Controllers;
 
+/// <summary>
+/// Controller for managing event requests.
+/// </summary>
 [Route("api/event-requests")]
 [ApiController]
 public class EventRequestController : ControllerBase
 {
     private readonly IEventRequestService _eventRequestService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventRequestController"/> class.
+    /// </summary>
+    /// <param name="eventRequestService">The event request service.</param>
     public EventRequestController(IEventRequestService eventRequestService)
     {
         _eventRequestService = eventRequestService;
     }
+
+    /// <summary>
+    /// Gets all event requests for the current user.
+    /// </summary>
+    /// <returns>A list of event requests for the authenticated user.</returns>
     [HttpGet]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -29,6 +41,11 @@ public class EventRequestController : ControllerBase
         var response = await _eventRequestService.GetByManagerIdAsync(Guid.Parse(userId));
         return Ok(response);
     }
+
+    /// <summary>
+    /// Gets all event requests in the system.
+    /// </summary>
+    /// <returns>A list of all event requests.</returns>
     [HttpGet("all")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -42,6 +59,12 @@ public class EventRequestController : ControllerBase
         var response = await _eventRequestService.GetAllAsync();
         return Ok(response);
     }
+
+    /// <summary>
+    /// Gets an event request by its ID.
+    /// </summary>
+    /// <param name="requestId">The ID of the event request.</param>
+    /// <returns>The event request details.</returns>
     [HttpGet("{requestId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -56,6 +79,12 @@ public class EventRequestController : ControllerBase
         var response = await _eventRequestService.GetByIdAsync(Guid.Parse(userId), requestId);
         return Ok(response);
     }
+
+    /// <summary>
+    /// Creates a new event request.
+    /// </summary>
+    /// <param name="request">The event request data to create.</param>
+    /// <returns>The created event request ID and success message.</returns>
     [HttpPost("create")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -71,6 +100,12 @@ public class EventRequestController : ControllerBase
         Guid requestId = await _eventRequestService.CreateAsync(Guid.Parse(userId), request);
         return Ok(new { EventRequestId = requestId, Message = "Success" });
     }
+
+    /// <summary>
+    /// Deletes an event request.
+    /// </summary>
+    /// <param name="requestId">The ID of the event request to delete.</param>
+    /// <returns>A success message.</returns>
     [HttpDelete("delete/{requestId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -86,6 +121,13 @@ public class EventRequestController : ControllerBase
         await _eventRequestService.DeleteAsync(Guid.Parse(userId), requestId);
         return Ok(new { Message = "Success" });
     }
+
+    /// <summary>
+    /// Approves an event request.
+    /// </summary>
+    /// <param name="requestId">The ID of the event request to approve.</param>
+    /// <param name="request">The approval request data.</param>
+    /// <returns>A success message.</returns>
     [HttpPatch("approve/{requestId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -100,6 +142,13 @@ public class EventRequestController : ControllerBase
         await _eventRequestService.ApproveAsync(Guid.Parse(userId), requestId, request);
         return Ok(new { Message = "Success" });
     }
+
+    /// <summary>
+    /// Rejects an event request.
+    /// </summary>
+    /// <param name="requestId">The ID of the event request to reject.</param>
+    /// <param name="request">The rejection request data.</param>
+    /// <returns>A success message.</returns>
     [HttpPatch("reject/{requestId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
