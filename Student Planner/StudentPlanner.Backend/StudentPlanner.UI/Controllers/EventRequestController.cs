@@ -30,7 +30,7 @@ public class EventRequestController : ControllerBase
         var response = await _eventRequestService.GetByManagerIdAsync(Guid.Parse(userId));
         return Ok(response);
     }
-
+    
     [HttpGet("all")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -44,7 +44,7 @@ public class EventRequestController : ControllerBase
         var response = await _eventRequestService.GetAllAsync();
         return Ok(response);
     }
-
+    
     [HttpGet("{requestId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -59,8 +59,7 @@ public class EventRequestController : ControllerBase
         var response = await _eventRequestService.GetByIdAsync(Guid.Parse(userId), requestId);
         return Ok(response);
     }
-
-    // Manager endpoints
+    
     [HttpPost("create")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -76,8 +75,7 @@ public class EventRequestController : ControllerBase
         Guid requestId = await _eventRequestService.CreateAsync(Guid.Parse(userId), request);
         return Ok(new { EventRequestId = requestId, Message = "Success" });
     }
-
-    // Manager endpoints
+    
     [HttpDelete("delete/{requestId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -94,7 +92,6 @@ public class EventRequestController : ControllerBase
         return Ok(new { Message = "Success" });
     }
     
-    // Admin endpoints
     [HttpPatch("approve/{requestId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -109,8 +106,7 @@ public class EventRequestController : ControllerBase
         await _eventRequestService.ApproveAsync(Guid.Parse(userId), requestId, request);
         return Ok(new { Message = "Success" });
     }
-
-    // Admin endpoints
+    
     [HttpPatch("reject/{requestId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
