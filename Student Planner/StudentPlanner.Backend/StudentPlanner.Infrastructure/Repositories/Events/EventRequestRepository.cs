@@ -16,14 +16,12 @@ public class EventRequestRepository : IEventRequestRepository
     public async Task<List<EventRequest>> GetAllAsync()
     {
         return await _context.EventRequests
-            //.Include(e => e.Event)
             .ToListAsync();
     }
 
     public async Task<List<EventRequest>> GetByFacultyIdAsync(Guid facultyId)
     {
         return await _context.EventRequests
-            //.Include(e => e.Event)
             .Where(e => e.FacultyId == facultyId)
             .ToListAsync();
     }
@@ -31,7 +29,6 @@ public class EventRequestRepository : IEventRequestRepository
     public async Task<List<EventRequest>> GetByManagerIdAsync(Guid managerId)
     {
         return await _context.EventRequests
-            //.Include(e => e.Event)
             .Where(e => e.ManagerId == managerId)
             .ToListAsync();
     }
@@ -39,7 +36,6 @@ public class EventRequestRepository : IEventRequestRepository
     public async Task<EventRequest?> GetByIdAsync(Guid requestId)
     {
         return await _context.EventRequests
-            //.Include(e => e.Event)
             .FirstOrDefaultAsync(e => e.Id == requestId);
     }
 
@@ -59,8 +55,10 @@ public class EventRequestRepository : IEventRequestRepository
         EventRequest? eventRequest = await _context.EventRequests
             .FirstOrDefaultAsync(e => e.Id == requestId);
         
-        if (eventRequest == null) return;
-
+        if (eventRequest == null)
+        {
+            return;
+        }
         _context.EventRequests.Remove(eventRequest);
         await _context.SaveChangesAsync();
     }
