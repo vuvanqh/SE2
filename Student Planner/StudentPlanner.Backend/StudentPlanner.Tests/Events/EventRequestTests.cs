@@ -1,4 +1,5 @@
 using Moq;
+using StudentPlanner.Core;
 using StudentPlanner.Core.Application.EventRequests;
 using StudentPlanner.Core.Domain;
 using StudentPlanner.Core.Domain.RepositoryContracts;
@@ -17,7 +18,7 @@ public class EventRequestTests
     }
 
     [Fact]
-    public async Task CreateAsync_ShouldCreateRequest_WhenRequestIsValid()
+    public async Task CreateAsync_ShouldCreateRequest_WhenCreateRequestIsValid()
     {
         EventRequest? result = null;
         Guid managerId = Guid.NewGuid();
@@ -25,8 +26,16 @@ public class EventRequestTests
         CreateEventRequestRequest request = new CreateEventRequestRequest
         {
             FacultyId = Guid.NewGuid(),
-            EventId = Guid.NewGuid(),
-            RequestType = RequestType.Create
+            EventId = null,
+            RequestType = RequestType.Create,
+            EventDetails = new EventDetails
+            {
+                Title = "New Event",
+                StartTime = DateTime.UtcNow.AddHours(1),
+                EndTime = DateTime.UtcNow.AddHours(2),
+                Location = "Room A",
+                Description = "Description"
+            }
         };
 
         _eventRequestRepoMock.Setup(r => r.AddAsync(It.IsAny<EventRequest>()))
@@ -44,6 +53,57 @@ public class EventRequestTests
         Assert.Equal(request.RequestType, result.RequestType);
         Assert.Equal(request.FacultyId, result.FacultyId);
         Assert.Equal(request.EventId, result.EventId);
+        Assert.Null(result.EventId);
+        Assert.Equal(request.EventDetails.Title, result.EventDetails.Title);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ShouldThrow_WhenCreateRequestContainsEventId()
+    {
+        Guid managerId = Guid.NewGuid();
+
+        CreateEventRequestRequest request = new CreateEventRequestRequest
+        {
+            FacultyId = Guid.NewGuid(),
+            EventId = Guid.NewGuid(),
+            RequestType = RequestType.Create,
+            EventDetails = new EventDetails
+            {
+                Title = "New Event",
+                StartTime = DateTime.UtcNow.AddHours(1),
+                EndTime = DateTime.UtcNow.AddHours(2),
+                Location = "Room A",
+                Description = "Description"
+            }
+        };
+
+        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(managerId, request));
+    }
+
+    [Fact]
+    public async Task CreateAsync_ShouldThrow_WhenUpdateRequestDoesNotContainEventId()
+    {
+        Guid managerId = Guid.NewGuid();
+
+        CreateEventRequestRequest request = new CreateEventRequestRequest
+        {
+            FacultyId = Guid.NewGuid(),
+            EventId = null,
+            RequestType = RequestType.Update,
+            EventDetails = new EventDetails
+            {
+                Title = "Updated Event",
+                StartTime = DateTime.UtcNow.AddHours(1),
+                EndTime = DateTime.UtcNow.AddHours(2),
+                Location = "Room A",
+                Description = "Description"
+            }
+        };
+
+        EventRequestService service = new EventRequestService(_eventRequestRepo);
+
+        await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(managerId, request));
     }
 
     [Fact]
@@ -58,13 +118,19 @@ public class EventRequestTests
             FacultyId = Guid.NewGuid(),
             ManagerId = managerId,
             ReviewedByAdminId = null,
-            RequestType = RequestType.Create,
-            Status = RequestStatus.Pending,
+            EventId = Guid.NewGuid(),
+            EventDetails = new EventDetails
+            {
+                Title = "Delete Event",
+                StartTime = DateTime.UtcNow.AddHours(1),
+                EndTime = DateTime.UtcNow.AddHours(2),
+                Location = "Room A",
+                Description = "Description"
+            },
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
-            ReviewComment = null,
-            EventId = Guid.NewGuid(),
-            //Event = null!
+            RequestType = RequestType.Delete,
+            Status = RequestStatus.Pending
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -104,12 +170,19 @@ public class EventRequestTests
             FacultyId = Guid.NewGuid(),
             ManagerId = otherManagerId,
             ReviewedByAdminId = null,
-            RequestType = RequestType.Create,
-            Status = RequestStatus.Pending,
+            EventId = Guid.NewGuid(),
+            EventDetails = new EventDetails
+            {
+                Title = "Delete Event",
+                StartTime = DateTime.UtcNow.AddHours(1),
+                EndTime = DateTime.UtcNow.AddHours(2),
+                Location = "Room A",
+                Description = "Description"
+            },
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
-            ReviewComment = null,
-            EventId = Guid.NewGuid()
+            RequestType = RequestType.Delete,
+            Status = RequestStatus.Pending
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -132,12 +205,19 @@ public class EventRequestTests
             FacultyId = Guid.NewGuid(),
             ManagerId = managerId,
             ReviewedByAdminId = null,
-            RequestType = RequestType.Create,
-            Status = RequestStatus.Approved,
+            EventId = Guid.NewGuid(),
+            EventDetails = new EventDetails
+            {
+                Title = "Delete Event",
+                StartTime = DateTime.UtcNow.AddHours(1),
+                EndTime = DateTime.UtcNow.AddHours(2),
+                Location = "Room A",
+                Description = "Description"
+            },
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
-            ReviewComment = null,
-            EventId = Guid.NewGuid()
+            RequestType = RequestType.Delete,
+            Status = RequestStatus.Approved
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -160,12 +240,19 @@ public class EventRequestTests
             FacultyId = Guid.NewGuid(),
             ManagerId = managerId,
             ReviewedByAdminId = null,
-            RequestType = RequestType.Update,
-            Status = RequestStatus.Pending,
+            EventId = Guid.NewGuid(),
+            EventDetails = new EventDetails
+            {
+                Title = "Update Event",
+                StartTime = DateTime.UtcNow.AddHours(1),
+                EndTime = DateTime.UtcNow.AddHours(2),
+                Location = "Room A",
+                Description = "Description"
+            },
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
-            ReviewComment = null,
-            EventId = Guid.NewGuid()
+            RequestType = RequestType.Update,
+            Status = RequestStatus.Pending
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -179,6 +266,7 @@ public class EventRequestTests
         Assert.Equal(requestId, result!.Id);
         Assert.Equal(managerId, result.ManagerId);
         Assert.Equal(RequestType.Update, result.RequestType);
+        Assert.Equal(eventRequest.EventDetails.Title, result.EventDetails.Title);
     }
 
     [Fact]
@@ -208,12 +296,19 @@ public class EventRequestTests
             FacultyId = Guid.NewGuid(),
             ManagerId = otherManagerId,
             ReviewedByAdminId = null,
-            RequestType = RequestType.Delete,
-            Status = RequestStatus.Pending,
+            EventId = Guid.NewGuid(),
+            EventDetails = new EventDetails
+            {
+                Title = "Delete Event",
+                StartTime = DateTime.UtcNow.AddHours(1),
+                EndTime = DateTime.UtcNow.AddHours(2),
+                Location = "Room A",
+                Description = "Description"
+            },
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
-            ReviewComment = null,
-            EventId = Guid.NewGuid()
+            RequestType = RequestType.Delete,
+            Status = RequestStatus.Pending
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -229,7 +324,7 @@ public class EventRequestTests
     {
         Guid managerId = Guid.NewGuid();
 
-        List<EventRequest> requests = new List<EventRequest>
+         List<EventRequest> requests = new()
         {
             new EventRequest
             {
@@ -237,25 +332,39 @@ public class EventRequestTests
                 FacultyId = Guid.NewGuid(),
                 ManagerId = managerId,
                 ReviewedByAdminId = null,
-                RequestType = RequestType.Create,
-                Status = RequestStatus.Pending,
+                EventId = null,
+                EventDetails = new EventDetails
+                {
+                    Title = "Create Event",
+                    StartTime = DateTime.UtcNow.AddHours(1),
+                    EndTime = DateTime.UtcNow.AddHours(2),
+                    Location = "Room A",
+                    Description = "Description"
+                },
                 CreatedAt = DateTime.UtcNow,
                 ReviewedAt = null,
-                ReviewComment = null,
-                EventId = Guid.NewGuid()
+                RequestType = RequestType.Create,
+                Status = RequestStatus.Pending
             },
             new EventRequest
             {
                 Id = Guid.NewGuid(),
                 FacultyId = Guid.NewGuid(),
                 ManagerId = managerId,
-                ReviewedByAdminId = null,
-                RequestType = RequestType.Update,
-                Status = RequestStatus.Rejected,
+                ReviewedByAdminId = Guid.NewGuid(),
+                EventId = Guid.NewGuid(),
+                EventDetails = new EventDetails
+                {
+                    Title = "Update Event",
+                    StartTime = DateTime.UtcNow.AddHours(3),
+                    EndTime = DateTime.UtcNow.AddHours(4),
+                    Location = "Room B",
+                    Description = "Description"
+                },
                 CreatedAt = DateTime.UtcNow,
                 ReviewedAt = DateTime.UtcNow,
-                ReviewComment = "Rejected",
-                EventId = Guid.NewGuid()
+                RequestType = RequestType.Update,
+                Status = RequestStatus.Rejected
             }
         };
 
@@ -273,7 +382,7 @@ public class EventRequestTests
     [Fact]
     public async Task GetAllAsync_ShouldReturnAllRequests()
     {
-        List<EventRequest> requests = new List<EventRequest>
+        List<EventRequest> requests = new()
         {
             new EventRequest
             {
@@ -281,12 +390,19 @@ public class EventRequestTests
                 FacultyId = Guid.NewGuid(),
                 ManagerId = Guid.NewGuid(),
                 ReviewedByAdminId = null,
-                RequestType = RequestType.Create,
-                Status = RequestStatus.Pending,
+                EventId = null,
+                EventDetails = new EventDetails
+                {
+                    Title = "Create Event",
+                    StartTime = DateTime.UtcNow.AddHours(1),
+                    EndTime = DateTime.UtcNow.AddHours(2),
+                    Location = "Room A",
+                    Description = "Description"
+                },
                 CreatedAt = DateTime.UtcNow,
                 ReviewedAt = null,
-                ReviewComment = null,
-                EventId = Guid.NewGuid()
+                RequestType = RequestType.Create,
+                Status = RequestStatus.Pending
             },
             new EventRequest
             {
@@ -294,12 +410,19 @@ public class EventRequestTests
                 FacultyId = Guid.NewGuid(),
                 ManagerId = Guid.NewGuid(),
                 ReviewedByAdminId = Guid.NewGuid(),
-                RequestType = RequestType.Delete,
-                Status = RequestStatus.Approved,
+                EventId = Guid.NewGuid(),
+                EventDetails = new EventDetails
+                {
+                    Title = "Delete Event",
+                    StartTime = DateTime.UtcNow.AddHours(3),
+                    EndTime = DateTime.UtcNow.AddHours(4),
+                    Location = "Room B",
+                    Description = "Description"
+                },
                 CreatedAt = DateTime.UtcNow,
                 ReviewedAt = DateTime.UtcNow,
-                ReviewComment = "Approved",
-                EventId = Guid.NewGuid()
+                RequestType = RequestType.Delete,
+                Status = RequestStatus.Approved
             }
         };
 
@@ -325,17 +448,19 @@ public class EventRequestTests
             FacultyId = Guid.NewGuid(),
             ManagerId = Guid.NewGuid(),
             ReviewedByAdminId = null,
-            RequestType = RequestType.Update,
-            Status = RequestStatus.Pending,
+            EventId = Guid.NewGuid(),
+            EventDetails = new EventDetails
+            {
+                Title = "Update Event",
+                StartTime = DateTime.UtcNow.AddHours(1),
+                EndTime = DateTime.UtcNow.AddHours(2),
+                Location = "Room A",
+                Description = "Description"
+            },
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
-            ReviewComment = null,
-            EventId = Guid.NewGuid()
-        };
-
-        ReviewEventRequestRequest request = new ReviewEventRequestRequest
-        {
-            ReviewComment = "Approved by admin"
+            RequestType = RequestType.Update,
+            Status = RequestStatus.Pending
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -343,12 +468,11 @@ public class EventRequestTests
 
         EventRequestService service = new EventRequestService(_eventRequestRepo);
 
-        await service.ApproveAsync(adminId, requestId, request);
+        await service.ApproveAsync(adminId, requestId);
 
         Assert.Equal(RequestStatus.Approved, eventRequest.Status);
         Assert.Equal(adminId, eventRequest.ReviewedByAdminId);
         Assert.NotNull(eventRequest.ReviewedAt);
-        Assert.Equal("Approved by admin", eventRequest.ReviewComment);
 
         _eventRequestRepoMock.Verify(r => r.UpdateAsync(eventRequest), Times.Once);
     }
@@ -359,17 +483,12 @@ public class EventRequestTests
         Guid adminId = Guid.NewGuid();
         Guid requestId = Guid.NewGuid();
 
-        ReviewEventRequestRequest request = new ReviewEventRequestRequest
-        {
-            ReviewComment = "Approved by admin"
-        };
-
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync((EventRequest?)null);
 
         EventRequestService service = new EventRequestService(_eventRequestRepo);
 
-        await Assert.ThrowsAsync<ArgumentException>(() => service.ApproveAsync(adminId, requestId, request));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.ApproveAsync(adminId, requestId));
     }
 
     [Fact]
@@ -384,17 +503,19 @@ public class EventRequestTests
             FacultyId = Guid.NewGuid(),
             ManagerId = Guid.NewGuid(),
             ReviewedByAdminId = null,
-            RequestType = RequestType.Update,
-            Status = RequestStatus.Rejected,
+            EventId = Guid.NewGuid(),
+            EventDetails = new EventDetails
+            {
+                Title = "Update Event",
+                StartTime = DateTime.UtcNow.AddHours(1),
+                EndTime = DateTime.UtcNow.AddHours(2),
+                Location = "Room A",
+                Description = "Description"
+            },
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
-            ReviewComment = null,
-            EventId = Guid.NewGuid()
-        };
-
-        ReviewEventRequestRequest request = new ReviewEventRequestRequest
-        {
-            ReviewComment = "Approved by admin"
+            RequestType = RequestType.Update,
+            Status = RequestStatus.Rejected
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -402,7 +523,7 @@ public class EventRequestTests
 
         EventRequestService service = new EventRequestService(_eventRequestRepo);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => service.ApproveAsync(adminId, requestId, request));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.ApproveAsync(adminId, requestId));
     }
 
     [Fact]
@@ -417,17 +538,19 @@ public class EventRequestTests
             FacultyId = Guid.NewGuid(),
             ManagerId = Guid.NewGuid(),
             ReviewedByAdminId = null,
-            RequestType = RequestType.Delete,
-            Status = RequestStatus.Pending,
+            EventId = Guid.NewGuid(),
+            EventDetails = new EventDetails
+            {
+                Title = "Delete Event",
+                StartTime = DateTime.UtcNow.AddHours(1),
+                EndTime = DateTime.UtcNow.AddHours(2),
+                Location = "Room A",
+                Description = "Description"
+            },
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
-            ReviewComment = null,
-            EventId = Guid.NewGuid()
-        };
-
-        ReviewEventRequestRequest request = new ReviewEventRequestRequest
-        {
-            ReviewComment = "Rejected by admin"
+            RequestType = RequestType.Delete,
+            Status = RequestStatus.Pending
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -435,12 +558,11 @@ public class EventRequestTests
 
         EventRequestService service = new EventRequestService(_eventRequestRepo);
 
-        await service.RejectAsync(adminId, requestId, request);
+        await service.RejectAsync(adminId, requestId);
 
         Assert.Equal(RequestStatus.Rejected, eventRequest.Status);
         Assert.Equal(adminId, eventRequest.ReviewedByAdminId);
         Assert.NotNull(eventRequest.ReviewedAt);
-        Assert.Equal("Rejected by admin", eventRequest.ReviewComment);
 
         _eventRequestRepoMock.Verify(r => r.UpdateAsync(eventRequest), Times.Once);
     }
@@ -451,17 +573,12 @@ public class EventRequestTests
         Guid adminId = Guid.NewGuid();
         Guid requestId = Guid.NewGuid();
 
-        ReviewEventRequestRequest request = new ReviewEventRequestRequest
-        {
-            ReviewComment = "Rejected by admin"
-        };
-
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync((EventRequest?)null);
 
         EventRequestService service = new EventRequestService(_eventRequestRepo);
 
-        await Assert.ThrowsAsync<ArgumentException>(() => service.RejectAsync(adminId, requestId, request));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.RejectAsync(adminId, requestId));
     }
 
     [Fact]
@@ -476,17 +593,19 @@ public class EventRequestTests
             FacultyId = Guid.NewGuid(),
             ManagerId = Guid.NewGuid(),
             ReviewedByAdminId = null,
-            RequestType = RequestType.Delete,
-            Status = RequestStatus.Approved,
+            EventId = Guid.NewGuid(),
+            EventDetails = new EventDetails
+            {
+                Title = "Delete Event",
+                StartTime = DateTime.UtcNow.AddHours(1),
+                EndTime = DateTime.UtcNow.AddHours(2),
+                Location = "Room A",
+                Description = "Description"
+            },
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
-            ReviewComment = null,
-            EventId = Guid.NewGuid()
-        };
-
-        ReviewEventRequestRequest request = new ReviewEventRequestRequest
-        {
-            ReviewComment = "Rejected by admin"
+            RequestType = RequestType.Delete,
+            Status = RequestStatus.Approved
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -494,6 +613,6 @@ public class EventRequestTests
 
         EventRequestService service = new EventRequestService(_eventRequestRepo);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejectAsync(adminId, requestId, request));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejectAsync(adminId, requestId));
     }
 }

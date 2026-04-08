@@ -14,19 +14,28 @@ public class EventRequestService : IEventRequestService
 
     public async Task<Guid> CreateAsync(Guid managerId, CreateEventRequestRequest request)
     {
+        if (request.RequestType == RequestType.Create && request.EventId != null)
+        {
+            throw new ArgumentException("Create request should not contain EventId.");
+        }
+
+        if ((request.RequestType == RequestType.Update || request.RequestType == RequestType.Delete) && request.EventId == null)
+        {
+            throw new ArgumentException("Update and Delete requests must contain EventId.");
+        }
+        
         EventRequest eventRequest = new EventRequest
         {
             Id = Guid.NewGuid(),
-            EventId = request.EventId,
             FacultyId = request.FacultyId,
             ManagerId = managerId,
-            RequestType = request.RequestType,
-            Status = RequestStatus.Pending,
-            CreatedAt = DateTime.UtcNow,
             ReviewedByAdminId = null,
+            EventId = request.EventId,
+            EventDetails = request.EventDetails,
+            CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
-            ReviewComment = null,
-            //Event = null!
+            RequestType = request.RequestType,
+            Status = RequestStatus.Pending
         };
         await _eventRequestRepository.AddAsync(eventRequest);
         return eventRequest.Id;
@@ -73,7 +82,7 @@ public class EventRequestService : IEventRequestService
             .ToList();
     }
 
-    public async Task ApproveAsync(Guid adminId, Guid requestId, ReviewEventRequestRequest request)
+    public async Task ApproveAsync(Guid adminId, Guid requestId)
     {
         EventRequest? eventRequest = await _eventRequestRepository.GetByIdAsync(requestId);
 
@@ -86,14 +95,13 @@ public class EventRequestService : IEventRequestService
         eventRequest.Status = RequestStatus.Approved;
         eventRequest.ReviewedByAdminId = adminId;
         eventRequest.ReviewedAt = DateTime.UtcNow;
-        eventRequest.ReviewComment = request.ReviewComment;
 
         // Here create or update the actual event based on the request details
 
         await _eventRequestRepository.UpdateAsync(eventRequest);
     }
 
-    public async Task RejectAsync(Guid adminId, Guid requestId, ReviewEventRequestRequest request)
+    public async Task RejectAsync(Guid adminId, Guid requestId)
     {
         EventRequest? eventRequest = await _eventRequestRepository.GetByIdAsync(requestId);
 
@@ -106,7 +114,6 @@ public class EventRequestService : IEventRequestService
         eventRequest.Status = RequestStatus.Rejected;
         eventRequest.ReviewedByAdminId = adminId;
         eventRequest.ReviewedAt = DateTime.UtcNow;
-        eventRequest.ReviewComment = request.ReviewComment;
 
         await _eventRequestRepository.UpdateAsync(eventRequest);
     }

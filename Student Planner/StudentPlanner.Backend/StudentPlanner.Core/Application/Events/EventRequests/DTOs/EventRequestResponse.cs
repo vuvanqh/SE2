@@ -1,3 +1,4 @@
+using StudentPlanner.Core;
 using StudentPlanner.Core.Domain;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,10 +10,10 @@ public record EventRequestResponse
     [Required] public Guid FacultyId { get; set; }
     [Required] public Guid ManagerId { get; set; }
     public Guid? ReviewedByAdminId { get; set; }
+    public Guid? EventId { get; set; }
+    [Required] public EventDetails EventDetails { get; set; } = null!;
     [Required] public RequestType RequestType { get; set; }
     [Required] public RequestStatus Status { get; set; }
     [Required] public DateTime CreatedAt { get; set; }
     public DateTime? ReviewedAt { get; set; }
-    public string? ReviewComment { get; set; }
-    [Required] public Guid EventId { get; set; }
 }

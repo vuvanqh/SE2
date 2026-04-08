@@ -21,6 +21,8 @@ public class EventRequestConfig : IEntityTypeConfiguration<EventRequest>
         builder.Property(e => e.CreatedAt)
             .IsRequired();
 
+        builder.OwnsOne(e => e.EventDetails);
+
         builder.HasOne<AppFaculty>()
             .WithMany()
             .HasForeignKey(e => e.FacultyId)
@@ -35,9 +37,7 @@ public class EventRequestConfig : IEntityTypeConfiguration<EventRequest>
             .WithMany()
             .HasForeignKey(e => e.ReviewedByAdminId)
             .OnDelete(DeleteBehavior.Restrict);
-        builder.HasIndex(e => e.FacultyId);
         builder.HasIndex(e => e.ManagerId);
         builder.HasIndex(e => e.Status);
-        builder.HasIndex(e => e.EventId);
     }
 }

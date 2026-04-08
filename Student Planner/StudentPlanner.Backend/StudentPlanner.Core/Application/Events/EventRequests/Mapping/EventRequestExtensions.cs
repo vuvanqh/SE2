@@ -12,12 +12,12 @@ public static class EventRequestExtensions
             FacultyId = eventRequest.FacultyId,
             ManagerId = eventRequest.ManagerId,
             ReviewedByAdminId = eventRequest.ReviewedByAdminId,
+            EventId = eventRequest.EventId,
+            EventDetails = eventRequest.EventDetails,
             RequestType = eventRequest.RequestType,
             Status = eventRequest.Status,
             CreatedAt = eventRequest.CreatedAt,
-            ReviewedAt = eventRequest.ReviewedAt,
-            ReviewComment = eventRequest.ReviewComment,
-            EventId = eventRequest.EventId
+            ReviewedAt = eventRequest.ReviewedAt
         };
     }
 }

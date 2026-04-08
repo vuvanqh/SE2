@@ -9,6 +9,6 @@ public interface IEventRequestService
     Task<List<EventRequestResponse>> GetByManagerIdAsync(Guid managerId);
     Task<EventRequestResponse?> GetByIdAsync(Guid userId, Guid requestId);
     Task<List<EventRequestResponse>> GetAllAsync();
-    Task ApproveAsync(Guid adminId, Guid requestId, ReviewEventRequestRequest request);
-    Task RejectAsync(Guid adminId, Guid requestId, ReviewEventRequestRequest request);
+    Task ApproveAsync(Guid adminId, Guid requestId);
+    Task RejectAsync(Guid adminId, Guid requestId);
 }
