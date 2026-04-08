@@ -72,6 +72,14 @@ export default function RegisterPage() {
   //TO-DO: DISABLE CREATE BUTTON WHILE IS PENDING
   return (
     <Modal open={isRegisterOpen} className="register-page" onClose={()=>navigate("/")}>    
+        <button
+          type="button"
+          className="auth-modal-close"
+          aria-label="Close registration modal"
+          onClick={() => navigate("/")}
+        >
+          X
+        </button>
         <p>Join Student Planner today</p>
 
         <form action={formAction} className="auth-form">

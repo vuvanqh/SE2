@@ -83,6 +83,14 @@ export default function LoginPage() {
 
   return (
     <Modal open={isLoginOpen} className="register-page" onClose={()=>navigate("/")}>    
+        <button
+          type="button"
+          className="auth-modal-close"
+          aria-label="Close login modal"
+          onClick={() => navigate("/")}
+        >
+          X
+        </button>
         <p>Welcome back to Student Planner</p>
 
         <form action={formAction} className='auth-form'>
