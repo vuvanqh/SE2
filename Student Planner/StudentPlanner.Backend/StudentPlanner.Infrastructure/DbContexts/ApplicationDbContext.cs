@@ -11,6 +11,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public virtual DbSet<PersonalEvent> PersonalEvents => Set<PersonalEvent>();
     public virtual DbSet<EventRequest> EventRequests => Set<EventRequest>();
     public virtual DbSet<AppFaculty> Faculties => Set<AppFaculty>();
+    public virtual DbSet<AcademicEvent> AcademicEvents => Set<AcademicEvent>();
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
