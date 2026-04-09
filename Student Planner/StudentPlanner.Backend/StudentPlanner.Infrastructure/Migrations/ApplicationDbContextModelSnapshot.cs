@@ -477,7 +477,7 @@ namespace StudentPlanner.Infrastructure.Migrations
                     b.HasOne("StudentPlanner.Infrastructure.IdentityEntities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
 

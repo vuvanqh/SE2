@@ -12,8 +12,8 @@ using StudentPlanner.Infrastructure;
 namespace StudentPlanner.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260409135859_RefactorSubscribersToJoinTable")]
-    partial class RefactorSubscribersToJoinTable
+    [Migration("20260409141252_RefactorAcademicEventSubscribersToJoinTable")]
+    partial class RefactorAcademicEventSubscribersToJoinTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -480,7 +480,7 @@ namespace StudentPlanner.Infrastructure.Migrations
                     b.HasOne("StudentPlanner.Infrastructure.IdentityEntities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
 

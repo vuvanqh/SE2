@@ -15,7 +15,7 @@ public class AcademicEventSubscriberConfig : IEntityTypeConfiguration<AcademicEv
         builder.HasOne<ApplicationUser>()
             .WithMany()
             .HasForeignKey(s => s.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.ClientCascade);
 
         builder.HasOne<AcademicEvent>()
             .WithMany(e => e.Subscribers)

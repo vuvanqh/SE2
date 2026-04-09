@@ -35,8 +35,7 @@ namespace StudentPlanner.Infrastructure.Migrations
                         name: "FK_AcademicEventSubscribers_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
