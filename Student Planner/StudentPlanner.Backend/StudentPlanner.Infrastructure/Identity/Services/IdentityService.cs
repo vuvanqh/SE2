@@ -99,4 +99,28 @@ public class IdentityService : IIdentityService
         user.RefreshTokenIssuedAt = issuedAt;
         await _userManager.UpdateAsync(user);
     }
+    public async Task <User?> GetUserByIdAsync(Guid userId)
+    {
+        var appUser = await _userManager.FindByIdAsync(userId.ToString());
+        if(appUser == null)
+        {
+            return null;
+        }
+            var roles  = await _userManager.GetRolesAsync(appUser);
+            var roleName = roles.FirstOrDefault()?? UserRoleOptions.Student.ToString();
+            return appUser.ToUser(roleName);
+
+    }
+    public async Task  DeleteUserAsync(Guid userId)
+    {
+        var appUser = await _userManager.FindByIdAsync(userId.ToString());
+        if(appUser == null)
+            throw new KeyNotFoundException("User not found!");
+        var result = await _userManager.DeleteAsync(appUser);
+        if (!result.Succeeded)
+        {
+            throw new InvalidOperationException(string.Join("; ", result.Errors.Select(e => e.Description))); // TO do change to a proper one 
+        }
+    }
+
 }
