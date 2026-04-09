@@ -1,15 +1,28 @@
 using StudentPlanner.Core.Domain;
 using StudentPlanner.Core.Domain.RepositoryContracts;
+using StudentPlanner.Core.Application.EventRequests.Strategies;
+using System.Collections.Generic;
 
 namespace StudentPlanner.Core.Application.EventRequests;
 
 public class EventRequestService : IEventRequestService
 {
     private readonly IEventRequestRepository _eventRequestRepository;
+    private readonly IReadOnlyDictionary<RequestType, IEventRequestApprovalStrategy> _strategies;
 
-    public EventRequestService(IEventRequestRepository eventRequestRepository)
+    public EventRequestService(
+        IEventRequestRepository eventRequestRepository, 
+        CreateApprovalStrategy createStrategy,
+        UpdateApprovalStrategy updateStrategy,
+        DeleteApprovalStrategy deleteStrategy)
     {
         _eventRequestRepository = eventRequestRepository;
+        _strategies = new Dictionary<RequestType, IEventRequestApprovalStrategy>
+        {
+            { RequestType.Create, createStrategy },
+            { RequestType.Update, updateStrategy },
+            { RequestType.Delete, deleteStrategy }
+        };
     }
 
     public async Task<Guid> CreateAsync(Guid managerId, CreateEventRequestRequest request)
@@ -95,7 +108,12 @@ public class EventRequestService : IEventRequestService
         eventRequest.ReviewedByAdminId = adminId;
         eventRequest.ReviewedAt = DateTime.UtcNow;
 
-        // Here create or update the actual event based on the request details
+        if (!_strategies.TryGetValue(eventRequest.RequestType, out var strategy))
+        {
+            throw new NotSupportedException($"Strategy for request type {eventRequest.RequestType} is not supported.");
+        }
+
+        await strategy.ExecuteAsync(eventRequest);
 
         await _eventRequestRepository.UpdateAsync(eventRequest);
     }

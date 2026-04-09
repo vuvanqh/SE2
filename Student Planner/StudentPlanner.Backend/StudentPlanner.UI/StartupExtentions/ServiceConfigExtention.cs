@@ -50,8 +50,13 @@ public static class ServiceConfigExtention
         //repo
         services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();
         services.AddScoped<IEventRequestRepository, EventRequestRepository>();
+        services.AddScoped<IAcademicEventRepository, AcademicEventRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFacultyRepository, FacultyRepository>();
+
+        services.AddScoped<StudentPlanner.Core.Application.EventRequests.Strategies.CreateApprovalStrategy>();
+        services.AddScoped<StudentPlanner.Core.Application.EventRequests.Strategies.UpdateApprovalStrategy>();
+        services.AddScoped<StudentPlanner.Core.Application.EventRequests.Strategies.DeleteApprovalStrategy>();
 
         //hosted
         services.AddHostedService<FacultyBootstrapService>();

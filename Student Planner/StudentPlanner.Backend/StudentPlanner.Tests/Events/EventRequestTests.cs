@@ -3,6 +3,7 @@ using StudentPlanner.Core;
 using StudentPlanner.Core.Application.EventRequests;
 using StudentPlanner.Core.Domain;
 using StudentPlanner.Core.Domain.RepositoryContracts;
+using StudentPlanner.Core.Application.EventRequests.Strategies;
 
 namespace StudentPlanner.Tests;
 
@@ -10,11 +11,25 @@ public class EventRequestTests
 {
     private readonly Mock<IEventRequestRepository> _eventRequestRepoMock;
     private readonly IEventRequestRepository _eventRequestRepo;
+    private readonly Mock<IAcademicEventRepository> _academicEventRepoMock;
+    private readonly IAcademicEventRepository _academicEventRepo;
 
     public EventRequestTests()
     {
         _eventRequestRepoMock = new Mock<IEventRequestRepository>();
         _eventRequestRepo = _eventRequestRepoMock.Object;
+        _academicEventRepoMock = new Mock<IAcademicEventRepository>();
+        _academicEventRepo = _academicEventRepoMock.Object;
+    }
+
+    private EventRequestService CreateService()
+    {
+        return new EventRequestService(
+            _eventRequestRepo,
+            new CreateApprovalStrategy(_academicEventRepo),
+            new UpdateApprovalStrategy(_academicEventRepo),
+            new DeleteApprovalStrategy(_academicEventRepo)
+        );
     }
 
     [Fact]
@@ -42,7 +57,7 @@ public class EventRequestTests
             .Callback<EventRequest>(e => result = e)
             .Returns(Task.CompletedTask);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         Guid createdId = await service.CreateAsync(managerId, request);
 
@@ -77,7 +92,7 @@ public class EventRequestTests
             }
         };
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
         await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(managerId, request));
     }
 
@@ -101,7 +116,7 @@ public class EventRequestTests
             }
         };
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(managerId, request));
     }
@@ -136,7 +151,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync(eventRequest);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         await service.DeleteAsync(managerId, requestId);
 
@@ -152,7 +167,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync((EventRequest?)null);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         await Assert.ThrowsAsync<ArgumentException>(() => service.DeleteAsync(managerId, requestId));
     }
@@ -188,7 +203,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync(eventRequest);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => service.DeleteAsync(managerId, requestId));
     }
@@ -223,7 +238,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync(eventRequest);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => service.DeleteAsync(managerId, requestId));
     }
@@ -258,7 +273,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync(eventRequest);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         EventRequestResponse? result = await service.GetByIdAsync(managerId, requestId);
 
@@ -278,7 +293,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync((EventRequest?)null);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         await Assert.ThrowsAsync<ArgumentException>(() => service.GetByIdAsync(managerId, requestId));
     }
@@ -314,7 +329,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync(eventRequest);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => service.GetByIdAsync(managerId, requestId));
     }
@@ -371,7 +386,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByManagerIdAsync(managerId))
             .ReturnsAsync(requests);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         List<EventRequestResponse> result = await service.GetByManagerIdAsync(managerId);
 
@@ -429,7 +444,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetAllAsync())
             .ReturnsAsync(requests);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         List<EventRequestResponse> result = await service.GetAllAsync();
 
@@ -466,7 +481,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync(eventRequest);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         await service.ApproveAsync(adminId, requestId);
 
@@ -486,7 +501,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync((EventRequest?)null);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         await Assert.ThrowsAsync<ArgumentException>(() => service.ApproveAsync(adminId, requestId));
     }
@@ -521,7 +536,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync(eventRequest);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => service.ApproveAsync(adminId, requestId));
     }
@@ -556,7 +571,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync(eventRequest);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         await service.RejectAsync(adminId, requestId);
 
@@ -576,7 +591,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync((EventRequest?)null);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         await Assert.ThrowsAsync<ArgumentException>(() => service.RejectAsync(adminId, requestId));
     }
@@ -611,7 +626,7 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync(eventRequest);
 
-        EventRequestService service = new EventRequestService(_eventRequestRepo);
+        EventRequestService service = CreateService();
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejectAsync(adminId, requestId));
     }
