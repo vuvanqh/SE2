@@ -25,7 +25,7 @@ export default function ManagerCalendarPage(){
         ) : (
         <ul className="events-list">
             {eventRequests.map(e => (
-            <li key={e.id} className="event-item">
+            <li key={e.id}>
                 <EventRequestPreview eventRequest={e} />
             </li>
             ))}
@@ -38,7 +38,7 @@ export default function ManagerCalendarPage(){
         ) : (
         <ul className="events-list">
             {top10.map(e => (
-            <li key={e.id} className="event-item">
+            <li key={e.id}>
                 <EventPreview event={e} />
             </li>
             ))}

@@ -20,7 +20,7 @@ export function useAllEventRequests(){
 }
 
 export function useEventRequest(requestId: string){
-    const {data, isPending} = useQuery({
+    const {data, isPending} = useQuery<eventRequestResponse>({
         queryKey: ["eventRequests", requestId],
         queryFn: ()=> getEventRequestById(requestId)
     })
