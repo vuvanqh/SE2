@@ -10,7 +10,12 @@ import { useRef, useContext } from "react";
 import { ModalContext } from '../../store/ModalContext'
 import { isSameDay, toLocalInput } from '../../api/helpers'
 
-export default function Calendar({events}:{events: personalEventResponse[]}) {
+type calendarProps = {
+  events: personalEventResponse[],
+  onDateClick: (date:string) => void
+}
+
+export default function Calendar({events, onDateClick}:calendarProps) {
   const {open} = useContext(ModalContext);
   const handleEventClick = (arg: EventClickArg) => {
     open({type: "view", eventId: arg.event.id});
@@ -24,7 +29,7 @@ export default function Calendar({events}:{events: personalEventResponse[]}) {
     }
 
     const start = new Date(arg.date);
-    open({type: "createPersonal", startTime: toLocalInput(start)});
+    onDateClick(toLocalInput(start));
   }
 
 
@@ -41,7 +46,8 @@ export default function Calendar({events}:{events: personalEventResponse[]}) {
 
   const calendarRef = useRef<any>(null);
 
-  return <div className="calendar-wrapper">
+  return <>
+  <div className="calendar-wrapper">
     <FullCalendar
      ref={calendarRef}
      headerToolbar={{
@@ -68,6 +74,7 @@ export default function Calendar({events}:{events: personalEventResponse[]}) {
       }}
     />
   </div>
+  </>
 }
 
 
@@ -75,8 +82,8 @@ export default function Calendar({events}:{events: personalEventResponse[]}) {
 function renderEventContent(eventInfo: EventContentArg) {
   return(
     <div className="event-content">
-      <div className="event-time">{eventInfo.timeText}</div>
       <div className="event-title">{eventInfo.event.title}</div>
+      <div className="event-time">{eventInfo.timeText}</div>
     </div>
   );
 }

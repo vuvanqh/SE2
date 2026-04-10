@@ -1,7 +1,6 @@
 import Input from "../common/Input";
 import { useActionState } from "react";
 import { validateData } from "../../api/helpers";
-import type { createPersonalEventRequest } from "../../types/personalEventTypes";
 
 type stateType = {
     title: string,
@@ -15,7 +14,7 @@ type stateType = {
 type EventFormProps = {
   initialValues: stateType;
   onClose: () => void;
-  onSubmit: (data: createPersonalEventRequest) => Promise<string[] | null>;
+  onSubmit: (data: any) => Promise<string[] | null>;
   submitLabel: string;
 };
 

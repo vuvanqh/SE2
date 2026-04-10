@@ -1,0 +1,58 @@
+.nav-link {
+  position: relative;
+  text-decoration: none;
+
+  color: var(--white-soft);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+
+  padding: 6px 10px;
+
+  transition:
+    color 150ms ease,
+    transform 120ms ease;
+}
+
+/* subtle hover like navbar buttons */
+.nav-link:hover {
+  color: var(--white);
+  transform: translateY(-1px);
+}
+
+/* active state */
+.nav-link.active {
+  color: var(--white);
+}
+
+/* underline ONLY for active */
+.nav-link.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+
+  width: 100%;
+  height: 2px;
+
+  background: rgba(255,255,255,0.85);
+  border-radius: 2px;
+
+  /* 🔥 smooth appearance */
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ensure non-active has NO underline */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+
+  width: 100%;
+  height: 2px;
+
+  background: transparent;
+  transform: scaleX(0);
+}

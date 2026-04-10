@@ -33,12 +33,6 @@ public class ApplicationUser : IdentityUser<Guid>
         RefreshTokenIssuedAt = RefreshTokenIssuedAt,
         UsosToken = UsosToken,
         Role = roleName,
-        Faculty = Faculty?.ToFaculty() != null ? new Faculty
-        {
-            Id = Faculty.Id,
-            FacultyCode = Faculty.FacultyCode,
-            FacultyName = Faculty.FacultyName,
-            FacultyId = Faculty.FacultyId
-        } : null,
+        Faculty = Faculty?.ToFaculty()
     };
 }

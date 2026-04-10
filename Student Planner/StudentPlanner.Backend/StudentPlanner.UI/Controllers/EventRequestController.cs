@@ -57,8 +57,15 @@ public class EventRequestController : ControllerBase
         if (userId == null)
             return Unauthorized(new { Message = "Unauthorized access" });
 
-        var response = await _eventRequestService.GetAllAsync();
-        return Ok(response);
+        try
+        {
+            var response = await _eventRequestService.GetAllAsync();
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }   
     }
 
     /// <summary>
@@ -99,7 +106,7 @@ public class EventRequestController : ControllerBase
             return Unauthorized(new { Message = "Unauthorized access." });
 
         Guid requestId = await _eventRequestService.CreateAsync(Guid.Parse(userId), request);
-        return Ok(new { EventRequestId = requestId, Message = "Success" });
+        return Ok(new { EventRequestId = requestId, Message = "Success" }); 
     }
 
     /// <summary>
@@ -158,7 +165,7 @@ public class EventRequestController : ControllerBase
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userId == null)
             return Unauthorized(new { Message = "Unauthorized access" });
-
+       
         await _eventRequestService.RejectAsync(Guid.Parse(userId), requestId);
         return Ok(new { Message = "Success" });
     }

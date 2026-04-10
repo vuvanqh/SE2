@@ -34,7 +34,7 @@ public class IdentityService : IIdentityService
         var roles = await _userManager.GetRolesAsync(user);
 
         var roleName = roles.FirstOrDefault() ?? UserRoleOptions.Student.ToString();
-
+        Console.WriteLine($"Faculty: {user.ToUser(roleName).Faculty.Id.ToString()}");
         return user.ToUser(roleName);
     }
 
@@ -48,7 +48,8 @@ public class IdentityService : IIdentityService
             Email = user.Email,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            FacultyId = facultyId
+            FacultyId = facultyId,
+            UsosToken = user.UsosToken
         };
 
         var result = await _userManager.CreateAsync(appUser, password);

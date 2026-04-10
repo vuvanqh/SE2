@@ -9,6 +9,7 @@ export type ModalType =
     | { type: "edit"; eventId: string }
     | { type: "createPersonal"; startTime?: string;} 
     | { type: "eventList", events: personalEventResponse[]}
+    | { type: "createRequest", startTime?: string;}
     | null
 
 
