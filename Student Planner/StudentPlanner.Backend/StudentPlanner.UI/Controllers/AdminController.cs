@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Core.Entities;
 using StudentPlanner.Core;
+using StudentPlanner.Core.Application.Admin.DTO;
 
 namespace StudentPlanner.UI.Controllers;
 /// <summary>
@@ -25,5 +26,11 @@ public class AdminController : ControllerBase
     {
         await _adminService.DeleteUserAsync(userId);
         return NoContent(); // can be Ok potentially
+    }
+    [HttpPost("users/sync")]
+    public async Task<ActionResult<SyncUsersResultDto>> SyncUsers()
+    {
+        var result = await _adminService.SyncUsersWithUsosAsync();
+        return Ok(result);
     }
 }

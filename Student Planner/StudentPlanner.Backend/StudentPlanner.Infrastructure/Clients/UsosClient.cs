@@ -79,5 +79,38 @@ public class UsosClient : IUsosClient
             Id = Guid.NewGuid()
         }).ToList();
     }
+    public async Task<List<UsosStudentDto>> GetStudentsByFacultyAsync(string usosToken, string facultyId)
+    {
+         using var request = new HttpRequestMessage(HttpMethod.Get, $"/services/users/faculty/{facultyId}");
+    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", usosToken);
+
+    var response = await _httpClient.SendAsync(request);
+
+    if (!response.IsSuccessStatusCode)
+    {
+        _logger.LogWarning(
+            "Failed to fetch faculty users from USOS for faculty {FacultyId}. Status code: {StatusCode}",
+            facultyId,
+            (int)response.StatusCode);
+
+        throw new UsosException($"Failed to fetch users for faculty {facultyId}. Status code: {response.StatusCode}");
+    }
+
+    var students = await response.Content.ReadFromJsonAsync<List<UsosStudentResponseDto>>();
+
+    if (students == null)
+    {
+        _logger.LogCritical("USOS returned an empty users response for faculty {FacultyId}", facultyId);
+        throw new InvalidResponseException("USOS returned an empty users response.");
+    }
+
+    return students.Select(s => new UsosStudentDto
+    {
+        StudentId = s.student_id,
+        UniversityEmail = s.university_email,
+        FacultyId = s.faculty_id,
+        Status = s.status
+    }).ToList();
+    }
 
 }

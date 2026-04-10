@@ -14,5 +14,6 @@ public interface IIdentityService
     Task<IList<string>> GetUserRolesAsync(User user);
     Task UpdateToken(string email, string tokenHash, DateTime expirationDate, DateTime issuedAt);
     Task <User?> GetUserByIdAsync(Guid userId);
+    Task<List<User>> GetAllUsersAsync();
     Task  DeleteUserAsync(Guid userId);
 }

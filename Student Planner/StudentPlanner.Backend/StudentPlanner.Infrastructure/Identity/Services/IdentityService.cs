@@ -122,5 +122,17 @@ public class IdentityService : IIdentityService
             throw new InvalidOperationException(string.Join("; ", result.Errors.Select(e => e.Description))); // TO do change to a proper one 
         }
     }
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        var appUsers = await _userManager.Users.Include(u=>u.Faculty).ToListAsync();
+        var users = new List<User>();
+        foreach( var appUser in appUsers)
+        {
+            var roles = await _userManager.GetRolesAsync(appUser);
+            var roleName = roles.FirstOrDefault() ?? UserRoleOptions.Student.ToString();
+            users.Add(appUser.ToUser(roleName));
+        }
+        return users;
+    }
 
 }
