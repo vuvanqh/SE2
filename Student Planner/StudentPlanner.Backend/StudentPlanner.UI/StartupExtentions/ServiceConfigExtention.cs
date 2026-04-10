@@ -1,4 +1,5 @@
 using MailKit.Net.Smtp;
+using StudentPlanner.Core;
 using StudentPlanner.Core.Application;
 using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Infrastructure.Services.Settings;
@@ -38,6 +39,7 @@ public static class ServiceConfigExtention
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.Configure<EmailSettings>(config.GetSection("EmailSettings"));
         services.AddScoped<IEmailService, MailtrapEmailService>();
+        services.AddScoped<IAdminService, AdminService>();
 
         var baseUrl = config["UsosApi:BaseUrl"];
 
