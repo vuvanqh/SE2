@@ -1,4 +1,4 @@
-﻿using StudentPlanner.Core.Domain.Entities;
+using StudentPlanner.Core.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;

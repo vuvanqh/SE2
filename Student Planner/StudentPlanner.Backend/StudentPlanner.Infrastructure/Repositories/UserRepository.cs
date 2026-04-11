@@ -34,17 +34,23 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetUserByEmailAsync(string email)
     {
-        ApplicationUser? user = await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
+        ApplicationUser? user = await _context.Users.Include(u => u.Faculty).FirstOrDefaultAsync(user => user.Email == email);
         return await GetUserWithRole(user);
 
     }
 
     public async Task<User?> GetUserByRefreshToken(string token)
     {
-        ApplicationUser? user = (await _context.Users.FirstOrDefaultAsync(u => u.RefreshTokenHash == token));
+        ApplicationUser? user = (await _context.Users.Include(u => u.Faculty).FirstOrDefaultAsync(u => u.RefreshTokenHash == token));
 
         return await GetUserWithRole(user);
 
+    }
+
+    public async Task<User?> GetByIdAsync(Guid userId)
+    {
+        ApplicationUser? user = await _context.Users.Include(u => u.Faculty).FirstOrDefaultAsync(u => u.Id == userId);
+        return await GetUserWithRole(user);
     }
 
     public async Task<List<User>> GetUserByRoleAsync(string role)

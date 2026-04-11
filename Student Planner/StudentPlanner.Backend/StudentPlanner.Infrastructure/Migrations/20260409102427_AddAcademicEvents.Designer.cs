@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StudentPlanner.Infrastructure;
 
@@ -11,9 +12,11 @@ using StudentPlanner.Infrastructure;
 namespace StudentPlanner.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260409102427_AddAcademicEvents")]
+    partial class AddAcademicEvents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -134,26 +137,15 @@ namespace StudentPlanner.Infrastructure.Migrations
                     b.Property<Guid>("FacultyId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.PrimitiveCollection<string>("SubscriberIds")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FacultyId");
 
                     b.ToTable("AcademicEvents", (string)null);
-                });
-
-            modelBuilder.Entity("StudentPlanner.Core.Domain.AcademicEventSubscriber", b =>
-                {
-                    b.Property<Guid>("AcademicEventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("AcademicEventId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AcademicEventSubscribers", (string)null);
                 });
 
             modelBuilder.Entity("StudentPlanner.Core.Domain.EventRequest", b =>
@@ -466,21 +458,6 @@ namespace StudentPlanner.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("StudentPlanner.Core.Domain.AcademicEventSubscriber", b =>
-                {
-                    b.HasOne("StudentPlanner.Core.Domain.AcademicEvent", null)
-                        .WithMany("Subscribers")
-                        .HasForeignKey("AcademicEventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("StudentPlanner.Infrastructure.IdentityEntities.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("StudentPlanner.Core.Domain.EventRequest", b =>
                 {
                     b.HasOne("StudentPlanner.Infrastructure.IdentityEntities.AppFaculty", null)
@@ -590,11 +567,6 @@ namespace StudentPlanner.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Faculty");
-                });
-
-            modelBuilder.Entity("StudentPlanner.Core.Domain.AcademicEvent", b =>
-                {
-                    b.Navigation("Subscribers");
                 });
 
             modelBuilder.Entity("StudentPlanner.Infrastructure.IdentityEntities.AppFaculty", b =>
