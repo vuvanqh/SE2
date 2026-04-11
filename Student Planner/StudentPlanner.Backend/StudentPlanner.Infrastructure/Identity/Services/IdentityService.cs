@@ -48,7 +48,8 @@ public class IdentityService : IIdentityService
             Email = user.Email,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            FacultyId = facultyId
+            FacultyId = facultyId,
+            UsosToken = user.UsosToken
         };
 
         var result = await _userManager.CreateAsync(appUser, password);

@@ -1,14 +1,34 @@
+using System.Text.Json.Serialization;
 namespace StudentPlanner.Core.Application.ClientContracts.DTO;
 public record UsosEventResponseDto
 {
-    public string Title { get; init; } = null!;
-    public string StartTime { get; init; } = null!;
-    public string EndTime { get; init; } = null!;
-    public string CourseId { get; init; } = null!;
-    public string ClassType { get; init; } = null!;
-    public string GroupNumber { get; init; } = null!;
-    public string? BuildingId { get; init; }
-    public string? BuildingName { get; init; }
-    public string? RoomNumber { get; init; }
-    public string? RoomId { get; init; }
+    [JsonPropertyName("title")]
+    public string? Title { get; set; }
+
+    [JsonPropertyName("start_time")]
+    public string? StartTime { get; set; }
+
+    [JsonPropertyName("end_time")]
+    public string? EndTime { get; set; }
+
+    [JsonPropertyName("course_id")]
+    public string? CourseId { get; set; }
+
+    [JsonPropertyName("class_type")]
+    public string? ClassType { get; set; }
+
+    [JsonPropertyName("group_number")]
+    public string? GroupNumber { get; set; }
+
+    [JsonPropertyName("building_id")]
+    public string? BuildingId { get; set; }
+
+    [JsonPropertyName("building_name")]
+    public string? BuildingName { get; set; }
+
+    [JsonPropertyName("room_number")]
+    public string? RoomNumber { get; set; }
+
+    [JsonPropertyName("room_id")]
+    public string? RoomId { get; set; }
 }
