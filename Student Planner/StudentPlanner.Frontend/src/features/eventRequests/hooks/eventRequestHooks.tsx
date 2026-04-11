@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { approveEventRequest, createEventRequest, deleteEventRequest, getEventRequestById, getMyRequests, rejectEventRequest } from "../../../api/eventRequestApi";
 import type { createEventRequest as createRequestType, eventRequestResponse } from "../../../types/eventRequestTypes";
+import { queryClient } from "../../../api/queryClient";
 
 export function useAllEventRequests(){
     const {data, isPending} = useQuery<eventRequestResponse[]>({
@@ -8,14 +9,22 @@ export function useAllEventRequests(){
         queryFn: getMyRequests
     })
 
-     const {mutate: createRequest} = useMutation({
-        mutationFn: (payload: createRequestType) => createEventRequest(payload)
+    return {
+        eventRequests: data??[],
+        isPending
+    }
+}
+
+export function useCreateRequest(){
+    const {mutate: createRequest} = useMutation({
+        mutationFn: (payload: createRequestType) => createEventRequest(payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ["eventRequests", "all"]})
+        }
     })
 
     return {
-        eventRequests: data??[],
-        createRequest,
-        isPending
+        createRequest
     }
 }
 
@@ -26,14 +35,23 @@ export function useEventRequest(requestId: string){
     })
 
     const {mutate: deleteRequest} = useMutation({
-        mutationFn: () => deleteEventRequest(requestId)
+        mutationFn: () => deleteEventRequest(requestId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ["eventRequests", "all"]})
+        }
     })
 
     const {mutate: approveRequest} = useMutation({
-        mutationFn: () => approveEventRequest(requestId)
+        mutationFn: () => approveEventRequest(requestId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ["eventRequests", "all"]})
+        }
     })
     const {mutate: rejectRequest} = useMutation({
-        mutationFn: () => rejectEventRequest(requestId)
+        mutationFn: () => rejectEventRequest(requestId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ["eventRequests", "all"]})
+        }
     })
 
     return {

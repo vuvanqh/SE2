@@ -1,25 +1,31 @@
 import Modal from "../../../components/modals/Modal";
 import EventForm from "../../../components/common/EventForm";
-import { useCreateRequest } from "../hooks/eventRequestHooks";
+import { useCreateRequest, useEventRequest } from "../hooks/eventRequestHooks";
 import { extractErrors } from "../../../api/helpers";
 import type { createEventRequest, eventDetails } from "../../../types/eventRequestTypes";
 import { useUser } from "../../../global-hooks/authHooks";
 
 type createEventRequestProps = {
     requiresRole?: ("Student" | "Manager" | "Admin") [],
-    startTime?: string,
+    requestId: string,
     onClose: () => void
 }
 
-export default function CreateEventRequestModal({ startTime, onClose }: createEventRequestProps) {
-    const { createRequest } = useCreateRequest();
+export default function EditEventRequestModal({ requestId, onClose }: createEventRequestProps) {
+    const { eventRequest, isPending} = useEventRequest(requestId);
+    const {createRequest} = useCreateRequest();
     const {user} = useUser();
+    if(eventRequest==undefined || isPending)
+        return null;
+
+    const details = eventRequest?.eventDetails;
+
     const initial = {
-        title: "",
-        location: "",
-        startTime: startTime ?? "",
-        endTime: startTime ?? "",
-        description: "",
+        title: details.title,
+        location: details.location,
+        startTime: details.startTime,
+        endTime: details.endTime,
+        description: details.description,
         errors: []
     };
     console.log(localStorage.getItem("facultyId"), user);
@@ -32,8 +38,9 @@ export default function CreateEventRequestModal({ startTime, onClose }: createEv
         
         const payload: createEventRequest = {
             facultyId: localStorage.getItem("facultyId")!,
-            requestType: "Create",
-            eventDetails: data
+            requestType: "Update",
+            eventDetails: data,
+            eventId: eventRequest.id
         }
             
         try {
@@ -47,7 +54,7 @@ export default function CreateEventRequestModal({ startTime, onClose }: createEv
     return (
         <Modal open onClose={onClose}>
             <div className="modal-header">
-                <h2>Create Event Request</h2>
+                <h2>Update Event Request</h2>
             </div>
             <hr className="modal-divider" />
 

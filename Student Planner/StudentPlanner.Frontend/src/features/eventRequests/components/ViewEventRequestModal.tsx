@@ -1,7 +1,7 @@
 import Modal from "../../../components/modals/Modal";
 import { useEventRequest } from "../hooks/eventRequestHooks";
-// import { useContext } from "react";
-// import { ModalContext } from "../../../store/ModalContext";
+import { useContext } from "react";
+import { ModalContext } from "../../../store/ModalContext";
 import { formatDate } from "../../../api/helpers";
 
 type createEventProps = {
@@ -13,7 +13,7 @@ type createEventProps = {
 
 export default function ViewEventRequestModal({ requestId, onClose }: createEventProps) {
     const { eventRequest, isPending, deleteRequest} = useEventRequest(requestId);
-    //const {open} = useContext(ModalContext);
+    const {open} = useContext(ModalContext);
 
     if (isPending || !eventRequest) return <Modal open>Loading...</Modal>;
 
@@ -51,7 +51,7 @@ export default function ViewEventRequestModal({ requestId, onClose }: createEven
 
            <div className="modal-actions">
                 <button className="btn-secondary" onClick={handleDelete}>Delete</button>
-                <button className="btn-primary" onClick={() =>console.log("Dont Rush")}>Edit</button>
+                <button className="btn-primary" onClick={() =>open({type: "editRequest", requestId})}>Edit</button>
            </div>
         </Modal>
     );
