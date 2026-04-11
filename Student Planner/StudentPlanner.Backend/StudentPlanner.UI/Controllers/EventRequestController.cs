@@ -16,14 +16,17 @@ namespace StudentPlanner.UI.Controllers;
 public class EventRequestController : ControllerBase
 {
     private readonly IEventRequestService _eventRequestService;
+    private readonly ILogger<EventRequestController> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EventRequestController"/> class.
     /// </summary>
     /// <param name="eventRequestService">The event request service.</param>
-    public EventRequestController(IEventRequestService eventRequestService)
+    /// <param name="logger">The logger instance.</param>
+    public EventRequestController(IEventRequestService eventRequestService, ILogger<EventRequestController> logger)
     {
         _eventRequestService = eventRequestService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -205,19 +208,26 @@ public class EventRequestController : ControllerBase
             if (userId == null)
                 return Unauthorized(new { Message = "Unauthorized access" });
 
+            _logger.LogInformation("Admin {AdminId} is attempting to approve event request {RequestId}", userId, requestId);
+
             await _eventRequestService.ApproveAsync(Guid.Parse(userId), requestId);
+
+            _logger.LogInformation("Admin {AdminId} successfully approved event request {RequestId}", userId, requestId);
             return Ok(new { Message = "Success" });
         }
         catch (ArgumentException ex) when (ex.Message.Contains("exist", StringComparison.OrdinalIgnoreCase))
         {
+            _logger.LogWarning("Admin {AdminId} attempted to approve non-existent event request {RequestId}", User.FindFirst(ClaimTypes.NameIdentifier)?.Value, requestId);
             return NotFound(new { Message = ex.Message });
         }
         catch (InvalidOperationException ex)
         {
+            _logger.LogWarning(ex, "Admin {AdminId} attempted to approve event request {RequestId} in an invalid state", User.FindFirst(ClaimTypes.NameIdentifier)?.Value, requestId);
             return BadRequest(new { Message = ex.Message });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "An error occurred while Admin {AdminId} was approving event request {RequestId}", User.FindFirst(ClaimTypes.NameIdentifier)?.Value, requestId);
             return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while approving the event request." });
         }
     }
@@ -240,19 +250,26 @@ public class EventRequestController : ControllerBase
             if (userId == null)
                 return Unauthorized(new { Message = "Unauthorized access" });
 
+            _logger.LogInformation("Admin {AdminId} is attempting to reject event request {RequestId}", userId, requestId);
+
             await _eventRequestService.RejectAsync(Guid.Parse(userId), requestId);
+
+            _logger.LogInformation("Admin {AdminId} successfully rejected event request {RequestId}", userId, requestId);
             return Ok(new { Message = "Success" });
         }
         catch (ArgumentException ex) when (ex.Message.Contains("exist", StringComparison.OrdinalIgnoreCase))
         {
+            _logger.LogWarning("Admin {AdminId} attempted to reject non-existent event request {RequestId}", User.FindFirst(ClaimTypes.NameIdentifier)?.Value, requestId);
             return NotFound(new { Message = ex.Message });
         }
         catch (InvalidOperationException ex)
         {
+            _logger.LogWarning(ex, "Admin {AdminId} attempted to reject event request {RequestId} in an invalid state", User.FindFirst(ClaimTypes.NameIdentifier)?.Value, requestId);
             return BadRequest(new { Message = ex.Message });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "An error occurred while Admin {AdminId} was rejecting event request {RequestId}", User.FindFirst(ClaimTypes.NameIdentifier)?.Value, requestId);
             return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while rejecting the event request." });
         }
     }
