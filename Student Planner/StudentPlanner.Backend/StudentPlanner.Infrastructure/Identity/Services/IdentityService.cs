@@ -100,4 +100,10 @@ public class IdentityService : IIdentityService
         user.RefreshTokenIssuedAt = issuedAt;
         await _userManager.UpdateAsync(user);
     }
+    public async Task UpdateUsosToken(string UsosToken, User user)
+    {
+        ApplicationUser appUser = (await _userManager.FindByEmailAsync(user.Email)) ?? throw new InvalidOperationException("User not found");
+        appUser.UsosToken = UsosToken;
+        await _userManager.UpdateAsync(appUser);
+    }
 }
