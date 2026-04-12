@@ -29,7 +29,7 @@ public class UsosEventsController : ControllerBase
     if (!Guid.TryParse(userIdClaim, out var userId))
         return Unauthorized(new { message = "Invalid user id claim format." });
 
-    var user = await _userRepository.GetUserByIdAsync(userId);
+    var user = await _userRepository.GetByIdAsync(userId);
     if (user == null)
         return Unauthorized(new { message = "User not found." });
 
