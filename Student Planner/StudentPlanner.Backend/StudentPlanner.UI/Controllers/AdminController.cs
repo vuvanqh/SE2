@@ -33,4 +33,11 @@ public class AdminController : ControllerBase
         var result = await _adminService.SyncUsersWithUsosAsync();
         return Ok(result);
     }
+    [HttpPost("managers")]
+    public async Task<ActionResult<ManagerCreationResultDto>> CreateManager([FromBody] CreateManagerRequestDto request)
+    {
+    var result = await _adminService.CreateManagerAsync(request);
+    return Ok(result);
+    }
+
 }

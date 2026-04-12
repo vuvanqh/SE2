@@ -18,4 +18,8 @@ public class FacultyRepository : IFacultyRepository
     {
         return (await _context.Faculties.FirstOrDefaultAsync(f => f.FacultyId == facultyId))?.ToFaculty();
     }
+    public async Task<Faculty?> GetFacultyByFacultyCodeAsync(string facultycode)
+    {
+        return (await _context.Faculties.FirstOrDefaultAsync(f => f.FacultyCode == facultycode))?.ToFaculty();
+    }
 }

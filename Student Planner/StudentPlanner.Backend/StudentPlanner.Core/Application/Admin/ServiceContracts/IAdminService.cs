@@ -4,4 +4,5 @@ public interface IAdminService
 {
     Task DeleteUserAsync(Guid userId);
     Task<SyncUsersResultDto> SyncUsersWithUsosAsync();
+    Task<ManagerCreationResultDto> CreateManagerAsync(CreateManagerRequestDto request);
 }
