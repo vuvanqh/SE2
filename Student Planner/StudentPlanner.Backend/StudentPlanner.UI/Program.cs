@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using StudentPlanner.Infrastructure;
 
 namespace StudentPlanner.Backend;
+
 using Microsoft.EntityFrameworkCore;
 using StudentPlanner.Infrastructure;
 /// <summary>

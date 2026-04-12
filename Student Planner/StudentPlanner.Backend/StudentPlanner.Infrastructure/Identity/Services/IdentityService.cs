@@ -100,22 +100,22 @@ public class IdentityService : IIdentityService
         user.RefreshTokenIssuedAt = issuedAt;
         await _userManager.UpdateAsync(user);
     }
-    public async Task <User?> GetUserByIdAsync(Guid userId)
+    public async Task<User?> GetUserByIdAsync(Guid userId)
     {
         var appUser = await _userManager.FindByIdAsync(userId.ToString());
-        if(appUser == null)
+        if (appUser == null)
         {
             return null;
         }
-            var roles  = await _userManager.GetRolesAsync(appUser);
-            var roleName = roles.FirstOrDefault()?? UserRoleOptions.Student.ToString();
-            return appUser.ToUser(roleName);
+        var roles = await _userManager.GetRolesAsync(appUser);
+        var roleName = roles.FirstOrDefault() ?? UserRoleOptions.Student.ToString();
+        return appUser.ToUser(roleName);
 
     }
-    public async Task  DeleteUserAsync(Guid userId)
+    public async Task DeleteUserAsync(Guid userId)
     {
         var appUser = await _userManager.FindByIdAsync(userId.ToString());
-        if(appUser == null)
+        if (appUser == null)
             throw new KeyNotFoundException("User not found!");
         var result = await _userManager.DeleteAsync(appUser);
         if (!result.Succeeded)
@@ -125,9 +125,9 @@ public class IdentityService : IIdentityService
     }
     public async Task<List<User>> GetAllUsersAsync()
     {
-        var appUsers = await _userManager.Users.Include(u=>u.Faculty).ToListAsync();
+        var appUsers = await _userManager.Users.Include(u => u.Faculty).ToListAsync();
         var users = new List<User>();
-        foreach( var appUser in appUsers)
+        foreach (var appUser in appUsers)
         {
             var roles = await _userManager.GetRolesAsync(appUser);
             var roleName = roles.FirstOrDefault() ?? UserRoleOptions.Student.ToString();
@@ -141,5 +141,17 @@ public class IdentityService : IIdentityService
         ApplicationUser appUser = (await _userManager.FindByEmailAsync(user.Email)) ?? throw new InvalidOperationException("User not found");
         appUser.UsosToken = UsosToken;
         await _userManager.UpdateAsync(appUser);
+    }
+    public async Task<User?> GetUserByEmailAsync(string email)
+    {
+
+        var appUser = await _userManager.FindByEmailAsync(email);
+        if (appUser == null)
+        {
+            return null;
+        }
+        var roles = await _userManager.GetRolesAsync(appUser);
+        var roleName = roles.FirstOrDefault() ?? UserRoleOptions.Student.ToString();
+        return appUser.ToUser(roleName);
     }
 }

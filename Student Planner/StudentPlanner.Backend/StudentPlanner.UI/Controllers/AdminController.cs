@@ -20,7 +20,7 @@ public class AdminController : ControllerBase
     {
         _adminService = adminService;
     }
-    
+
     [HttpDelete("users/{userId:guid}")]
     public async Task<IActionResult> DeleteUser(Guid userId)
     {
@@ -36,8 +36,8 @@ public class AdminController : ControllerBase
     [HttpPost("managers")]
     public async Task<ActionResult<ManagerCreationResultDto>> CreateManager([FromBody] CreateManagerRequestDto request)
     {
-    var result = await _adminService.CreateManagerAsync(request);
-    return Ok(result);
+        var result = await _adminService.CreateManagerAsync(request);
+        return Ok(result);
     }
 
 }
