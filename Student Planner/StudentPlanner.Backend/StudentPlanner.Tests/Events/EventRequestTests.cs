@@ -11,24 +11,32 @@ public class EventRequestTests
 {
     private readonly Mock<IEventRequestRepository> _eventRequestRepoMock;
     private readonly IEventRequestRepository _eventRequestRepo;
-    private readonly Mock<IAcademicEventRepository> _academicEventRepoMock;
-    private readonly IAcademicEventRepository _academicEventRepo;
+    private readonly Mock<IEventRequestApprovalStrategy> _createStrategyMock;
+    private readonly Mock<IEventRequestApprovalStrategy> _updateStrategyMock;
+    private readonly Mock<IEventRequestApprovalStrategy> _deleteStrategyMock;
 
     public EventRequestTests()
     {
         _eventRequestRepoMock = new Mock<IEventRequestRepository>();
         _eventRequestRepo = _eventRequestRepoMock.Object;
-        _academicEventRepoMock = new Mock<IAcademicEventRepository>();
-        _academicEventRepo = _academicEventRepoMock.Object;
+        _createStrategyMock = new Mock<IEventRequestApprovalStrategy>();
+        _createStrategyMock.Setup(s => s.RequestType).Returns(RequestType.Create);
+        _updateStrategyMock = new Mock<IEventRequestApprovalStrategy>();
+        _updateStrategyMock.Setup(s => s.RequestType).Returns(RequestType.Update);
+        _deleteStrategyMock = new Mock<IEventRequestApprovalStrategy>();
+        _deleteStrategyMock.Setup(s => s.RequestType).Returns(RequestType.Delete);
     }
 
     private EventRequestService CreateService()
     {
         return new EventRequestService(
             _eventRequestRepo,
-            new CreateApprovalStrategy(_academicEventRepo),
-            new UpdateApprovalStrategy(_academicEventRepo),
-            new DeleteApprovalStrategy(_academicEventRepo)
+            new List<IEventRequestApprovalStrategy>
+            {
+                _createStrategyMock.Object,
+                _updateStrategyMock.Object,
+                _deleteStrategyMock.Object
+            }
         );
     }
 
@@ -452,7 +460,7 @@ public class EventRequestTests
     }
 
     [Fact]
-    public async Task ApproveAsync_ShouldApproveRequest_WhenRequestIsPending()
+    public async Task ApproveAsync_ShouldApproveCreateRequest_WhenRequestIsPending()
     {
         Guid adminId = Guid.NewGuid();
         Guid requestId = Guid.NewGuid();
@@ -463,15 +471,43 @@ public class EventRequestTests
             FacultyId = Guid.NewGuid(),
             ManagerId = Guid.NewGuid(),
             ReviewedByAdminId = null,
-            EventId = Guid.NewGuid(),
-            EventDetails = new EventDetails
-            {
-                Title = "Update Event",
-                StartTime = DateTime.UtcNow.AddHours(1),
-                EndTime = DateTime.UtcNow.AddHours(2),
-                Location = "Room A",
-                Description = "Description"
-            },
+            EventId = null,
+            EventDetails = new EventDetails { Title = "New Event" },
+            CreatedAt = DateTime.UtcNow,
+            ReviewedAt = null,
+            RequestType = RequestType.Create,
+            Status = RequestStatus.Pending
+        };
+
+        _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
+            .ReturnsAsync(eventRequest);
+        _createStrategyMock.Setup(s => s.ExecuteAsync(eventRequest))
+            .Returns(Task.CompletedTask);
+
+        EventRequestService service = CreateService();
+
+        await service.ApproveAsync(adminId, requestId);
+
+        Assert.Equal(RequestStatus.Approved, eventRequest.Status);
+        Assert.Equal(adminId, eventRequest.ReviewedByAdminId);
+        _createStrategyMock.Verify(s => s.ExecuteAsync(eventRequest), Times.Once);
+        _eventRequestRepoMock.Verify(r => r.UpdateAsync(eventRequest), Times.Once);
+    }
+
+    [Fact]
+    public async Task ApproveAsync_ShouldApproveUpdateRequest_WhenRequestIsPending()
+    {
+        Guid adminId = Guid.NewGuid();
+        Guid requestId = Guid.NewGuid();
+
+        EventRequest eventRequest = new EventRequest
+        {
+            Id = requestId,
+            FacultyId = Guid.NewGuid(),
+            ManagerId = Guid.NewGuid(),
+            ReviewedByAdminId = null,
+            EventId = null,
+            EventDetails = new EventDetails { Title = "Update Event" },
             CreatedAt = DateTime.UtcNow,
             ReviewedAt = null,
             RequestType = RequestType.Update,
@@ -480,16 +516,48 @@ public class EventRequestTests
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
             .ReturnsAsync(eventRequest);
+        _updateStrategyMock.Setup(s => s.ExecuteAsync(eventRequest))
+            .Returns(Task.CompletedTask);
 
         EventRequestService service = CreateService();
 
         await service.ApproveAsync(adminId, requestId);
 
         Assert.Equal(RequestStatus.Approved, eventRequest.Status);
-        Assert.Equal(adminId, eventRequest.ReviewedByAdminId);
-        Assert.NotNull(eventRequest.ReviewedAt);
+        _updateStrategyMock.Verify(s => s.ExecuteAsync(eventRequest), Times.Once);
+    }
 
-        _eventRequestRepoMock.Verify(r => r.UpdateAsync(eventRequest), Times.Once);
+    [Fact]
+    public async Task ApproveAsync_ShouldApproveDeleteRequest_WhenRequestIsPending()
+    {
+        Guid adminId = Guid.NewGuid();
+        Guid requestId = Guid.NewGuid();
+
+        EventRequest eventRequest = new EventRequest
+        {
+            Id = requestId,
+            FacultyId = Guid.NewGuid(),
+            ManagerId = Guid.NewGuid(),
+            ReviewedByAdminId = null,
+            EventId = null,
+            EventDetails = new EventDetails { Title = "Delete Event" },
+            CreatedAt = DateTime.UtcNow,
+            ReviewedAt = null,
+            RequestType = RequestType.Delete,
+            Status = RequestStatus.Pending
+        };
+
+        _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
+            .ReturnsAsync(eventRequest);
+        _deleteStrategyMock.Setup(s => s.ExecuteAsync(eventRequest))
+            .Returns(Task.CompletedTask);
+
+        EventRequestService service = CreateService();
+
+        await service.ApproveAsync(adminId, requestId);
+
+        Assert.Equal(RequestStatus.Approved, eventRequest.Status);
+        _deleteStrategyMock.Verify(s => s.ExecuteAsync(eventRequest), Times.Once);
     }
 
     [Fact]

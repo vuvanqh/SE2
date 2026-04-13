@@ -15,4 +15,3 @@ public class EventRequest
     public required RequestType RequestType { get; set; }
     public required RequestStatus Status { get; set; }
 }
-

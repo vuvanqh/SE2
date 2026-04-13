@@ -12,17 +12,10 @@ public class EventRequestService : IEventRequestService
 
     public EventRequestService(
         IEventRequestRepository eventRequestRepository,
-        CreateApprovalStrategy createStrategy,
-        UpdateApprovalStrategy updateStrategy,
-        DeleteApprovalStrategy deleteStrategy)
+        IEnumerable<IEventRequestApprovalStrategy> strategies)
     {
         _eventRequestRepository = eventRequestRepository;
-        _strategies = new Dictionary<RequestType, IEventRequestApprovalStrategy>
-        {
-            { RequestType.Create, createStrategy },
-            { RequestType.Update, updateStrategy },
-            { RequestType.Delete, deleteStrategy }
-        };
+        _strategies = strategies.ToDictionary(s => s.RequestType, s => s);
     }
 
     public async Task<Guid> CreateAsync(Guid managerId, CreateEventRequestRequest request)

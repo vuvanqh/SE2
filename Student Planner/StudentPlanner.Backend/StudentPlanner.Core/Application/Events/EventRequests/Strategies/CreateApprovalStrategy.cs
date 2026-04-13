@@ -14,6 +14,8 @@ public class CreateApprovalStrategy : IEventRequestApprovalStrategy
         _academicEventRepository = academicEventRepository;
     }
 
+    public RequestType RequestType => RequestType.Create;
+
     public async Task ExecuteAsync(EventRequest eventRequest)
     {
         EventRequestValidationHelper.ValidateEventDetails(eventRequest.EventDetails);
