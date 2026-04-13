@@ -8,5 +8,5 @@ public record CreateEventRequestRequest
     [Required] public Guid FacultyId { get; init; }
     public Guid? EventId { get; init; }
     [Required] public RequestType RequestType { get; init; }
-    [Required] public EventDetails EventDetails { get; init; } = null!;
+    [Required] public EventDetailsDto EventDetails { get; init; } = null!;
 }

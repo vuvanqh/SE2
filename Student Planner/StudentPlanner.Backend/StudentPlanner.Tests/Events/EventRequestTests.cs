@@ -51,7 +51,7 @@ public class EventRequestTests
             FacultyId = Guid.NewGuid(),
             EventId = null,
             RequestType = RequestType.Create,
-            EventDetails = new EventDetails
+            EventDetails = new EventDetailsDto
             {
                 Title = "New Event",
                 StartTime = DateTime.UtcNow.AddHours(1),
@@ -90,7 +90,7 @@ public class EventRequestTests
             FacultyId = Guid.NewGuid(),
             EventId = Guid.NewGuid(),
             RequestType = RequestType.Create,
-            EventDetails = new EventDetails
+            EventDetails = new EventDetailsDto
             {
                 Title = "New Event",
                 StartTime = DateTime.UtcNow.AddHours(1),
@@ -114,7 +114,7 @@ public class EventRequestTests
             FacultyId = Guid.NewGuid(),
             EventId = null,
             RequestType = RequestType.Update,
-            EventDetails = new EventDetails
+            EventDetails = new EventDetailsDto
             {
                 Title = "Updated Event",
                 StartTime = DateTime.UtcNow.AddHours(1),
