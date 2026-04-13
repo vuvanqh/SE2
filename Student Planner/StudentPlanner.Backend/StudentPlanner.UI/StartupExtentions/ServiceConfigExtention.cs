@@ -4,6 +4,7 @@ using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Infrastructure.Services.Settings;
 using StudentPlanner.Core.Application.PersonalEvents;
 using StudentPlanner.Core.Application.EventRequests;
+using StudentPlanner.Core.Application.EventRequests.Strategies;
 using StudentPlanner.Core.Application.AcademicEvents.ServiceContracts;
 using StudentPlanner.Core.Application.AcademicEvents.Services;
 using StudentPlanner.Core.Domain.RepositoryContracts;
@@ -53,9 +54,9 @@ public static class ServiceConfigExtention
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFacultyRepository, FacultyRepository>();
 
-        services.AddTransient<StudentPlanner.Core.Application.EventRequests.Strategies.CreateApprovalStrategy>();
-        services.AddTransient<StudentPlanner.Core.Application.EventRequests.Strategies.UpdateApprovalStrategy>();
-        services.AddTransient<StudentPlanner.Core.Application.EventRequests.Strategies.DeleteApprovalStrategy>();
+        services.AddTransient<IEventRequestApprovalStrategy, StudentPlanner.Core.Application.EventRequests.Strategies.CreateApprovalStrategy>();
+        services.AddTransient<IEventRequestApprovalStrategy, StudentPlanner.Core.Application.EventRequests.Strategies.UpdateApprovalStrategy>();
+        services.AddTransient<IEventRequestApprovalStrategy, StudentPlanner.Core.Application.EventRequests.Strategies.DeleteApprovalStrategy>();
 
         //hosted
         services.AddHostedService<FacultyBootstrapService>();
