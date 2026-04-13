@@ -43,10 +43,6 @@ public static class ServiceConfigExtention
         services.Configure<EmailSettings>(config.GetSection("EmailSettings"));
         services.AddScoped<IEmailService, MailtrapEmailService>();
 
-        var baseUrl = config["UsosApi:BaseUrl"];
-
-        Console.WriteLine($"DEBUG BaseUrl = {baseUrl}");
-
         services.AddHttpClient<IUsosClient, UsosClient>(client =>
         {
             client.BaseAddress = new Uri(config["UsosApi:BaseUrl"]!);

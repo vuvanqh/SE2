@@ -46,7 +46,7 @@ public class StudentPlannerWebApplicationFactory : WebApplicationFactory<Program
                 FirstName = "Test",
                 LastName = "User",
                 FacultyId = "test-faculty",
-                UsosToken = "test-token"
+                Token = "test-token"
             });
 
         UsosAuthServiceMock.Setup(s => s.GetFacultiesAsync())
