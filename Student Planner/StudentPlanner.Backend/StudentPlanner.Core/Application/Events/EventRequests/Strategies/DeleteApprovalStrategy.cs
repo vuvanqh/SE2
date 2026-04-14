@@ -14,13 +14,14 @@ public class DeleteApprovalStrategy : IEventRequestApprovalStrategy
         _academicEventRepository = academicEventRepository;
     }
 
+    public RequestType RequestType => RequestType.Delete;
+
     public async Task ExecuteAsync(EventRequest eventRequest)
     {
         if (eventRequest.EventId == null) throw new InvalidOperationException("Delete request missing EventId.");
         var existingDeleteEvent = await _academicEventRepository.GetByIdAsync(eventRequest.EventId.Value);
-        if (existingDeleteEvent != null)
-        {
-            await _academicEventRepository.DeleteAsync(existingDeleteEvent.Id);
-        }
+        if (existingDeleteEvent == null) return;
+
+        await _academicEventRepository.DeleteAsync(existingDeleteEvent.Id);
     }
 }

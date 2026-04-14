@@ -15,7 +15,7 @@ public record UsosLoginResponseDto
 
     public UsosLoginResponse ToUsosLoginResponse() => new UsosLoginResponse
     {
-        UsosToken = token,
+        Token = token,
         FirstName = firstName,
         LastName = lastName,
         FacultyId = facultyId

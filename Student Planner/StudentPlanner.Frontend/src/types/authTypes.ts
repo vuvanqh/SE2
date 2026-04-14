@@ -8,7 +8,9 @@ export type loginResponse = {
   firstName: string,
   lastName: string,
   email: string,
-  userRole: "Student" | "Manager" | "Admin"
+  userRole: "Student" | "Manager" | "Admin",
+  facultyId?: string,
+  facultyCode?: string
 }
 
 export type registerRequest = {

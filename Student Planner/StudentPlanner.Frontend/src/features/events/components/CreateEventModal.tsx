@@ -33,7 +33,7 @@ export default function CreateEventModal({ startTime, onClose }: createEventProp
   return (
     <Modal open onClose={onClose}>
         <div className="modal-header">
-            <h2>Create Event</h2>
+            <h2>Create Personal Event</h2>
         </div>
         <hr className="modal-divider" />
 

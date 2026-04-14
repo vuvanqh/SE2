@@ -20,7 +20,7 @@ export default function ViewEventModal({ eventId, onClose }: createEventProps) {
         await deleteEvent();
         onClose();
     }
-
+    
     return (
         <Modal open onClose={onClose}>
            <h2>{event.title}</h2>

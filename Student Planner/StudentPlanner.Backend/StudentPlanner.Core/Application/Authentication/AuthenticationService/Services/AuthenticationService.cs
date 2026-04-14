@@ -44,6 +44,8 @@ public class AuthenticationService : IAuthenticationService
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
+            FacultyCode = user.Faculty?.FacultyCode,
+            FacultyId = user.Faculty?.Id
         }, refreshTokenResult);
     }
 
@@ -69,7 +71,7 @@ public class AuthenticationService : IAuthenticationService
             Email = request.Email,
             FirstName = response.FirstName,
             LastName = response.LastName,
-            UsosToken = response.UsosToken,
+            UsosToken = response.Token,
             Role = UserRoleOptions.Student.ToString()
         };
         await _identityService.RegisterUser(user, request.Password, faculty.Id, UserRoleOptions.Student.ToString());

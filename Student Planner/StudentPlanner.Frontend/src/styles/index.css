@@ -6,6 +6,8 @@
 @import "./userPage/calendar.css";
 @import "./events/eventList.css";
 @import "./events/viewEvent.css";
+@import "./uiElements/navlink.css";
+@import "./uiElements/sidebar.css";
 
 *,
 *::before,
@@ -260,7 +262,7 @@ dialog[open] {
     );
 
   color: var(--white);
-  margin-top: 2rem; /* less gap above */
+  margin-top: auto; /* less gap above */
 }
 
 /* ===== MAIN ROW ===== */

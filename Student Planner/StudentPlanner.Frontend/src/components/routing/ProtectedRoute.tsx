@@ -11,6 +11,7 @@ export default function ProtectedRoute(){
         if(!isAuthenticated)
         {
             navigate("/login");
+            console.log("lol");
             //toast message
         }
     }, [isAuthenticated]);

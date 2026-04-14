@@ -11,7 +11,7 @@ public record EventRequestResponse
     [Required] public Guid ManagerId { get; set; }
     public Guid? ReviewedByAdminId { get; set; }
     public Guid? EventId { get; set; }
-    [Required] public EventDetails EventDetails { get; set; } = null!;
+    [Required] public EventDetailsDto EventDetails { get; set; } = null!;
     [Required] public RequestType RequestType { get; set; }
     [Required] public RequestStatus Status { get; set; }
     [Required] public DateTime CreatedAt { get; set; }
