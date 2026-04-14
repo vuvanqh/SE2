@@ -57,8 +57,8 @@ public class UsosEventsController : ControllerBase
             var parsedStart = string.IsNullOrWhiteSpace(start)
                 ? DateOnly.FromDateTime(DateTime.UtcNow)
                 : DateOnly.ParseExact(start, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                
-                var events = await _usosEventService.SyncAndGetEventsAsync(userId, user.UsosToken, parsedStart, days);
+
+            var events = await _usosEventService.SyncAndGetEventsAsync(userId, user.UsosToken, parsedStart, days);
 
             return Ok(events);
         }

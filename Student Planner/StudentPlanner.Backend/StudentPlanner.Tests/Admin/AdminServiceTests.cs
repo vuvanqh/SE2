@@ -6,6 +6,7 @@ using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Core.Domain.Entities;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Core.Entities;
+using StudentPlanner.Core.Application.ClientContracts;
 using Xunit;
 
 namespace StudentPlanner.Tests.Admin;

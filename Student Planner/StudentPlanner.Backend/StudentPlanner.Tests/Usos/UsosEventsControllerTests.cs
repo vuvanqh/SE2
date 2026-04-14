@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using StudentPlanner.Core.Application.ClientContracts;
 using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Core.Application.ClientContracts.DTO;
 using StudentPlanner.Core.Domain.Entities;
@@ -26,10 +27,10 @@ public class UsosEventsControllerTests
 
     private static UsosEventsController CreateController(
        IUserRepository userRepository,
-       IUsosClient usosClient,
+       IUsosClient usosClients,
        ClaimsPrincipal? user = null)
     {
-        return new UsosEventsController(userRepository, usosClient)
+        return new UsosEventsController(userRepository, usosClients)
         {
             ControllerContext = new ControllerContext
             {

@@ -10,6 +10,7 @@ using StudentPlanner.Backend;
 using StudentPlanner.Core.Application;
 using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Infrastructure;
+using StudentPlanner.Core.Application.ClientContracts;
 using System.Net.Http;
 using Moq;
 using System;

@@ -1,9 +1,10 @@
 using StudentPlanner.Core;
 
 namespace StudentPlanner.Core.Domain;
+
 public class UsosEvent : Event
 {
-     public Guid UserId { get; set; }
+    public Guid UserId { get; set; }
 
     public string? CourseId { get; set; }
     public string? ClassType { get; set; }
