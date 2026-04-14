@@ -41,6 +41,8 @@ public class AuthenticationService : IAuthenticationService
             await _identityService.UpdateUsosToken(response.Token, user);
         }
         RefreshTokenResult refreshTokenResult = await _refreshTokenService.IssueOnLogin(user);
+        UsosLoginResponse response = await _usosAuthService.LoginAsync(request.Email, request.Password);
+        await _identityService.UpdateUsosToken(response.UsosToken, user);
         return (new LoginResponseDto
         {
             Token = _jwtService.CreateToken(user),

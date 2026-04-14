@@ -344,5 +344,164 @@ public class EventRequestControllerE2ETests : IntegrationTestBase
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
+    [Fact]
+    public async Task CreateRequest_Manager_Returns200_AndPersistsPendingRequest()
+    {
+        var managerToken = await RegisterAndLoginUserAsync("manager_create_req@pw.edu.pl", "Password123!", "Manager");
+        var faculty = await EnsureFacultyExistsAsync("FAC_CREATE_REQ");
 
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", managerToken);
+
+        var payload = new
+        {
+            facultyId = faculty.Id,
+            eventId = (Guid?)null,
+            requestType = "Create",
+            eventDetails = new
+            {
+                title = "Created From API",
+                startTime = DateTime.UtcNow.AddDays(1),
+                endTime = DateTime.UtcNow.AddDays(1).AddHours(2),
+                location = "Room 101",
+                description = "Description"
+            }
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/event-requests/create", payload, TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        var saved = await db.EventRequests.FirstOrDefaultAsync(r => r.EventDetails.Title == "Created From API", TestContext.Current.CancellationToken);
+        saved.Should().NotBeNull();
+        saved!.Status.Should().Be(RequestStatus.Pending);
+        saved.RequestType.Should().Be(RequestType.Create);
+    }
+
+    [Fact]
+    public async Task CreateRequest_Student_Returns403()
+    {
+        var studentToken = await RegisterAndLoginUserAsync("student_create_req@pw.edu.pl", "Password123!", "Student");
+        var faculty = await EnsureFacultyExistsAsync("FAC_CREATE_STUDENT");
+
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", studentToken);
+
+        var payload = new
+        {
+            facultyId = faculty.Id,
+            eventId = (Guid?)null,
+            requestType = "Create",
+            eventDetails = new
+            {
+                title = "Student Event",
+                startTime = DateTime.UtcNow.AddDays(1),
+                endTime = DateTime.UtcNow.AddDays(1).AddHours(2),
+                location = "Room 101",
+                description = "Description"
+            }
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/event-requests/create", payload, TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task GetMyRequests_Manager_ReturnsOnlyOwnRequests()
+    {
+        var faculty = await EnsureFacultyExistsAsync("FAC_GET_MY");
+
+        var manager1Email = "manager_get_my_1@pw.edu.pl";
+        await RegisterAndLoginUserAsync(manager1Email, "Password123!", "Manager");
+        var manager1Id = await GetCurrentUserIdAsync(manager1Email);
+
+        var manager2Email = "manager_get_my_2@pw.edu.pl";
+        await RegisterAndLoginUserAsync(manager2Email, "Password123!", "Manager");
+        var manager2Id = await GetCurrentUserIdAsync(manager2Email);
+
+        await SeedEventRequestAsync(manager1Id, faculty.Id, RequestType.Create);
+        await SeedEventRequestAsync(manager2Id, faculty.Id, RequestType.Create);
+
+        var manager1Token = await RegisterAndLoginUserAsync("manager_get_my_login@pw.edu.pl", "Password123!", "Manager");
+        var managerLoginId = await GetCurrentUserIdAsync("manager_get_my_login@pw.edu.pl");
+        await SeedEventRequestAsync(managerLoginId, faculty.Id, RequestType.Create);
+
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", manager1Token);
+
+        var response = await _client.GetAsync("/api/event-requests", TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        body.Should().Contain("New E2E Event");
+    }
+
+    [Fact]
+    public async Task GetAllRequests_Admin_Returns200()
+    {
+        var adminToken = await RegisterAndLoginUserAsync("admin_get_all@pw.edu.pl", "Password123!", "Admin");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        var response = await _client.GetAsync("/api/event-requests/all", TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task GetAllRequests_Manager_Returns403()
+    {
+        var managerToken = await RegisterAndLoginUserAsync("manager_get_all_403@pw.edu.pl", "Password123!", "Manager");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", managerToken);
+
+        var response = await _client.GetAsync("/api/event-requests/all", TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task DeleteRequest_Manager_DeletesPendingRequest()
+    {
+        var managerEmail = "manager_delete_req@pw.edu.pl";
+        var managerToken = await RegisterAndLoginUserAsync(managerEmail, "Password123!", "Manager");
+        var managerId = await GetCurrentUserIdAsync(managerEmail);
+        var faculty = await EnsureFacultyExistsAsync("FAC_DELETE_REQ");
+        var requestId = await SeedEventRequestAsync(managerId, faculty.Id, RequestType.Create);
+
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", managerToken);
+
+        var response = await _client.DeleteAsync($"/api/event-requests/delete/{requestId}", TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var deleted = await db.EventRequests.FindAsync(new object[] { requestId }, TestContext.Current.CancellationToken);
+        deleted.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task DeleteRequest_Manager_ApprovedRequest_Returns400()
+    {
+        var managerEmail = "manager_delete_approved@pw.edu.pl";
+        var managerToken = await RegisterAndLoginUserAsync(managerEmail, "Password123!", "Manager");
+        var managerId = await GetCurrentUserIdAsync(managerEmail);
+        var faculty = await EnsureFacultyExistsAsync("FAC_DELETE_APPROVED");
+        var requestId = await SeedEventRequestAsync(managerId, faculty.Id, RequestType.Create);
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var request = await db.EventRequests.FindAsync(new object[] { requestId }, TestContext.Current.CancellationToken);
+            request!.Status = RequestStatus.Approved;
+            await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", managerToken);
+
+        var response = await _client.DeleteAsync($"/api/event-requests/delete/{requestId}", TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 }

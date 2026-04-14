@@ -1,5 +1,6 @@
 using Serilog;
-using StudentPlanner.Infrastructure.Identity;
+using Microsoft.EntityFrameworkCore;
+using StudentPlanner.Infrastructure;
 
 namespace StudentPlanner.Backend;
 

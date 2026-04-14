@@ -85,7 +85,7 @@ public class EventRequestController : ControllerBase
     /// <param name="requestId">The ID of the event request.</param>
     /// <returns>The event request details.</returns>
     [HttpGet("{requestId:guid}")]
-    [Authorize(Roles = nameof(UserRoleOptions.Manager))]
+    [Authorize(Roles = nameof(UserRoleOptions.Admin))]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -97,7 +97,7 @@ public class EventRequestController : ControllerBase
             if (userId == null)
                 return Unauthorized(new { Message = "Unauthorized access" });
 
-            var response = await _eventRequestService.GetByIdAsync(Guid.Parse(userId), requestId);
+            var response = await _eventRequestService.GetByIdAsync(requestId);
             return Ok(response);
         }
         catch (ArgumentException ex) when (ex.Message.Contains("exist", StringComparison.OrdinalIgnoreCase))
