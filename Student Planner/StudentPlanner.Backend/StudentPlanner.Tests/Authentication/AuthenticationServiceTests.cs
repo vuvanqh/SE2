@@ -143,6 +143,19 @@ public class AuthenticationServiceTests
         _identityServiceMock.Setup(s => s.GetUserRolesAsync(user)).ReturnsAsync(new List<string> { "Student" });
         _refreshTokenServiceMock.Setup(r => r.IssueOnLogin(user)).ReturnsAsync(refreshTokenResult);
         _jwtServiceMock.Setup(j => j.CreateToken(user)).Returns("jwt-token");
+        _usosAuthServiceMock
+        .Setup(s => s.LoginAsync(request.Email, request.Password))
+        .ReturnsAsync(new UsosLoginResponse
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            FacultyId = "FAC001",
+            UsosToken = "fresh-usos-token"
+        });
+
+        _identityServiceMock
+            .Setup(s => s.UpdateUsosToken("fresh-usos-token", user))
+            .Returns(Task.CompletedTask);
 
 
         var (loginResponse, refreshResult) = await _authService.LoginAsync(request);
@@ -166,7 +179,19 @@ public class AuthenticationServiceTests
         _identityServiceMock.Setup(s => s.GetUserRolesAsync(user)).ReturnsAsync(new List<string>());
         _refreshTokenServiceMock.Setup(r => r.IssueOnLogin(user)).ReturnsAsync(refreshTokenResult);
         _jwtServiceMock.Setup(j => j.CreateToken(user)).Returns("jwt-token");
+        _usosAuthServiceMock
+        .Setup(s => s.LoginAsync(request.Email, request.Password))
+        .ReturnsAsync(new UsosLoginResponse
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            FacultyId = "FAC001",
+            UsosToken = "fresh-usos-token"
+        });
 
+        _identityServiceMock
+            .Setup(s => s.UpdateUsosToken("fresh-usos-token", user))
+            .Returns(Task.CompletedTask);
 
         var (loginResponse, _) = await _authService.LoginAsync(request);
 

@@ -423,7 +423,7 @@ public class EventRequestTests
     {
         Guid adminId = Guid.NewGuid();
         Guid requestId = Guid.NewGuid();
-
+        Guid existingEventId = Guid.NewGuid();
         EventRequest eventRequest = new EventRequest
         {
             Id = requestId,
@@ -436,6 +436,19 @@ public class EventRequestTests
             ReviewedAt = null,
             RequestType = RequestType.Create,
             Status = RequestStatus.Pending
+        };
+        AcademicEvent existingEvent = new AcademicEvent
+        {
+            Id = existingEventId,
+            FacultyId = eventRequest.FacultyId,
+            EventDetails = new EventDetails
+            {
+                Title = "Old Event",
+                StartTime = DateTime.UtcNow.AddDays(1),
+                EndTime = DateTime.UtcNow.AddDays(1).AddHours(1),
+                Location = "Old Room",
+                Description = "Old Description"
+            }
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))

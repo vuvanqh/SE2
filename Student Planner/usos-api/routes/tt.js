@@ -4,10 +4,10 @@ const { getUserTimetable, getCourseTimetable, getRoomTimetable } = require('../d
 
 // GET /services/tt/user
 router.get('/user', (req, res) => {
-  const { user_id, start, days } = req.query;
-
+  const { start, days } = req.query;
+  const user_id = req.student_id;
   if (!user_id) {
-    return res.status(400).json({ error: 'user_id required' });
+    return res.status(400).json({ error: 'Unauthorized' });
   }
 
   const timetable = getUserTimetable(user_id, start, days);
