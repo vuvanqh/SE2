@@ -252,50 +252,8 @@ public class EventRequestTests
     }
 
     [Fact]
-    public async Task GetByIdAsync_ShouldReturnRequest_WhenRequestExistsAndBelongsToManager()
-    {
-        Guid managerId = Guid.NewGuid();
-        Guid requestId = Guid.NewGuid();
-
-        EventRequest eventRequest = new EventRequest
-        {
-            Id = requestId,
-            FacultyId = Guid.NewGuid(),
-            ManagerId = managerId,
-            ReviewedByAdminId = null,
-            EventId = Guid.NewGuid(),
-            EventDetails = new EventDetails
-            {
-                Title = "Update Event",
-                StartTime = DateTime.UtcNow.AddHours(1),
-                EndTime = DateTime.UtcNow.AddHours(2),
-                Location = "Room A",
-                Description = "Description"
-            },
-            CreatedAt = DateTime.UtcNow,
-            ReviewedAt = null,
-            RequestType = RequestType.Update,
-            Status = RequestStatus.Pending
-        };
-
-        _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
-            .ReturnsAsync(eventRequest);
-
-        EventRequestService service = CreateService();
-
-        EventRequestResponse? result = await service.GetByIdAsync(managerId, requestId);
-
-        Assert.NotNull(result);
-        Assert.Equal(requestId, result!.Id);
-        Assert.Equal(managerId, result.ManagerId);
-        Assert.Equal(RequestType.Update, result.RequestType);
-        Assert.Equal(eventRequest.EventDetails.Title, result.EventDetails.Title);
-    }
-
-    [Fact]
     public async Task GetByIdAsync_ShouldThrow_WhenRequestDoesNotExist()
     {
-        Guid managerId = Guid.NewGuid();
         Guid requestId = Guid.NewGuid();
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))
@@ -303,21 +261,19 @@ public class EventRequestTests
 
         EventRequestService service = CreateService();
 
-        await Assert.ThrowsAsync<ArgumentException>(() => service.GetByIdAsync(managerId, requestId));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.GetByIdAsync(requestId));
     }
 
     [Fact]
-    public async Task GetByIdAsync_ShouldThrow_WhenRequestBelongsToAnotherManager()
+    public async Task GetByIdAsync_ShouldReturnRequest_WhenRequestExists()
     {
-        Guid managerId = Guid.NewGuid();
-        Guid otherManagerId = Guid.NewGuid();
         Guid requestId = Guid.NewGuid();
 
         EventRequest eventRequest = new EventRequest
         {
             Id = requestId,
             FacultyId = Guid.NewGuid(),
-            ManagerId = otherManagerId,
+            ManagerId = Guid.NewGuid(),
             ReviewedByAdminId = null,
             EventId = Guid.NewGuid(),
             EventDetails = new EventDetails
@@ -339,7 +295,10 @@ public class EventRequestTests
 
         EventRequestService service = CreateService();
 
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => service.GetByIdAsync(managerId, requestId));
+        EventRequestResponse? result = await service.GetByIdAsync(requestId);
+
+        Assert.NotNull(result);
+        Assert.Equal(requestId, result!.Id);
     }
 
     [Fact]

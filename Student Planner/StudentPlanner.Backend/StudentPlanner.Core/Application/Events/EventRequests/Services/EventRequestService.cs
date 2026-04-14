@@ -55,15 +55,12 @@ public class EventRequestService : IEventRequestService
             .ToList();
     }
 
-    public async Task<EventRequestResponse?> GetByIdAsync(Guid userId, Guid requestId)
+    public async Task<EventRequestResponse?> GetByIdAsync(Guid requestId)
     {
         EventRequest? eventRequest = await _eventRequestRepository.GetByIdAsync(requestId);
 
         if (eventRequest == null)
             throw new ArgumentException("Event request does not exist.");
-
-        if (eventRequest.ManagerId != userId)
-            throw new UnauthorizedAccessException("You do not have permission to access this request.");
 
         return eventRequest.ToEventRequestResponse();
     }
