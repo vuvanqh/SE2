@@ -1,6 +1,7 @@
 using StudentPlanner.Core.Domain.Entities;
 using StudentPlanner.Core.Application.ClientContracts.DTO;
-namespace StudentPlanner.Core.Application.Authentication;
+using StudentPlanner.Core.Application.Authentication;
+namespace StudentPlanner.Core.Application.ClientContracts;
 
 
 public interface IUsosClient

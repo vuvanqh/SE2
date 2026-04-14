@@ -9,10 +9,13 @@ using StudentPlanner.Core.Application.EventRequests.Strategies;
 using StudentPlanner.Core.Application.AcademicEvents.ServiceContracts;
 using StudentPlanner.Core.Application.AcademicEvents.Services;
 using StudentPlanner.Core.Domain.RepositoryContracts;
+using StudentPlanner.Core.Application.ClientContracts;
 using StudentPlanner.Infrastructure.Identity;
 using StudentPlanner.Infrastructure.Repositories;
 using StudentPlanner.Infrastructure.Services;
-
+using StudentPlanner.Core.Application.Events.UsosEvents.ServiceContracts;
+using StudentPlanner.Core.Application.Events.UsosEvents.Services;
+using StudentPlanner.Infrastructure.Repositories.Events;
 namespace StudentPlanner.Backend;
 
 /// <summary>
@@ -44,7 +47,8 @@ public static class ServiceConfigExtention
         services.Configure<EmailSettings>(config.GetSection("EmailSettings"));
         services.AddScoped<IEmailService, MailtrapEmailService>();
         services.AddScoped<IAdminService, AdminService>();
-
+        services.AddScoped<IUsosEventService, UsosEventService>();
+        services.AddScoped<IUsosEventRepository, UsosEventRepository>();
         services.AddHttpClient<IUsosClient, UsosClient>(client =>
         {
             client.BaseAddress = new Uri(config["UsosApi:BaseUrl"]!);

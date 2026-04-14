@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Core.Application.Exceptions;
 using StudentPlanner.Core.Domain.RepositoryContracts;
+using StudentPlanner.Core.Application.Events.UsosEvents.ServiceContracts;
 using System.Security.Claims;
 using System.Globalization;
 namespace StudentPlanner.UI.Controllers;
@@ -18,15 +19,15 @@ namespace StudentPlanner.UI.Controllers;
 public class UsosEventsController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
-    private readonly IUsosClient _usosClient;
+    private readonly IUsosEventService _usosEventService;
     /// <summary>
     /// Creates a controller, it has usosCLient and userRepository.
     /// </summary>
 
-    public UsosEventsController(IUserRepository userRepository, IUsosClient usosClient)
+    public UsosEventsController(IUserRepository userRepository, IUsosEventService usosEventService)
     {
         _userRepository = userRepository;
-        _usosClient = usosClient;
+        _usosEventService = usosEventService;
     }
 
     /// <summary>
@@ -56,8 +57,8 @@ public class UsosEventsController : ControllerBase
             var parsedStart = string.IsNullOrWhiteSpace(start)
                 ? DateOnly.FromDateTime(DateTime.UtcNow)
                 : DateOnly.ParseExact(start, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-
-            var events = await _usosClient.GetTimetableAsync(user.UsosToken, parsedStart, days);
+                
+                var events = await _usosEventService.SyncAndGetEventsAsync(userId, user.UsosToken, parsedStart, days);
 
             return Ok(events);
         }

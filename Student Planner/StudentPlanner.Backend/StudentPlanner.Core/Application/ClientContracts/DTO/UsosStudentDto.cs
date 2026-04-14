@@ -1,4 +1,4 @@
-namespace StudentPlanner.Core.Application.Authentication;
+namespace StudentPlanner.Core.Application.ClientContracts.DTO;
 
 public class UsosStudentDto
 {

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using StudentPlanner.Core.Application.ClientContracts;
 using StudentPlanner.Core.Application.Authentication;
 
 namespace StudentPlanner.Infrastructure.Services;

@@ -1,6 +1,7 @@
 using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Core.Application;
 using StudentPlanner.Core.Entities;
+using StudentPlanner.Core.Application.ClientContracts;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Core.Domain.Entities;
 

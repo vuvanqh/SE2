@@ -12,6 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public virtual DbSet<EventRequest> EventRequests => Set<EventRequest>();
     public virtual DbSet<AppFaculty> Faculties => Set<AppFaculty>();
     public virtual DbSet<AcademicEvent> AcademicEvents => Set<AcademicEvent>();
+    public virtual DbSet<UsosEvent> StudentUsosEvents => Set<UsosEvent>();
     public virtual DbSet<AcademicEventSubscriber> AcademicEventSubscribers => Set<AcademicEventSubscriber>();
     protected override void OnModelCreating(ModelBuilder builder)
     {

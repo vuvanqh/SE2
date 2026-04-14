@@ -2,6 +2,7 @@ using System.Security.Principal;
 using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Core.Application.Admin.DTO;
 using System.Security.AccessControl;
+using StudentPlanner.Core.Application.ClientContracts;
 using StudentPlanner.Core.Entities;
 using StudentPlanner.Core.Application.Exceptions;
 using StudentPlanner.Core.Domain.RepositoryContracts;
