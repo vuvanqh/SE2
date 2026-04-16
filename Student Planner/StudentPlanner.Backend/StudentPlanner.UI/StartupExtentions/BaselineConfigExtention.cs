@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using StudentPlanner.Infrastructure;
 using StudentPlanner.Infrastructure.IdentityEntities;
+using System.Security.Claims;
 using System.Text.Json.Serialization;
 
 namespace StudentPlanner.Backend;
@@ -94,8 +95,24 @@ public static class BaselineConfigExtention
                 ValidIssuer = config["Jwt:Issuer"],
                 ValidAudience = config["Jwt:Audience"],
                 IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                    System.Text.Encoding.UTF8.GetBytes(secretKey)),
+                System.Text.Encoding.UTF8.GetBytes(secretKey)),
+                NameClaimType = ClaimTypes.NameIdentifier,
                 //ClockSkew = TimeSpan.Zero
+            };
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+
+                    if (!string.IsNullOrEmpty(accessToken) &&
+                        context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+                    {
+                        context.Token = accessToken;
+                    }
+
+                    return Task.CompletedTask;
+                }
             };
         });
 
