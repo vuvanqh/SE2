@@ -16,7 +16,7 @@ public class UsosEventsControllerE2ETests : IntegrationTestBase
     [Fact]
     public async Task GetMyEvents_ShouldReturn401_WhenNoJwtProvided()
     {
-        var response = await _client.GetAsync("/api/usos-events/me?start=2025-10-01&days=7", TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync("/api/usos-events?start=2025-10-01&days=7", TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
@@ -68,7 +68,7 @@ public class UsosEventsControllerE2ETests : IntegrationTestBase
 
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginPayload.Token);
 
-        var response = await _client.GetAsync("/api/usos-events/me?start=2025-10-01&days=7", TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync("/api/usos-events?start=2025-10-01&days=7", TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
