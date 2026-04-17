@@ -6,10 +6,11 @@ import RegisterPage from "./pages/public/RegisterPage";
 import ApplicationLayout from "./pages/ApplicationLayout";
 import StudentPage from "./pages/protected/Student/StudentPage";
 import RoleRoute from "./components/routing/RoleRoute";
-import AdminPage from "./pages/protected/AdminPage";
+import AdminPage from "./pages/protected/Admin/AdminPage";
 import ManagerPage from "./pages/protected/Manager/ManagerPage";
 import StudentCalendarPage from "./pages/protected/Student/StudentCalendarPage";
 import ManagerCalendarPage from "./pages/protected/Manager/ManagerCalendarPage";
+import AdminCalendarPage from "./pages/protected/Admin/AdminCalendarPage";
 
 export const router = createBrowserRouter([{
     path: "/",
@@ -76,7 +77,13 @@ export const router = createBrowserRouter([{
                     path: "admin",
                     element: <RoleRoute allowed={["Admin"]}>
                         <AdminPage/>
-                    </RoleRoute>
+                    </RoleRoute>,
+                    children: [
+                        {
+                            index: true,
+                            element: <AdminCalendarPage/>
+                        }
+                    ]
                 }
             ]
             

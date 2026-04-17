@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom"
-import DashboardLayout from "../Dashboard";
+import DashboardLayout from "../common/Dashboard";
 
 export default function StudentPage(){
     return <DashboardLayout navItems={

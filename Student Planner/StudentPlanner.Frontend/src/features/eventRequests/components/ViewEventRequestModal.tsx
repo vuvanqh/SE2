@@ -3,6 +3,7 @@ import { useEventRequest } from "../hooks/eventRequestHooks";
 import { useContext } from "react";
 import { ModalContext } from "../../../store/ModalContext";
 import { formatDate } from "../../../api/helpers";
+import { useUser } from "../../../global-hooks/authHooks"
 
 type createEventProps = {
     requiresRole?: ("Student" | "Manager" | "Admin") [],
@@ -10,10 +11,11 @@ type createEventProps = {
     onClose: () => void
 }
 
-
+//NOTE: TRY TO CLEAN THE CONDITIONAL LOGIC BLOCK
 export default function ViewEventRequestModal({ requestId, onClose }: createEventProps) {
     const { eventRequest, isPending, deleteRequest} = useEventRequest(requestId);
     const {open} = useContext(ModalContext);
+    const {user} = useUser();
 
     if (isPending || !eventRequest) return <Modal open>Loading...</Modal>;
 
@@ -49,10 +51,17 @@ export default function ViewEventRequestModal({ requestId, onClose }: createEven
                 <p className="view-text">{eventDetails.description}</p>
             </div>
 
-           <div className="modal-actions">
-                <button className="btn-secondary" onClick={handleDelete}>Delete</button>
-                <button className="btn-primary" onClick={() =>open({type: "editRequest", requestId})}>Edit</button>
-           </div>
+            {user && user.userRole=="Manager" &&
+            <div className="modal-actions">
+                    <button className="btn-secondary" onClick={handleDelete}>Delete</button>
+                    <button className="btn-primary" onClick={() =>open({type: "editRequest", requestId})}>Edit</button>
+            </div>}
+
+            {user && user.userRole=="Admin" &&
+            <div>
+                <button>Approve</button>
+                <button>Reject</button>
+            </div>}
         </Modal>
     );
 }

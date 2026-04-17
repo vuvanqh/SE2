@@ -34,7 +34,7 @@ public class UsosEventsController : ControllerBase
     /// api end point of the form  PortNum/api/usos-events/me?start=yyyy-mm-day andpersand days=n
     /// </summary>
 
-    [HttpGet("me")]
+    [HttpGet]
     public async Task<IActionResult> GetMyEvents([FromQuery] string? start, [FromQuery] int days = 30)
     {
         try

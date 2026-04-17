@@ -2,6 +2,7 @@ using StudentPlanner.Core.Domain;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Core.Application.EventRequests.Strategies;
 using System.Collections.Generic;
+using StudentPlanner.Core.Application.Notifications.ServiceContracts;
 
 namespace StudentPlanner.Core.Application.EventRequests;
 
@@ -9,13 +10,16 @@ public class EventRequestService : IEventRequestService
 {
     private readonly IEventRequestRepository _eventRequestRepository;
     private readonly IReadOnlyDictionary<RequestType, IEventRequestApprovalStrategy> _strategies;
+    private readonly IEventRequestNotificationService _notify;
 
     public EventRequestService(
         IEventRequestRepository eventRequestRepository,
-        IEnumerable<IEventRequestApprovalStrategy> strategies)
+        IEnumerable<IEventRequestApprovalStrategy> strategies,
+        IEventRequestNotificationService notify)
     {
         _eventRequestRepository = eventRequestRepository;
         _strategies = strategies.ToDictionary(s => s.RequestType, s => s);
+        _notify = notify;
     }
 
     public async Task<Guid> CreateAsync(Guid managerId, CreateEventRequestRequest request)
@@ -31,6 +35,8 @@ public class EventRequestService : IEventRequestService
         }
         EventRequest eventRequest = request.ToEventRequest(managerId);
         await _eventRequestRepository.AddAsync(eventRequest);
+
+        await _notify.NotifyEventRequestListChanged();
         return eventRequest.Id;
     }
 
@@ -45,7 +51,9 @@ public class EventRequestService : IEventRequestService
 
         if (eventRequest.Status != RequestStatus.Pending)
             throw new InvalidOperationException("Only pending event requests can be deleted.");
+
         await _eventRequestRepository.DeleteAsync(requestId);
+        await _notify.NotifyEventRequestListChanged();
     }
 
     public async Task<List<EventRequestResponse>> GetByManagerIdAsync(Guid managerId)
@@ -92,8 +100,9 @@ public class EventRequestService : IEventRequestService
         }
 
         await strategy.ExecuteAsync(eventRequest);
-
         await _eventRequestRepository.UpdateAsync(eventRequest);
+
+        await _notify.EventRequestUpdated(eventRequest.ManagerId);
     }
 
     public async Task RejectAsync(Guid adminId, Guid requestId)
@@ -111,5 +120,6 @@ public class EventRequestService : IEventRequestService
         eventRequest.ReviewedAt = DateTime.UtcNow;
 
         await _eventRequestRepository.UpdateAsync(eventRequest);
+        await _notify.EventRequestUpdated(eventRequest.ManagerId);
     }
 }

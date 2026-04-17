@@ -1,0 +1,78 @@
+.admin-request-row {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+.approve-btn {
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+
+  border: 1px solid rgba(30, 41, 59, 0.4);
+
+  background: transparent;
+  color: var(--navy);
+
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.approve-btn:hover {
+  background: var(--navy);
+  color: white;
+
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(30,41,59,0.3);
+}
+
+.reject-btn {
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+
+  border: 1px solid rgba(127, 29, 29, 0.5);
+
+  background: transparent;
+  color: #7f1d1d;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.reject-btn:hover {
+  background: #7f1d1d;
+  color: white;
+
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(127,29,29,0.35);
+}
+
+.admin-request-row:hover .approve-btn,
+.admin-request-row:hover .reject-btn {
+  border-color: rgba(255,255,255,0.3);
+}
+
+.admin-actions button {
+  z-index: 2;
+}

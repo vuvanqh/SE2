@@ -1,21 +1,24 @@
 using MailKit.Net.Smtp;
 using StudentPlanner.Core;
 using StudentPlanner.Core.Application;
-using StudentPlanner.Core.Application.Authentication;
-using StudentPlanner.Infrastructure.Services.Settings;
-using StudentPlanner.Core.Application.PersonalEvents;
-using StudentPlanner.Core.Application.EventRequests;
-using StudentPlanner.Core.Application.EventRequests.Strategies;
 using StudentPlanner.Core.Application.AcademicEvents.ServiceContracts;
 using StudentPlanner.Core.Application.AcademicEvents.Services;
-using StudentPlanner.Core.Domain.RepositoryContracts;
+using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Core.Application.ClientContracts;
-using StudentPlanner.Infrastructure.Identity;
-using StudentPlanner.Infrastructure.Repositories;
-using StudentPlanner.Infrastructure.Services;
+using StudentPlanner.Core.Application.EventRequests;
+using StudentPlanner.Core.Application.EventRequests.Strategies;
+using StudentPlanner.Core.Application.Events.EventPreveiws;
 using StudentPlanner.Core.Application.Events.UsosEvents.ServiceContracts;
 using StudentPlanner.Core.Application.Events.UsosEvents.Services;
+using StudentPlanner.Core.Application.Notifications.ServiceContracts;
+using StudentPlanner.Core.Application.PersonalEvents;
+using StudentPlanner.Core.Domain.RepositoryContracts;
+using StudentPlanner.Infrastructure.Identity;
+using StudentPlanner.Infrastructure.Repositories;
 using StudentPlanner.Infrastructure.Repositories.Events;
+using StudentPlanner.Infrastructure.Services;
+using StudentPlanner.Infrastructure.Services.Settings;
+using StudentPlanner.UI.NotificationServices;
 namespace StudentPlanner.Backend;
 
 /// <summary>
@@ -49,10 +52,17 @@ public static class ServiceConfigExtention
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IUsosEventService, UsosEventService>();
         services.AddScoped<IUsosEventRepository, UsosEventRepository>();
+        services.AddScoped<IEventPreviewService, EventPreviewService>();
+
+        //notification services
+        services.AddScoped<IEventRequestNotificationService, EventRequestNotificationService>();
+
+        //clients
         services.AddHttpClient<IUsosClient, UsosClient>(client =>
         {
             client.BaseAddress = new Uri(config["UsosApi:BaseUrl"]!);
         });
+
         //repo
         services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();
         services.AddScoped<IEventRequestRepository, EventRequestRepository>();
@@ -63,6 +73,9 @@ public static class ServiceConfigExtention
         services.AddTransient<IEventRequestApprovalStrategy, StudentPlanner.Core.Application.EventRequests.Strategies.CreateApprovalStrategy>();
         services.AddTransient<IEventRequestApprovalStrategy, StudentPlanner.Core.Application.EventRequests.Strategies.UpdateApprovalStrategy>();
         services.AddTransient<IEventRequestApprovalStrategy, StudentPlanner.Core.Application.EventRequests.Strategies.DeleteApprovalStrategy>();
+        services.AddTransient<IEventPreviewStrategy, PersonalEventPreveiwStrategy>();
+        services.AddTransient<IEventPreviewStrategy, AcademicEventPreviewStrategy>();
+        services.AddTransient<IEventPreviewStrategy, UsosEventPreviewStrategy>();
 
         //hosted
         services.AddHostedService<FacultyBootstrapService>();

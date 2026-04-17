@@ -12,8 +12,8 @@ using StudentPlanner.Infrastructure;
 namespace StudentPlanner.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260410171759_Hehe")]
-    partial class Hehe
+    [Migration("20260414021143_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,6 +126,37 @@ namespace StudentPlanner.Infrastructure.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("StudentPlanner.Core.Domain.AcademicEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("FacultyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FacultyId");
+
+                    b.ToTable("AcademicEvents", (string)null);
+                });
+
+            modelBuilder.Entity("StudentPlanner.Core.Domain.AcademicEventSubscriber", b =>
+                {
+                    b.Property<Guid>("AcademicEventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AcademicEventId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AcademicEventSubscribers", (string)null);
                 });
 
             modelBuilder.Entity("StudentPlanner.Core.Domain.EventRequest", b =>
@@ -395,6 +426,64 @@ namespace StudentPlanner.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("StudentPlanner.Core.Domain.AcademicEvent", b =>
+                {
+                    b.HasOne("StudentPlanner.Infrastructure.IdentityEntities.AppFaculty", null)
+                        .WithMany()
+                        .HasForeignKey("FacultyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("StudentPlanner.Core.EventDetails", "EventDetails", b1 =>
+                        {
+                            b1.Property<Guid>("AcademicEventId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Description")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<DateTime>("EndTime")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("Location")
+                                .HasMaxLength(70)
+                                .HasColumnType("nvarchar(70)");
+
+                            b1.Property<DateTime>("StartTime")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)");
+
+                            b1.HasKey("AcademicEventId");
+
+                            b1.ToTable("AcademicEvents");
+
+                            b1.WithOwner()
+                                .HasForeignKey("AcademicEventId");
+                        });
+
+                    b.Navigation("EventDetails")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("StudentPlanner.Core.Domain.AcademicEventSubscriber", b =>
+                {
+                    b.HasOne("StudentPlanner.Core.Domain.AcademicEvent", null)
+                        .WithMany("Subscribers")
+                        .HasForeignKey("AcademicEventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StudentPlanner.Infrastructure.IdentityEntities.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("StudentPlanner.Core.Domain.EventRequest", b =>
                 {
                     b.HasOne("StudentPlanner.Infrastructure.IdentityEntities.AppFaculty", null)
@@ -504,6 +593,11 @@ namespace StudentPlanner.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Faculty");
+                });
+
+            modelBuilder.Entity("StudentPlanner.Core.Domain.AcademicEvent", b =>
+                {
+                    b.Navigation("Subscribers");
                 });
 
             modelBuilder.Entity("StudentPlanner.Infrastructure.IdentityEntities.AppFaculty", b =>

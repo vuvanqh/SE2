@@ -1,11 +1,12 @@
 using Serilog;
 using Microsoft.EntityFrameworkCore;
 using StudentPlanner.Infrastructure;
+using StudentPlanner.Infrastructure.Identity;
+using StudentPlanner.UI.Hubs;
 
 namespace StudentPlanner.Backend;
 
-using Microsoft.EntityFrameworkCore;
-using StudentPlanner.Infrastructure;
+
 /// <summary>
 /// Entry point for the StudentPlanner application.
 /// </summary>
@@ -58,6 +59,7 @@ public class Program
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "StudentPlanner API v1");
         });
 
+        app.MapHub<EventRequestHub>("/hubs/eventRequest");
         app.MapControllers();
 
         await app.RunAsync();

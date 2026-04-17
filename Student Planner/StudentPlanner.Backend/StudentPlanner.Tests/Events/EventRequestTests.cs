@@ -4,6 +4,9 @@ using StudentPlanner.Core.Application.EventRequests;
 using StudentPlanner.Core.Domain;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Core.Application.EventRequests.Strategies;
+using StudentPlanner.UI.NotificationServices;
+using StudentPlanner.UI.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace StudentPlanner.Tests;
 
@@ -14,6 +17,7 @@ public class EventRequestTests
     private readonly Mock<IEventRequestApprovalStrategy> _createStrategyMock;
     private readonly Mock<IEventRequestApprovalStrategy> _updateStrategyMock;
     private readonly Mock<IEventRequestApprovalStrategy> _deleteStrategyMock;
+    private readonly Mock<IHubContext<EventRequestHub>> _erHubMock;
 
     public EventRequestTests()
     {
@@ -25,6 +29,7 @@ public class EventRequestTests
         _updateStrategyMock.Setup(s => s.RequestType).Returns(RequestType.Update);
         _deleteStrategyMock = new Mock<IEventRequestApprovalStrategy>();
         _deleteStrategyMock.Setup(s => s.RequestType).Returns(RequestType.Delete);
+        _erHubMock = new Mock<IHubContext<EventRequestHub>>();
     }
 
     private EventRequestService CreateService()
@@ -36,7 +41,7 @@ public class EventRequestTests
                 _createStrategyMock.Object,
                 _updateStrategyMock.Object,
                 _deleteStrategyMock.Object
-            }
+            }, new EventRequestNotificationService(_erHubMock.Object)
         );
     }
 
@@ -435,19 +440,6 @@ public class EventRequestTests
             ReviewedAt = null,
             RequestType = RequestType.Create,
             Status = RequestStatus.Pending
-        };
-        AcademicEvent existingEvent = new AcademicEvent
-        {
-            Id = existingEventId,
-            FacultyId = eventRequest.FacultyId,
-            EventDetails = new EventDetails
-            {
-                Title = "Old Event",
-                StartTime = DateTime.UtcNow.AddDays(1),
-                EndTime = DateTime.UtcNow.AddDays(1).AddHours(1),
-                Location = "Old Room",
-                Description = "Old Description"
-            }
         };
 
         _eventRequestRepoMock.Setup(r => r.GetByIdAsync(requestId))

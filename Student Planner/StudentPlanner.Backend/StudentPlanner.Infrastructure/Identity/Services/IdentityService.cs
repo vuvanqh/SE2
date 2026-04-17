@@ -105,4 +105,24 @@ public class IdentityService : IIdentityService
         appUser.UsosToken = UsosToken;
         await _userManager.UpdateAsync(appUser);
     }
+
+    public Task<User?> GetUserByIdAsync(Guid userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<User>> GetAllUsersAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteUserAsync(Guid userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<User?> GetUserByEmailAsync(string email)
+    {
+        throw new NotImplementedException();
+    }
 }

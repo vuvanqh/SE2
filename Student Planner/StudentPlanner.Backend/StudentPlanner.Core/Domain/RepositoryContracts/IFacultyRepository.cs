@@ -8,5 +8,6 @@ namespace StudentPlanner.Core.Domain.RepositoryContracts;
 public interface IFacultyRepository
 {
     Task<Faculty?> GetFacultyByUsosIdAsync(string facultyId);
-    Task<Faculty?> GetFacultyByFacultyCodeAsync(string facultycode);
+    Task<Faculty?> GetFacultyByIdAsync(Guid facultyId);
+    Task<List<Faculty>> GetAllFacultiesAsync();
 }

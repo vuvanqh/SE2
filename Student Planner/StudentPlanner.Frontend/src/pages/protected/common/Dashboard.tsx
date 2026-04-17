@@ -1,8 +1,8 @@
 import {  Outlet, useNavigate } from "react-router-dom";
-import Navbar from "../../components/layout/Navbar";
+import Navbar from "../../../components/layout/Navbar";
 import { useEffect, useState, type ReactNode } from "react";
-import { useUser } from "../../global-hooks/authHooks";
-import Sidebar from "../../components/layout/Sidebar";
+import { useUser } from "../../../global-hooks/authHooks";
+import Sidebar from "../../../components/layout/Sidebar";
 
 type Props = {
   navItems: ReactNode;

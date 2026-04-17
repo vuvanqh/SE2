@@ -1,9 +1,10 @@
-using System;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using StudentPlanner.Core.Application.EventRequests;
 using StudentPlanner.Core.Entities;
+using System;
+using System.Data;
 using System.Security.Claims;
 
 namespace StudentPlanner.UI.Controllers;
@@ -85,7 +86,7 @@ public class EventRequestController : ControllerBase
     /// <param name="requestId">The ID of the event request.</param>
     /// <returns>The event request details.</returns>
     [HttpGet("{requestId:guid}")]
-    [Authorize(Roles = nameof(UserRoleOptions.Admin))]
+    [Authorize(Roles = nameof(UserRoleOptions.Manager) + "," + nameof(UserRoleOptions.Admin))]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

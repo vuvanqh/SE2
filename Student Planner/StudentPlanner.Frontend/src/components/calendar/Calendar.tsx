@@ -6,9 +6,11 @@ import type { DateClickArg } from '@fullcalendar/interaction'
 import type { EventClickArg } from '@fullcalendar/core'
 import type { personalEventResponse } from '../../types/personalEventTypes'
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { useRef, useContext } from "react";
+import { useRef, useContext, useState } from "react";
 import { ModalContext } from '../../store/ModalContext'
 import { isSameDay, toLocalInput } from '../../api/helpers'
+import useEventPreviews from '../../global-hooks/eventPreviewHooks';
+//import useUsosEvents from '../../global-hooks/usosHooks'
 
 type calendarProps = {
   events: personalEventResponse[],
@@ -17,9 +19,30 @@ type calendarProps = {
 
 export default function Calendar({events, onDateClick}:calendarProps) {
   const {open} = useContext(ModalContext);
+  const [range, setRange] = useState<{from?: string, to?: string}>({});
+  
+  let from = range.from? new Date(range.from): new Date(Date.now());
+  var date = new Date(from);
+  let to = range.to? new Date(range.to): new Date(date.setMonth(date.getMonth() + 1));
+  const { eventPreviews } = useEventPreviews(from, to);
+  //const {usosEvents} = useUsosEvents(from, to);
+  const handleDatesSet = (arg: any) => {
+    const from = toLocalInput(arg.start);
+
+    const end = new Date(arg.end);
+    end.setDate(end.getDate() - 1);
+    const to = toLocalInput(end);
+
+    setRange(prev => {
+      if (prev.from === from && prev.to === to) return prev;
+      return { from, to };
+    });
+  };
+
   const handleEventClick = (arg: EventClickArg) => {
     open({type: "view", eventId: arg.event.id});
   }
+
   const handleDateClick = (arg: DateClickArg) => {
     if (arg.view.type !== "timeGridWeek")
     {
@@ -33,7 +56,7 @@ export default function Calendar({events, onDateClick}:calendarProps) {
   }
 
 
-  const mappedEvents = events.map(e => ({
+  const mappedEvents = eventPreviews.map(e => ({
     id: e.id,
     title: e.title,
     start: new Date(e.startTime),
@@ -72,6 +95,7 @@ export default function Calendar({events, onDateClick}:calendarProps) {
         minute: '2-digit',
         meridiem: 'short'
       }}
+      datesSet={handleDatesSet}
     />
   </div>
   </>

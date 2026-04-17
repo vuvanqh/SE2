@@ -2,8 +2,9 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using StudentPlanner.Core.Application.Authentication;
+using StudentPlanner.Core.Application.ClientContracts;
 using StudentPlanner.Core.Application.ClientContracts.DTO;
+using StudentPlanner.Core.Application.Events.UsosEvents.ServiceContracts;
 using StudentPlanner.Core.Domain.Entities;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Core.Entities;
@@ -17,19 +18,20 @@ public class UsosEventsControllerTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock;
     private readonly Mock<IUsosClient> _usosClientMock;
-
+    private readonly Mock<IUsosEventService> _usosEventService;
     public UsosEventsControllerTests()
     {
         _userRepositoryMock = new Mock<IUserRepository>();
         _usosClientMock = new Mock<IUsosClient>();
+        _usosEventService = new Mock<IUsosEventService>();
     }
 
     private static UsosEventsController CreateController(
        IUserRepository userRepository,
-       IUsosClient usosClient,
+       IUsosEventService usosEventService,
        ClaimsPrincipal? user = null)
     {
-        return new UsosEventsController(userRepository, usosClient)
+        return new UsosEventsController(userRepository, usosEventService)
         {
             ControllerContext = new ControllerContext
             {
@@ -43,7 +45,7 @@ public class UsosEventsControllerTests
     [Fact]
     public async Task GetMyEvents_ShouldReturnUnauthorized_WhenNameIdentifierClaimMissing()
     {
-        var controller = CreateController(_userRepositoryMock.Object, _usosClientMock.Object);
+        var controller = CreateController(_userRepositoryMock.Object, _usosEventService.Object);
 
         var result = await controller.GetMyEvents("2025-10-01", 7);
 
@@ -58,7 +60,7 @@ public class UsosEventsControllerTests
                 new[] { new Claim(ClaimTypes.NameIdentifier, "not-a-guid") },
                 "TestAuth"));
 
-        var controller = CreateController(_userRepositoryMock.Object, _usosClientMock.Object, principal);
+        var controller = CreateController(_userRepositoryMock.Object, _usosEventService.Object, principal);
 
         var result = await controller.GetMyEvents("2025-10-01", 7);
 
@@ -88,7 +90,7 @@ public class UsosEventsControllerTests
                 new[] { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) },
                 "TestAuth"));
 
-        var controller = CreateController(_userRepositoryMock.Object, _usosClientMock.Object, principal);
+        var controller = CreateController(_userRepositoryMock.Object, _usosEventService.Object, principal);
 
         var result = await controller.GetMyEvents("2025-10-01", 7);
 
@@ -139,7 +141,7 @@ public class UsosEventsControllerTests
                 new[] { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) },
                 "TestAuth"));
 
-        var controller = CreateController(_userRepositoryMock.Object, _usosClientMock.Object, principal);
+        var controller = CreateController(_userRepositoryMock.Object, _usosEventService.Object, principal);
 
         var result = await controller.GetMyEvents("2025-10-01", 7);
 

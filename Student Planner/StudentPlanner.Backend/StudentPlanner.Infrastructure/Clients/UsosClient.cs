@@ -6,11 +6,8 @@ using StudentPlanner.Core.Application.ClientContracts.DTO;
 using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Core.Application.Exceptions;
 using StudentPlanner.Core.Domain.Entities;
-using StudentPlanner.Infrastructure.Clients;
 using StudentPlanner.Core.Application.ClientContracts;
 using StudentPlanner.Infrastructure.Clients.DTO;
-using StudentPlanner.Infrastructure.IdentityEntities;
-using StudentPlanner.Infrastructure.Services.Settings;
 using System.Net.Http.Json;
 namespace StudentPlanner.Infrastructure.Services;
 
@@ -142,5 +139,4 @@ public class UsosClient : IUsosClient
 
         return result;
     }
-
 }

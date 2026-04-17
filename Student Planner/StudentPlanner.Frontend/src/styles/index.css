@@ -8,6 +8,7 @@
 @import "./events/viewEvent.css";
 @import "./uiElements/navlink.css";
 @import "./uiElements/sidebar.css";
+@import "./events/adminRequest.css";
 
 *,
 *::before,

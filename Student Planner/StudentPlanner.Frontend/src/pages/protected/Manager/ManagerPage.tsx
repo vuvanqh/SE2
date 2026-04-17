@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react";
 import { useUser } from "../../../global-hooks/authHooks";
-import DashboardLayout from "../Dashboard";
+import DashboardLayout from "../common/Dashboard";
 
 export default function ManagerPage(){
     const navigate = useNavigate();

@@ -30,7 +30,7 @@ public static class IdentitySeeder
                 LastName = "Hehe",
                 UserName = "hehe",
                 Email = "manager@pw.edu.pl",
-                // FacultyId = Guid.Parse("ff8c5ad6-e743-4756-aaf9-7f56d686e57f"),
+                FacultyId = Guid.Parse("948c3586-1299-41b1-ae33-f77316ced97d"),
                 EmailConfirmed = true
             };
 
@@ -49,11 +49,11 @@ public static class IdentitySeeder
             {
                 FirstName = "Admin",
                 LastName = "Hehe",
-                UserName = "hehe",
+                UserName = "heheAdmin",
                 Email = "admin@pw.edu.pl",
                 EmailConfirmed = true
             };
-
+            Console.WriteLine("\nCreatingADmin\n");
             await userManager.CreateAsync(admin, "Password123!");
             await userManager.AddToRoleAsync(admin, UserRoleOptions.Admin.ToString());
         }
