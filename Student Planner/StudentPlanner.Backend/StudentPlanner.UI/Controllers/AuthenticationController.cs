@@ -163,7 +163,7 @@ public class AuthenticationController : ControllerBase
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
         {
-            return NotFound(ex.Message);
+            return Ok();
         }
     }
 
@@ -186,14 +186,22 @@ public class AuthenticationController : ControllerBase
             await _authenticationService.ResetPasswordAsync(request);
             return Ok();
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
+        catch (InvalidOperationException ex)
         {
-            _logger.LogWarning(ex, "Password reset attempt for non-existent email: {Email}", request.Email);
-            return NotFound(ex.Message);
+            _logger.LogError(ex, "Error during password reset for user {Email}", request.Email);
+
+            if (ex.Message.Contains("token", StringComparison.OrdinalIgnoreCase) ||
+                ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase) ||
+                ex.Message.Contains("Invalid Operation", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest("Invalid or expired token.");
+            }
+
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during password reset for user {Email}", request.Email);
+            _logger.LogError(ex, "Unexpected error during password reset for user {Email}", request.Email);
             return BadRequest("Invalid or expired token.");
         }
     }
