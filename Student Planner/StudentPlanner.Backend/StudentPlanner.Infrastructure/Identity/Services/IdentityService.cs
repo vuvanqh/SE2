@@ -78,7 +78,6 @@ public class IdentityService : IIdentityService
     public async Task ResetPasswordAsync(string email, string token, string newPasswd)
     {
         ApplicationUser user = (await _userManager.FindByEmailAsync(email)) ?? throw new InvalidOperationException("Invalid Operation");
-
         var result = await _userManager.ResetPasswordAsync(user, token, newPasswd);
         if (!result.Succeeded)
         {
