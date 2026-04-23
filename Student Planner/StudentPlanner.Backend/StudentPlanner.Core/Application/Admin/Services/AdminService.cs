@@ -219,9 +219,19 @@ public class AdminService : IAdminService
            FirstName = u.FirstName,
             LastName = u.LastName,
             Email = u.Email,
-            FacultyName = u.Faculty.ToString(),
             FacultyCode = u.Faculty?.FacultyCode,
-            FacultyId = u.Faculty?.Id
+        }).ToList();
+    }
+    public async Task<List<UsersResultDto>> GetAllUsersAsync()
+    {
+        var users = await _identityService.GetAllUsersAsync();
+        return users.Select(u => new UsersResultDto
+        {
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            UserRole = u.Role,
+            Email = u.Email,
+            FacultyCode = u.Faculty?.FacultyCode,
         }).ToList();
     }
 }

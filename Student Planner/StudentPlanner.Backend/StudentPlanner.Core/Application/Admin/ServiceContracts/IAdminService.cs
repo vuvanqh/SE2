@@ -7,4 +7,5 @@ public interface IAdminService
     Task<SyncUsersResultDto> SyncUsersWithUsosAsync();
     Task<ManagerCreationResultDto> CreateManagerAsync(CreateManagerRequestDto request);
     Task<List<ManagerResponseDto>> GetManagersAsync();
+    Task<List<UsersResultDto>> GetAllUsersAsync();
 }

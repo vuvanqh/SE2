@@ -90,11 +90,24 @@ public class AdminController : ControllerBase
         }
     }
     [HttpGet("managers")]
-    public async Task<ActionResult<ManagerCreationResultDto>> GetManagers()
+    public async Task<ActionResult<ManagerResponseDto>> GetManagers()
     {
         try
         {
             var result = await _adminService.GetManagersAsync();
+            return Ok(result);
+        }
+        catch(Exception ex)
+        {
+            return BadRequest(new {message = ex.Message});
+        }
+    }
+    [HttpGet("users")]
+    public async Task<ActionResult<UsersResultDto>> GetAllUsers()
+    {
+        try
+        {
+            var result = await _adminService.GetAllUsersAsync();
             return Ok(result);
         }
         catch(Exception ex)
