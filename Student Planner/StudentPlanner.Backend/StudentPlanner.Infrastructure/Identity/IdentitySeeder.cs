@@ -22,24 +22,24 @@ public static class IdentitySeeder
 
         var manager = await userManager.FindByEmailAsync("manager@pw.edu.pl");
 
-        // if (manager == null)
-        // {
-        //     manager = new ApplicationUser
-        //     {
-        //         FirstName = "Manager",
-        //         LastName = "Hehe",
-        //         UserName = "hehe",
-        //         Email = "manager@pw.edu.pl",
-        //         FacultyId = Guid.Parse("ff8c5ad6-e743-4756-aaf9-7f56d686e57f"),
-        //         EmailConfirmed = true
-        //     };
+        if (manager == null)
+        {
+            manager = new ApplicationUser
+            {
+                FirstName = "Manager",
+                LastName = "Hehe",
+                UserName = "hehe",
+                Email = "manager@pw.edu.pl",
+                FacultyId = Guid.Parse("ff8c5ad6-e743-4756-aaf9-7f56d686e57f"),
+                EmailConfirmed = true
+            };
 
-        //     await userManager.CreateAsync(manager, "Password123!");
-        //     await userManager.AddToRoleAsync(manager, UserRoleOptions.Manager.ToString());
-        // }
+            await userManager.CreateAsync(manager, "Password123!");
+            await userManager.AddToRoleAsync(manager, UserRoleOptions.Manager.ToString());
+        }
 
-         if (!await roleManager.RoleExistsAsync(UserRoleOptions.Admin.ToString()))
-             await roleManager.CreateAsync(new ApplicationRole { Name = UserRoleOptions.Admin.ToString() });
+        if (!await roleManager.RoleExistsAsync(UserRoleOptions.Admin.ToString()))
+            await roleManager.CreateAsync(new ApplicationRole { Name = UserRoleOptions.Admin.ToString() });
 
         var admin = await userManager.FindByEmailAsync("admin@pw.edu.pl");
 

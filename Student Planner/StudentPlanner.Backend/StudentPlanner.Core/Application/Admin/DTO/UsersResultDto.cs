@@ -1,4 +1,5 @@
 namespace StudentPlanner.Core.Application.Admin.DTO;
+
 public class UsersResultDto
 {
     public string FirstName { get; set; } = null!;

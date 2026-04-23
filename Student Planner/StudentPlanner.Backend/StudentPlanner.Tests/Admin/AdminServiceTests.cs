@@ -306,7 +306,7 @@ public class AdminServiceTests
             FacultyCode = null
         });
     }
-     [Fact]
+    [Fact]
     public async Task GetAllUsersAsync_ShouldReturnAllUsersMappedToDto()
     {
         var faculty = new Faculty

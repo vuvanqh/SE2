@@ -8,10 +8,10 @@ using System.Security.Claims;
 using System.Globalization;
 namespace StudentPlanner.UI.Controllers;
 
-    /// <summary>
-    /// Provides endpoints for retrieving USOS timetable events
-    /// for the currently authenticated student.
-    /// </summary>
+/// <summary>
+/// Provides endpoints for retrieving USOS timetable events
+/// for the currently authenticated student.
+/// </summary>
 
 [Route("api/usos-events")]
 [ApiController]
@@ -20,7 +20,7 @@ namespace StudentPlanner.UI.Controllers;
 public class UsosEventsController : ControllerBase
 {
     private readonly IUsosEventService _usosEventService;
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="UsosEventsController"/> class.
     /// </summary>

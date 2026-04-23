@@ -178,11 +178,11 @@ public class AdminService : IAdminService
     public async Task<List<ManagerResponseDto>> GetManagersAsync()
     {
         var users = await _identityService.GetAllUsersAsync();
-        return users.Where(u=>string.Equals(u.Role, UserRoleOptions.Manager.ToString(),StringComparison.OrdinalIgnoreCase))
+        return users.Where(u => string.Equals(u.Role, UserRoleOptions.Manager.ToString(), StringComparison.OrdinalIgnoreCase))
         .Select(u => new ManagerResponseDto
         {
-           Id = u.Id,
-           FirstName = u.FirstName,
+            Id = u.Id,
+            FirstName = u.FirstName,
             LastName = u.LastName,
             Email = u.Email,
             FacultyCode = u.Faculty?.FacultyCode,

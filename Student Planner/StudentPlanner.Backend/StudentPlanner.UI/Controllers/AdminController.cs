@@ -18,7 +18,7 @@ namespace StudentPlanner.UI.Controllers;
 public class AdminController : ControllerBase
 {
     private readonly IAdminService _adminService;
-   /// <summary>
+    /// <summary>
     /// Initializes a new instance of the <see cref="AdminController"/> class.
     /// </summary>
     /// <param name="adminService">
@@ -81,7 +81,7 @@ public class AdminController : ControllerBase
             return StatusCode(StatusCodes.Status502BadGateway, new { message = ex.Message });
         }
     }
-     /// <summary>
+    /// <summary>
     /// Creates a new manager account.
     /// </summary>
     /// <param name="request">
@@ -116,9 +116,9 @@ public class AdminController : ControllerBase
             return Ok(result);
         }
         catch (Exception ex)
-    {
-        return BadRequest(new { message = ex.Message });
-    }
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
     /// <summary>
     /// Retrieves all managers from the database.
@@ -138,9 +138,9 @@ public class AdminController : ControllerBase
             var result = await _adminService.GetManagersAsync();
             return Ok(result);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            return BadRequest(new {message = ex.Message});
+            return BadRequest(new { message = ex.Message });
         }
     }
     /// <summary>
@@ -161,9 +161,9 @@ public class AdminController : ControllerBase
             var result = await _adminService.GetAllUsersAsync();
             return Ok(result);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            return BadRequest(new {message = ex.Message});
+            return BadRequest(new { message = ex.Message });
         }
     }
 
