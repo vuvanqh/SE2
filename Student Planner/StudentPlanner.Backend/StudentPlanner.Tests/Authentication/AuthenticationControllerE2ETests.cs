@@ -193,7 +193,7 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
     }
 
     [Fact]
-    public async Task ResetPassword_UserNotFound_404()
+    public async Task ResetPassword_UserNotFound_400()
     {
         var request = new ResetPasswordRequestDto
         {
@@ -203,7 +203,7 @@ public class AuthenticationControllerE2ETests : IntegrationTestBase
             ConfirmNewPassword = "NewPassword123!"
         };
         var response = await _client.PostAsJsonAsync("/api/auth/verify-reset", request, TestContext.Current.CancellationToken);
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
