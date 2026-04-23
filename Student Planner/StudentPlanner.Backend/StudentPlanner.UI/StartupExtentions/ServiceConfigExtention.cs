@@ -12,6 +12,8 @@ using StudentPlanner.Core.Application.Events.UsosEvents.ServiceContracts;
 using StudentPlanner.Core.Application.Events.UsosEvents.Services;
 using StudentPlanner.Core.Application.Notifications.ServiceContracts;
 using StudentPlanner.Core.Application.PersonalEvents;
+using StudentPlanner.Core.Application.Notifications.ServiceContracts;
+using StudentPlanner.Core.Application.Notifications.Services;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Infrastructure.Identity;
 using StudentPlanner.Infrastructure.Repositories;
@@ -53,6 +55,7 @@ public static class ServiceConfigExtention
         services.AddScoped<IUsosEventService, UsosEventService>();
         services.AddScoped<IUsosEventRepository, UsosEventRepository>();
         services.AddScoped<IEventPreviewService, EventPreviewService>();
+        services.AddScoped<INotificationPreferenceService, NotificationPreferenceService>();
 
         //notification services
         services.AddScoped<IEventRequestNotificationService, EventRequestNotificationService>();

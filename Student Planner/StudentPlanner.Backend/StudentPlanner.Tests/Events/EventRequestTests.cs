@@ -7,6 +7,7 @@ using StudentPlanner.Core.Application.EventRequests.Strategies;
 using StudentPlanner.UI.NotificationServices;
 using StudentPlanner.UI.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using StudentPlanner.Core.Application.Notifications.ServiceContracts;
 
 namespace StudentPlanner.Tests;
 
@@ -18,6 +19,7 @@ public class EventRequestTests
     private readonly Mock<IEventRequestApprovalStrategy> _updateStrategyMock;
     private readonly Mock<IEventRequestApprovalStrategy> _deleteStrategyMock;
     private readonly Mock<IHubContext<EventRequestHub>> _erHubMock;
+    private readonly Mock<INotificationPreferenceService> _notificationPreferenceServiceMock;
 
     public EventRequestTests()
     {
@@ -47,7 +49,10 @@ public class EventRequestTests
                 _createStrategyMock.Object,
                 _updateStrategyMock.Object,
                 _deleteStrategyMock.Object
-            }, new EventRequestNotificationService(_erHubMock.Object)
+            },
+            new EventRequestNotificationService(
+                _erHubMock.Object,
+                _notificationPreferenceServiceMock.Object)
         );
     }
 

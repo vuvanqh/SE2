@@ -12,4 +12,7 @@ public interface IAcademicEventRepository
     Task AddAsync(AcademicEvent academicEvent);
     Task UpdateAsync(AcademicEvent academicEvent);
     Task DeleteAsync(Guid eventId);
+    Task<bool> IsSubscribedAsync(Guid eventId, Guid userId);
+    Task SubscribeAsync(Guid eventId, Guid userId);
+    Task<bool> UnsubscribeAsync(Guid eventId, Guid userId);
 }

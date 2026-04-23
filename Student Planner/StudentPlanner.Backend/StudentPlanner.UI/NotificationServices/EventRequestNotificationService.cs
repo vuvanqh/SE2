@@ -2,6 +2,7 @@
 using StudentPlanner.Core.Application.Notifications.ServiceContracts;
 using StudentPlanner.Core.Entities;
 using StudentPlanner.UI.Hubs;
+using StudentPlanner.Core.Application.Notifications.ServiceContracts;
 
 namespace StudentPlanner.UI.NotificationServices;
 
@@ -26,15 +27,17 @@ namespace StudentPlanner.UI.NotificationServices;
 public class EventRequestNotificationService : IEventRequestNotificationService
 {
     private readonly IHubContext<EventRequestHub> _hub;
+    private readonly INotificationPreferenceService _notificationPreferenceService;
     /// <summary>
     /// Initializes a new instance of the <see cref="EventRequestNotificationService"/> class.
     /// </summary>
     /// <param name="hub">
     /// SignalR hub context used to send messages to connected clients.
     /// </param>
-    public EventRequestNotificationService(IHubContext<EventRequestHub> hub)
+    public EventRequestNotificationService(IHubContext<EventRequestHub> hub, INotificationPreferenceService notificationPreferenceService)
     {
         _hub = hub;
+        _notificationPreferenceService = notificationPreferenceService;
     }
 
     /// <summary>
@@ -61,7 +64,10 @@ public class EventRequestNotificationService : IEventRequestNotificationService
     public async Task EventRequestUpdated(Guid managerId)
     {
         await _hub.Clients.Group("admins").SendAsync("refreshEventRequests");
-        await _hub.Clients.User(managerId.ToString()).SendAsync("refreshEventRequests");
+        if (await _notificationPreferenceService.AreNotificationsEnabledAsync(managerId))
+        {
+            await _hub.Clients.User(managerId.ToString()).SendAsync("refreshEventRequests");
+        }
     }
 
     /// <summary>

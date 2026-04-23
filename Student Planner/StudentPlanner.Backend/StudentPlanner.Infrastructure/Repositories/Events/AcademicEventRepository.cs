@@ -44,4 +44,39 @@ public class AcademicEventRepository : IAcademicEventRepository
     {
         await _context.SaveChangesAsync();
     }
+
+    public async Task<bool> IsSubscribedAsync(Guid eventId, Guid userId)
+    {
+        return await _context.AcademicEventSubscribers
+            .AnyAsync(s => s.AcademicEventId == eventId && s.UserId == userId);
+    }
+
+    public async Task SubscribeAsync(Guid eventId, Guid userId)
+    {
+        bool alreadySubscribed = await IsSubscribedAsync(eventId, userId);
+        if (alreadySubscribed)
+            return;
+
+        await _context.AcademicEventSubscribers.AddAsync(new AcademicEventSubscriber
+        {
+            AcademicEventId = eventId,
+            UserId = userId
+        });
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> UnsubscribeAsync(Guid eventId, Guid userId)
+    {
+        var subscription = await _context.AcademicEventSubscribers
+            .FirstOrDefaultAsync(s => s.AcademicEventId == eventId && s.UserId == userId);
+
+        if (subscription == null)
+            return false;
+
+        _context.AcademicEventSubscribers.Remove(subscription);
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 }
