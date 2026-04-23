@@ -89,5 +89,18 @@ public class AdminController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+    [HttpGet("managers")]
+    public async Task<ActionResult<ManagerCreationResultDto>> GetManagers()
+    {
+        try
+        {
+            var result = await _adminService.GetManagersAsync();
+            return Ok(result);
+        }
+        catch(Exception ex)
+        {
+            return BadRequest(new {message = ex.Message});
+        }
+    }
 
 }

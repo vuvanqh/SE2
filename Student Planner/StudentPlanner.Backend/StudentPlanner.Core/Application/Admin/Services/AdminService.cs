@@ -209,4 +209,19 @@ public class AdminService : IAdminService
         return existingUsers?.Any(u =>
             string.Equals(u.Email, temporaryEmail, StringComparison.OrdinalIgnoreCase)) == true;
     }
+    public async Task<List<ManagerResponseDto>> GetManagersAsync()
+    {
+        var users = await _identityService.GetAllUsersAsync();
+        return users.Where(u=>string.Equals(u.Role, UserRoleOptions.Manager.ToString(),StringComparison.OrdinalIgnoreCase))
+        .Select(u => new ManagerResponseDto
+        {
+           Id = u.Id,
+           FirstName = u.FirstName,
+            LastName = u.LastName,
+            Email = u.Email,
+            FacultyName = u.Faculty.ToString(),
+            FacultyCode = u.Faculty?.FacultyCode,
+            FacultyId = u.Faculty?.Id
+        }).ToList();
+    }
 }
