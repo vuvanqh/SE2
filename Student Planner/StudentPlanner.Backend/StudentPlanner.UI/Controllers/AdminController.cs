@@ -9,7 +9,8 @@ using StudentPlanner.Core.Application.Admin.DTO;
 
 namespace StudentPlanner.UI.Controllers;
 /// <summary>
-/// Unified controller for admin functionality and previlage based abilities.
+/// Provides administrative endpoints for managing users, managers, and synchronization operations.
+/// Access to all actions in this controller is restricted to users with the Admin role.
 /// </summary>
 [Route("api/admin")]
 [ApiController]
@@ -17,17 +18,30 @@ namespace StudentPlanner.UI.Controllers;
 public class AdminController : ControllerBase
 {
     private readonly IAdminService _adminService;
-    /// <summary>
-    /// Creates an Admin Controller which uses only adminService
+   /// <summary>
+    /// Initializes a new instance of the <see cref="AdminController"/> class.
     /// </summary>
+    /// <param name="adminService">
+    /// Service responsible for handling administrative operations.
+    /// </param>
     public AdminController(IAdminService adminService)
     {
         _adminService = adminService;
     }
 
     /// <summary>
-    /// Deletes user Form of the LINK : admin/users/{userId(fromDb)}
+    /// Deletes a user by their unique identifier.
     /// </summary>
+    /// <param name="userId">
+    /// The unique identifier of the user to delete.
+    /// </param>
+    /// <returns>
+    /// Returns <see cref="NoContentResult"/> if the user was successfully deleted.
+    /// </returns>
+    /// <response code="204">The user was successfully deleted.</response>
+    /// <response code="404">The specified user was not found.</response>
+    /// <response code="401">The request is unauthorized.</response>
+    /// <response code="403">The authenticated user does not have Admin privileges.</response>
     [HttpDelete("users/{userId:guid}")]
     public async Task<IActionResult> DeleteUser(Guid userId)
     {
@@ -42,9 +56,18 @@ public class AdminController : ControllerBase
         }
     }
     /// <summary>
-    /// Syncs users with the current Usos Active inactive structure on click 
-    /// currently has an issue with UsosTokens as on outdate it will track them as 'bad'
+    /// Synchronizes users in the local database with the current data retrieved from the USOS system.
     /// </summary>
+    /// <remarks>
+    /// This operation validates stored users against the external USOS source and updates the local state accordingly.
+    /// </remarks>
+    /// <returns>
+    /// A summary describing how many users were checked, validated, disabled, or failed during synchronization.
+    /// </returns>
+    /// <response code="200">The synchronization completed successfully.</response>
+    /// <response code="502">The application could not communicate correctly with the external USOS service.</response>
+    /// <response code="401">The request is unauthorized.</response>
+    /// <response code="403">The authenticated user does not have Admin privileges.</response>
     [HttpPost("users/sync")]
     public async Task<ActionResult<SyncUsersResultDto>> SyncUsers()
     {
@@ -58,15 +81,30 @@ public class AdminController : ControllerBase
             return StatusCode(StatusCodes.Status502BadGateway, new { message = ex.Message });
         }
     }
-    /// <summary>
-    /// Creates and Registers Manager
-    /// Body:
-    /// {
-    /// "firstName": NAme,
-    ///"lastName": Surname",
-    ///"facultyId": ID(used UsosId)
-    /// }
+     /// <summary>
+    /// Creates a new manager account.
     /// </summary>
+    /// <param name="request">
+    /// The data required to create a manager, including first name, last name, and faculty identifier.
+    /// </param>
+    /// <returns>
+    /// The created manager's generated credentials and assigned role.
+    /// </returns>
+    /// <remarks>
+    /// Example request:
+    ///
+    ///     POST /api/admin/managers
+    ///     {
+    ///         "firstName": "John",
+    ///         "lastName": "Smith",
+    ///         "facultyId": "WMiNI"
+    ///     }
+    ///
+    /// </remarks>
+    /// <response code="200">The manager was created successfully.</response>
+    /// <response code="400">The request data is invalid or the faculty does not exist.</response>
+    /// <response code="401">The request is unauthorized.</response>
+    /// <response code="403">The authenticated user does not have Admin privileges.</response>
 
     [HttpPost("managers")]
     public async Task<ActionResult<ManagerCreationResultDto>> CreateManager([FromBody] CreateManagerRequestDto request)
@@ -89,6 +127,16 @@ public class AdminController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+    /// <summary>
+    /// Retrieves all managers from the database.
+    /// </summary>
+    /// <returns>
+    /// A collection of manager records.
+    /// </returns>
+    /// <response code="200">The list of managers was retrieved successfully.</response>
+    /// <response code="400">The request could not be processed.</response>
+    /// <response code="401">The request is unauthorized.</response>
+    /// <response code="403">The authenticated user does not have Admin privileges.</response>
     [HttpGet("managers")]
     public async Task<ActionResult<ManagerResponseDto>> GetManagers()
     {
@@ -102,6 +150,16 @@ public class AdminController : ControllerBase
             return BadRequest(new {message = ex.Message});
         }
     }
+    /// <summary>
+    /// Retrieves all users from the database.
+    /// </summary>
+    /// <returns>
+    /// A result object containing all users available to the administrator.
+    /// </returns>
+    /// <response code="200">The list of users was retrieved successfully.</response>
+    /// <response code="400">The request could not be processed.</response>
+    /// <response code="401">The request is unauthorized.</response>
+    /// <response code="403">The authenticated user does not have Admin privileges.</response>
     [HttpGet("users")]
     public async Task<ActionResult<UsersResultDto>> GetAllUsers()
     {
