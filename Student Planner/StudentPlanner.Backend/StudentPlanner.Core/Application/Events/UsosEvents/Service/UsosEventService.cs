@@ -9,18 +9,28 @@ public class UsosEventService : IUsosEventService
 {
     private readonly IUsosClient _usosClient;
     private readonly IUsosEventRepository _studentUsosEventRepository;
+    private readonly IUserRepository _userRepository;
 
     public UsosEventService(
         IUsosClient usosClient,
-        IUsosEventRepository studentUsosEventRepository)
+        IUsosEventRepository studentUsosEventRepository,
+        IUserRepository userRepository)
     {
         _usosClient = usosClient;
         _studentUsosEventRepository = studentUsosEventRepository;
+        _userRepository = userRepository;
     }
 
-    public async Task<List<UsosEventResponseDto>> SyncAndGetEventsAsync(Guid userId, string usosToken, DateOnly start, int days)
+    public async Task<List<UsosEventResponseDto>> SyncAndGetEventsAsync(Guid userId, DateOnly start, int days)
     {
-        var fetchedEvents = await _usosClient.GetTimetableAsync(usosToken, start, days);
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+            throw new KeyNotFoundException("User not found.");
+
+        if (string.IsNullOrWhiteSpace(user.UsosToken))
+            throw new InvalidOperationException("User does not have a linked USOS token.");
+
+        var fetchedEvents = await _usosClient.GetTimetableAsync(user.UsosToken, start, days);
 
         var from = start.ToDateTime(TimeOnly.MinValue);
         var to = start.AddDays(days).ToDateTime(TimeOnly.MaxValue);

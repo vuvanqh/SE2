@@ -4,5 +4,5 @@ namespace StudentPlanner.Core.Application.Events.UsosEvents.ServiceContracts;
 
 public interface IUsosEventService
 {
-    Task<List<UsosEventResponseDto>> SyncAndGetEventsAsync(Guid userId, string usosToken, DateOnly start, int days);
+    Task<List<UsosEventResponseDto>> SyncAndGetEventsAsync(Guid userId, DateOnly start, int days);
 }

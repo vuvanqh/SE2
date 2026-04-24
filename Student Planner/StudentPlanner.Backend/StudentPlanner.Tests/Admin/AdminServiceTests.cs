@@ -77,12 +77,12 @@ public class AdminServiceTests
     [Fact]
     public async Task CreateManagerAsync_ShouldCreateManager_WhenRequestIsValid()
     {
-
         var request = new CreateManagerRequestDto
         {
             FirstName = "Anna",
             LastName = "Nowak",
-            FacultyId = "FAC001"
+            FacultyId = "FAC001",
+            Email = "anna.nowak@pw.edu.pl"
         };
 
         var faculty = new Faculty
@@ -92,26 +92,34 @@ public class AdminServiceTests
             FacultyName = "Electronics",
             FacultyCode = "EL"
         };
-        var facultyId = "FAC001";
 
         _facultyRepositoryMock
-            .Setup(x => x.GetFacultyByUsosIdAsync(facultyId))
+            .Setup(x => x.GetFacultyByUsosIdAsync(request.FacultyId))
             .ReturnsAsync(faculty);
 
         var result = await _adminService.CreateManagerAsync(request);
 
         result.Should().NotBeNull();
-        result.Email.Should().EndWith("@pw.edu.pl");
-        result.TemporaryPassword.Should().NotBeNullOrWhiteSpace();
+        result.Email.Should().Be(request.Email);
         result.Role.Should().Be(UserRoleOptions.Manager.ToString());
+        result.TemporaryPassword.Should().NotBeNullOrWhiteSpace();
+        result.TemporaryPassword.Length.Should().Be(12);
+        result.TemporaryPassword.Should().MatchRegex(@"[A-Z]");
+        result.TemporaryPassword.Should().MatchRegex(@"[a-z]");
+        result.TemporaryPassword.Should().MatchRegex(@"\d");
+        result.TemporaryPassword.Should().MatchRegex(@"[!@#$%^&*]");
 
         _identityServiceMock.Verify(x => x.RegisterUser(
             It.Is<User>(u =>
                 u.FirstName == request.FirstName &&
                 u.LastName == request.LastName &&
+                u.Email == request.Email &&
                 u.Role == UserRoleOptions.Manager.ToString() &&
-                u.Email.EndsWith("@pw.edu.pl")),
-            It.IsAny<string>(),
+                u.Faculty == faculty &&
+                u.UsosToken == null),
+            It.Is<string>(pwd =>
+                !string.IsNullOrWhiteSpace(pwd) &&
+                pwd.Length == 12),
             faculty.Id,
             UserRoleOptions.Manager.ToString()), Times.Once);
     }
@@ -123,7 +131,8 @@ public class AdminServiceTests
         {
             FirstName = "Anna",
             LastName = "Nowak",
-            FacultyId = Guid.NewGuid().ToString()
+            FacultyId = Guid.NewGuid().ToString(),
+            Email = "anna.nowak@pw.edu.pl"
         };
 
         _facultyRepositoryMock
@@ -216,5 +225,149 @@ public class AdminServiceTests
         result.ValidUsers.Should().Be(0);
         result.DisabledUsers.Should().Be(0);
         result.FailedChecks.Should().Be(1);
+    }
+    [Fact]
+    public async Task GetManagersAsync_ShouldReturnOnlyManagers()
+    {
+        var faculty = new Faculty
+        {
+            Id = Guid.NewGuid(),
+            FacultyId = "FAC001",
+            FacultyName = "Electronics",
+            FacultyCode = "EL"
+        };
+
+        var users = new List<User>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Anna",
+                LastName = "Nowak",
+                Email = "anna.nowak@pw.edu.pl",
+                Role = UserRoleOptions.Manager.ToString(),
+                Faculty = faculty
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Piotr",
+                LastName = "Kowal",
+                Email = "piotr.kowal@pw.edu.pl",
+                Role = UserRoleOptions.Manager.ToString(),
+                Faculty = null
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Jan",
+                LastName = "Student",
+                Email = "jan.student@pw.edu.pl",
+                Role = UserRoleOptions.Student.ToString(),
+                Faculty = faculty
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Adam",
+                LastName = "Admin",
+                Email = "adam.admin@pw.edu.pl",
+                Role = UserRoleOptions.Admin.ToString(),
+                Faculty = faculty
+            }
+        };
+
+        _identityServiceMock
+            .Setup(x => x.GetAllUsersAsync())
+            .ReturnsAsync(users);
+
+        var result = await _adminService.GetManagersAsync();
+
+        result.Should().HaveCount(2);
+        result.Should().OnlyContain(x =>
+            x.Email == "anna.nowak@pw.edu.pl" ||
+            x.Email == "piotr.kowal@pw.edu.pl");
+
+        result.Should().ContainEquivalentOf(new UsersResultDto
+        {
+            Id = users[0].Id,
+            FirstName = "Anna",
+            LastName = "Nowak",
+            Email = "anna.nowak@pw.edu.pl",
+            UserRole = UserRoleOptions.Manager.ToString(),
+            FacultyCode = "EL"
+        });
+
+        result.Should().ContainEquivalentOf(new UsersResultDto
+        {
+            Id = users[1].Id,
+            FirstName = "Piotr",
+            LastName = "Kowal",
+            Email = "piotr.kowal@pw.edu.pl",
+            UserRole = UserRoleOptions.Manager.ToString(),
+            FacultyCode = null
+        });
+    }
+    [Fact]
+    public async Task GetAllUsersAsync_ShouldReturnAllUsersMappedToDto()
+    {
+        var faculty = new Faculty
+        {
+            Id = Guid.NewGuid(),
+            FacultyId = "FAC001",
+            FacultyName = "Electronics",
+            FacultyCode = "EL"
+        };
+        Guid AnnaId = Guid.NewGuid();
+        Guid JanId = Guid.NewGuid();
+        var users = new List<User>
+        {
+            new()
+            {
+                Id = AnnaId,
+                FirstName = "Anna",
+                LastName = "Nowak",
+                Email = "anna.nowak@pw.edu.pl",
+                Role = UserRoleOptions.Manager.ToString(),
+                Faculty = faculty
+            },
+            new()
+            {
+                Id = JanId,
+                FirstName = "Jan",
+                LastName = "Kowalski",
+                Email = "jan.kowalski@pw.edu.pl",
+                Role = UserRoleOptions.Student.ToString(),
+                Faculty = null
+            }
+        };
+
+        _identityServiceMock
+            .Setup(x => x.GetAllUsersAsync())
+            .ReturnsAsync(users);
+
+        var result = await _adminService.GetAllUsersAsync();
+
+        result.Should().HaveCount(2);
+
+        result.Should().ContainEquivalentOf(new UsersResultDto
+        {
+            Id = AnnaId,
+            FirstName = "Anna",
+            LastName = "Nowak",
+            UserRole = UserRoleOptions.Manager.ToString(),
+            Email = "anna.nowak@pw.edu.pl",
+            FacultyCode = "EL"
+        });
+
+        result.Should().ContainEquivalentOf(new UsersResultDto
+        {
+            Id = JanId,
+            FirstName = "Jan",
+            LastName = "Kowalski",
+            UserRole = UserRoleOptions.Student.ToString(),
+            Email = "jan.kowalski@pw.edu.pl",
+            FacultyCode = null
+        });
     }
 }
