@@ -29,7 +29,13 @@ public class EventRequestTests
         _updateStrategyMock.Setup(s => s.RequestType).Returns(RequestType.Update);
         _deleteStrategyMock = new Mock<IEventRequestApprovalStrategy>();
         _deleteStrategyMock.Setup(s => s.RequestType).Returns(RequestType.Delete);
+
         _erHubMock = new Mock<IHubContext<EventRequestHub>>();
+        var clientsMock = new Mock<IHubClients>();
+        var clientProxyMock = new Mock<IClientProxy>();
+        clientsMock.Setup(c => c.Group(It.IsAny<string>())).Returns(clientProxyMock.Object);
+        clientsMock.Setup(c => c.User(It.IsAny<string>())).Returns(clientProxyMock.Object);
+        _erHubMock.Setup(h => h.Clients).Returns(clientsMock.Object);
     }
 
     private EventRequestService CreateService()

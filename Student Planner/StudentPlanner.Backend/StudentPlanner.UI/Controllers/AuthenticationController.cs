@@ -181,6 +181,7 @@ public class AuthenticationController : ControllerBase
     {
         _logger.LogInformation("/authentication/verify-reset");
         _logger.LogDebug("{Email}", request.Email);
+        _logger.LogCritical("RECEIVED TOKEN for {Email}: {Token}", request.Email, request.Token);
         try
         {
             await _authenticationService.ResetPasswordAsync(request);
@@ -193,8 +194,8 @@ public class AuthenticationController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during password reset for user {Email}", request.Email);
-            return BadRequest("Invalid or expired token.");
+            _logger.LogCritical(ex, "IDENTITY ERROR for {Email}: {Message}", request.Email, ex.Message);
+            return BadRequest($"DEBUG ERROR: {ex}");
         }
     }
 }

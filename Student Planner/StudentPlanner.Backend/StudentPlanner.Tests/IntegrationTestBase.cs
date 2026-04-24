@@ -33,6 +33,5 @@ public class IntegrationTestBase : IClassFixture<StudentPlannerWebApplicationFac
     }
 
     public ValueTask InitializeAsync() => ValueTask.CompletedTask;
-
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }
