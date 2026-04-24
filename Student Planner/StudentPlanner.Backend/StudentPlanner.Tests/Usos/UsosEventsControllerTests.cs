@@ -17,12 +17,10 @@ namespace StudentPlanner.Tests.Usos;
 public class UsosEventsControllerTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock;
-    private readonly Mock<IUsosClient> _usosClientMock;
     private readonly Mock<IUsosEventService> _usosEventService;
     public UsosEventsControllerTests()
     {
         _userRepositoryMock = new Mock<IUserRepository>();
-        _usosClientMock = new Mock<IUsosClient>();
         _usosEventService = new Mock<IUsosEventService>();
     }
 
@@ -132,8 +130,8 @@ public class UsosEventsControllerTests
             .Setup(r => r.GetByIdAsync(userId))
             .ReturnsAsync(user);
 
-        _usosClientMock
-            .Setup(c => c.GetTimetableAsync(user.UsosToken!, new DateOnly(2025, 10, 1), 7))
+        _usosEventService
+            .Setup(s => s.SyncAndGetEventsAsync(userId, user.UsosToken!, It.IsAny<DateOnly>(), 7))
             .ReturnsAsync(events);
 
         var principal = new ClaimsPrincipal(
@@ -151,8 +149,8 @@ public class UsosEventsControllerTests
         payload.Should().HaveCount(1);
         payload[0].Title.Should().Be("Algorithms - Lab 1");
 
-        _usosClientMock.Verify(
-            c => c.GetTimetableAsync("fresh-usos-token", new DateOnly(2025, 10, 1), 7),
+        _usosEventService.Verify(
+            s => s.SyncAndGetEventsAsync(userId, "fresh-usos-token", It.IsAny<DateOnly>(), 7),
             Times.Once);
     }
 

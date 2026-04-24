@@ -174,7 +174,8 @@ public class IdentityServiceTests : IDisposable
 
         Func<Task> act = async () => await _identityService.ResetPasswordAsync("test@pw.edu.pl", "invalid-token", "NewPassword123!");
 
-        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Invalid token.");
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("Invalid token.");
     }
 
     [Fact]

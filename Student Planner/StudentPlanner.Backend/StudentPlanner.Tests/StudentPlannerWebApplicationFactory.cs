@@ -16,6 +16,9 @@ using Moq;
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using StudentPlanner.Infrastructure.Testing;
+using StudentPlanner.Infrastructure.Services.Settings;
+using Microsoft.Extensions.Options;
 
 namespace StudentPlanner.Tests;
 
@@ -35,6 +38,11 @@ public class StudentPlannerWebApplicationFactory : WebApplicationFactory<Program
     /// Gets the mock for the IUsosClient.
     /// </summary>
     public Mock<IUsosClient> UsosAuthServiceMock { get; } = new();
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to use the real email service.
+    /// </summary>
+    public bool UseRealEmailService { get; set; } = false;
 
     public StudentPlannerWebApplicationFactory()
     {
@@ -58,7 +66,7 @@ public class StudentPlannerWebApplicationFactory : WebApplicationFactory<Program
                     FacultyId = "test-faculty",
                     FacultyName = "Test Faculty",
                     FacultyCode = "TF",
-                    Id = Guid.NewGuid()
+                    Id = Guid.Parse("ff8c5ad6-e743-4756-aaf9-7f56d686e57f")
                 }
             });
     }
@@ -88,6 +96,69 @@ public class StudentPlannerWebApplicationFactory : WebApplicationFactory<Program
         builder.UseSetting("RefreshToken:expiration_minutes", "60");
         builder.UseSetting("RefreshToken:max_session_lifetime_days", "30");
 
+        // override EmailSettings from environment variables if present
+        builder.ConfigureAppConfiguration((context, config) =>
+        {
+            // load .env file if it exists
+            var currentDir = new DirectoryInfo(AppContext.BaseDirectory);
+            string? envPath = null;
+            while (currentDir != null)
+            {
+                var potentialPath = Path.Combine(currentDir.FullName, ".env");
+                if (File.Exists(potentialPath))
+                {
+                    envPath = potentialPath;
+                    break;
+                }
+                currentDir = currentDir.Parent;
+            }
+
+            if (envPath == null)
+            {
+                throw new FileNotFoundException("Could not find .env file in any parent directory of " + AppContext.BaseDirectory);
+            }
+
+            foreach (var line in File.ReadAllLines(envPath))
+            {
+                var parts = line.Split('=', 2);
+                if (parts.Length == 2)
+                {
+                    Environment.SetEnvironmentVariable(parts[0].Trim(), parts[1].Trim());
+                }
+            }
+
+            config.AddEnvironmentVariables();
+
+            // Explicitly map MAILTRAP environment variables to EmailSettings properties
+            var mailtrapToken = Environment.GetEnvironmentVariable("MAILTRAP_API_TOKEN");
+            var mailtrapInbox = Environment.GetEnvironmentVariable("MAILTRAP_INBOX_ID");
+            var mailtrapAccount = Environment.GetEnvironmentVariable("MAILTRAP_ACCOUNT_ID");
+
+            var dict = new Dictionary<string, string?>();
+            if (!string.IsNullOrWhiteSpace(mailtrapToken)) dict["EmailSettings:ApiToken"] = mailtrapToken.Trim();
+            if (!string.IsNullOrWhiteSpace(mailtrapInbox)) dict["EmailSettings:InboxId"] = mailtrapInbox.Trim();
+            if (!string.IsNullOrWhiteSpace(mailtrapAccount)) dict["EmailSettings:AccountId"] = mailtrapAccount.Trim();
+
+            if (dict.Any())
+            {
+                config.AddInMemoryCollection(dict);
+            }
+
+            // Map common ENV names to our config structure if they differ
+            var overrides = new Dictionary<string, string>();
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("MAILTRAP_USERNAME")))
+                overrides["EmailSettings:SmtpUsername"] = Environment.GetEnvironmentVariable("MAILTRAP_USERNAME")!;
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("MAILTRAP_PASSWORD")))
+                overrides["EmailSettings:SmtpPassword"] = Environment.GetEnvironmentVariable("MAILTRAP_PASSWORD")!;
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("MAILTRAP_API_TOKEN")))
+                overrides["EmailSettings:ApiToken"] = Environment.GetEnvironmentVariable("MAILTRAP_API_TOKEN")!;
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("MAILTRAP_INBOX_ID")))
+                overrides["EmailSettings:InboxId"] = Environment.GetEnvironmentVariable("MAILTRAP_INBOX_ID")!;
+
+            if (overrides.Count > 0)
+                config.AddInMemoryCollection(overrides!);
+        });
+
         builder.ConfigureLogging(logging =>
         {
             logging.ClearProviders();
@@ -96,11 +167,20 @@ public class StudentPlannerWebApplicationFactory : WebApplicationFactory<Program
 
         builder.ConfigureTestServices(services =>
         {
-            // Replace real email service with mock
-            services.RemoveAll<IEmailService>();
-            services.AddScoped<IEmailService>(_ => EmailServiceMock.Object);
+            // Replace real email service with mock UNLESS we want to test integration
+            if (!UseRealEmailService)
+            {
+                services.RemoveAll<IEmailService>();
+                services.AddScoped<IEmailService>(_ => EmailServiceMock.Object);
+            }
 
-            // Replace real USOS service with mock
+            // register MailtrapTestingClient for E2E tests
+            services.AddHttpClient<MailtrapTestingClient>(client =>
+            {
+                client.BaseAddress = new Uri("https://mailtrap.io/");
+            });
+
+            // replace real USOS service with mock
             services.RemoveAll<IUsosClient>();
             services.AddScoped<IUsosClient>(_ => UsosAuthServiceMock.Object);
         });
@@ -119,6 +199,17 @@ public class StudentPlannerWebApplicationFactory : WebApplicationFactory<Program
         using var db = new ApplicationDbContext(options);
         await db.Database.EnsureDeletedAsync();
         await db.Database.MigrateAsync();
+
+        // Seed the required faculty manually before starting the host to satisfy FK constraints in IdentitySeeder
+        var faculty = new StudentPlanner.Infrastructure.IdentityEntities.AppFaculty
+        {
+            Id = Guid.Parse("ff8c5ad6-e743-4756-aaf9-7f56d686e57f"),
+            FacultyId = "test-faculty",
+            FacultyName = "Test Faculty",
+            FacultyCode = "TF"
+        };
+        await db.Faculties.AddAsync(faculty);
+        await db.SaveChangesAsync();
 
         // ensures the services are available for tests
         _ = Services;
@@ -146,4 +237,5 @@ public class StudentPlannerWebApplicationFactory : WebApplicationFactory<Program
 
         await base.DisposeAsync();
     }
+
 }
