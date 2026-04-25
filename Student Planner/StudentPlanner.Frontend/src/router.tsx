@@ -3,6 +3,7 @@ import IntroPage from "./pages/public/IntroPage";
 import ProtectedRoute from "./components/routing/ProtectedRoute";
 import LoginPage from "./pages/public/LoginPage";
 import RegisterPage from "./pages/public/RegisterPage";
+import ForgotPasswordPage from "./pages/public/ForgotPasswordPage";
 import ApplicationLayout from "./pages/ApplicationLayout";
 import StudentPage from "./pages/protected/Student/StudentPage";
 import RoleRoute from "./components/routing/RoleRoute";
@@ -14,79 +15,84 @@ import AdminCalendarPage from "./pages/protected/Admin/AdminCalendarPage";
 
 export const router = createBrowserRouter([{
     path: "/",
-    element: <ApplicationLayout/>,
-    children:[
-        {
-            path:"",
-            element: <IntroPage/>,
-            children: [
-            {
-                path: "login",
-                element: <LoginPage/>
-            },
-            {
-                path: "register",
-                element: <RegisterPage/>
-            }
-        ]},
+    element: <ApplicationLayout />,
+    children: [
         {
             path: "",
-            element: <ProtectedRoute/>,
+            element: <IntroPage />,
+            children: [
+                {
+                    path: "login",
+                    element: <LoginPage />
+                },
+                {
+                    path: "register",
+                    element: <RegisterPage />
+                },
+                {
+                    path: "forgot-password",
+                    element: <ForgotPasswordPage />
+                }
+            ]
+        },
+        {
+            path: "",
+            element: <ProtectedRoute />,
             children: [
                 {
                     path: "student",
                     element: <RoleRoute allowed={["Student"]}>
-                        <StudentPage/>
+                        <StudentPage />
                     </RoleRoute>,
                     children: [
                         {
                             index: true,
-                            element: <StudentCalendarPage/>
+                            element: <StudentCalendarPage />
                         },
                         {
                             path: "events",
-                            element: <StudentCalendarPage/>
+                            element: <StudentCalendarPage />
                         },
                         {
                             path: "requests",
-                            element: <StudentCalendarPage/>
+                            element: <StudentCalendarPage />
                         }
                     ]
                 },
                 {
                     path: "manager",
                     element: <RoleRoute allowed={["Manager"]}>
-                        <ManagerPage/>
+                        <ManagerPage />
                     </RoleRoute>,
                     children: [
                         {
                             index: true,
-                            element: <ManagerCalendarPage/>
+                            element: <ManagerCalendarPage />
                         },
                         {
                             path: "events",
-                            element: <ManagerCalendarPage/> //TO-DO idiot
+                            element: <ManagerCalendarPage />
                         },
                         {
                             path: "requests",
-                            element: <ManagerCalendarPage/>
+                            element: <ManagerCalendarPage />
                         }
                     ]
                 },
                 {
                     path: "admin",
                     element: <RoleRoute allowed={["Admin"]}>
-                        <AdminPage/>
+                        <AdminPage />
                     </RoleRoute>,
                     children: [
                         {
                             index: true,
-                            element: <AdminCalendarPage/>
+                            element: <AdminCalendarPage />
                         }
                     ]
                 }
             ]
-            
+
         }
     ]
 }])

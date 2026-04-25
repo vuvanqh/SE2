@@ -1,14 +1,21 @@
 import type { createPersonalEventRequest } from "../types/personalEventTypes";
 
 export function extractErrors(err: any): string[] {
-    const raw = err?.info?.errors;
+    const raw = err?.response?.data || err?.info?.errors || err;
 
     if (!raw) return ["Unknown error"];
 
-    if (Array.isArray(raw)) return raw;
     if (typeof raw === "string") return [raw];
+    if (Array.isArray(raw)) return raw;
+    
+    if (raw?.errors && typeof raw.errors === "object") {
+        // Handle ASP.NET Core ValidationProblemDetails
+        return Object.values(raw.errors).flat() as string[];
+    }
 
-    return ["Unexpected error format"];
+    if (raw?.message) return [raw.message];
+
+    return ["An unexpected error occurred"];
 }
 
 

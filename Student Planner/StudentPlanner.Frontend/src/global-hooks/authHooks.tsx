@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { login as loginApi, register } from "../api/authApi";
+import { login as loginApi, register, requestResetToken, verifyAndResetPassword } from "../api/authApi";
 import type { loginRequest, loginResponse } from "../types/authTypes";
 import { useNavigate } from "react-router-dom";
 import { queryClient } from "../api/queryClient";
@@ -29,7 +29,21 @@ export function useAuth(){
         onError: (error)=> {errorMessage(error.message)}
     })
 
-    const {mutate: registerUser, isPending: isRegisterPending} = useMutation({
+    const {mutateAsync: sendResetToken, isPending: isRequestPending} = useMutation({
+        mutationFn: requestResetToken,
+        onError: (error)=> {errorMessage(error.message)}
+    })
+
+    const {mutateAsync: resetPassword, isPending: isResetPending} = useMutation({
+        mutationFn: verifyAndResetPassword,
+        onSuccess: () => {
+            successMessage("Password reset successfully! You can now log in.");
+            navigate("/login");
+        },
+        onError: (error)=> {errorMessage(error.message)}
+    })
+
+    const {mutateAsync: registerUser, isPending: isRegisterPending} = useMutation({
         mutationFn: register,
         onSuccess: () => {
             successMessage("Registered in successfully! Feel free to log in now.");
@@ -37,12 +51,16 @@ export function useAuth(){
         },
         onError: (error)=> {errorMessage(error.message)}
     })
+
     return {
         login: mutateAsync, 
         registerUser,
+        sendResetToken,
+        resetPassword,
         isAuthenticated: !!queryClient.getQueryData(["user"]),
         isLoginPending,
-        isRegisterPending
+        isRegisterPending,
+        isResetPending: isRequestPending || isResetPending
     }
 }
 

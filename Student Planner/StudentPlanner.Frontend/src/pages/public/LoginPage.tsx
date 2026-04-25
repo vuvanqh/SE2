@@ -92,7 +92,7 @@ export default function LoginPage() {
             <Input type="password" id="password" label="Password" defaultValue={state.password}/>
 
 
-            <NavLink to="/forgot-password">Forgot Password? - Do not use this yet</NavLink>
+            <NavLink to="/forgot-password">Forgot Password?</NavLink>
 
             {state.errors?.map(error => <small className="error-text" key={error}>{error}</small>)}
 

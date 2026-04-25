@@ -146,7 +146,7 @@ public class AuthenticationControllerTests
     }
 
     [Fact]
-    public async Task ForgotPassword_ShouldReturn404_WhenEmailNotFound()
+    public async Task ForgotPassword_ShouldReturn200_WhenEmailNotFound()
     {
 
         var request = new ForgotPasswordRequestDto { Email = "notfound@pw.edu.pl" };
@@ -156,9 +156,7 @@ public class AuthenticationControllerTests
         var result = await _controller.ForgotPassword(request);
 
 
-        var notFoundResult = result as NotFoundObjectResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+        result.Should().BeOfType<OkResult>();
     }
 
     [Fact]
@@ -176,7 +174,7 @@ public class AuthenticationControllerTests
     }
 
     [Fact]
-    public async Task ResetPassword_ShouldReturn404_WhenEmailNotFound()
+    public async Task ResetPassword_ShouldReturn400_WhenEmailNotFound()
     {
 
         var request = new ResetPasswordRequestDto { Email = "notfound@pw.edu.pl" };
@@ -186,9 +184,10 @@ public class AuthenticationControllerTests
         var result = await _controller.ResetPassword(request);
 
 
-        var notFoundResult = result as NotFoundObjectResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        badRequestResult!.Value.Should().Be("Invalid or expired token.");
     }
 
     [Fact]
@@ -205,6 +204,25 @@ public class AuthenticationControllerTests
         var badRequestResult = result as BadRequestObjectResult;
         badRequestResult.Should().NotBeNull();
         badRequestResult!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        badRequestResult!.Value.Should().Be("Invalid or expired token.");
+    }
+
+    [Fact]
+    public async Task ResetPassword_ShouldReturnActualError_WhenPasswordTooWeak()
+    {
+
+        var request = new ResetPasswordRequestDto { Email = "user@pw.edu.pl", Token = "valid-token", NewPassword = "123" };
+        var weakPasswordError = "Password must be at least 8 characters.";
+        _authServiceMock.Setup(s => s.ResetPasswordAsync(request)).ThrowsAsync(new InvalidOperationException(weakPasswordError));
+
+
+        var result = await _controller.ResetPassword(request);
+
+
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        badRequestResult!.Value.Should().Be(weakPasswordError);
     }
 
     [Fact]

@@ -39,6 +39,8 @@ public class MailtrapEmailService : IEmailService
         {
             _logger.LogInformation("Attempting to send password reset email to {Email}", email);
 
+            _smtpClient.Timeout = 10000; // 10 seconds
+
             await _smtpClient.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.SmtpPort, SecureSocketOptions.StartTls);
             await _smtpClient.AuthenticateAsync(_emailSettings.SmtpUsername, _emailSettings.SmtpPassword);
             await _smtpClient.SendAsync(message);

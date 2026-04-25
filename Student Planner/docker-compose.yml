@@ -8,6 +8,8 @@ services:
       SA_PASSWORD: ${SA_PASSWORD}
     volumes:
       - mssql-data:/var/opt/mssql
+    ports:
+      - "14330:1433"
     expose:
       - "1433"
     healthcheck:
@@ -28,6 +30,11 @@ services:
       Jwt__Issuer: "http://localhost:8080"
       Jwt__SecretKey: "exemplaryKey_afaosfiajo8ug983j0cm0oxdjq2owkzihlmkjb79ockjdyk9c0m"
       UsosApi__BaseUrl: "http://usos-api:3000"
+      EmailSettings__SmtpUsername: ${MAILTRAP_USERNAME}
+      EmailSettings__SmtpPassword: ${MAILTRAP_PASSWORD}
+      EmailSettings__SmtpServer: "sandbox.smtp.mailtrap.io"
+      EmailSettings__SmtpPort: 2525
+
     
     ports:
       - "8080:8080"

@@ -19,3 +19,14 @@ export type registerRequest = {
     email: string,
     password: string
 }
+
+export type forgotPasswordRequest = {
+    email: string
+}
+
+export type resetPasswordRequest = {
+    email: string,
+    token: string,
+    newPassword: string,
+    confirmNewPassword: string
+}
