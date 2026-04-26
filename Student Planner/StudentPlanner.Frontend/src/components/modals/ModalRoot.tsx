@@ -7,6 +7,8 @@ import ViewEventModal from "../../features/events/components/ViewEventModal";
 import CreateEventRequestModal from "../../features/eventRequests/components/CreateEventRequestModal";
 import ViewEventRequestModal from "../../features/eventRequests/components/ViewEventRequestModal";
 import EditEventRequestModal from "../../features/eventRequests/components/EditEventRequestModal";
+import CreateManagerModal from "../../features/admin/CreateManagerModal";
+import UserViewModal from "../../features/admin/UserViewModal";
 
 export default function ModalRoot(){
     const {state, close} = useContext(ModalContext);
@@ -25,6 +27,8 @@ export default function ModalRoot(){
         case "viewRequest": return <ViewEventRequestModal requestId={modal.requestId} onClose={close}/>
         case "editRequest": return <EditEventRequestModal requestId={modal.requestId} onClose={close}/>
 
+        case "createManager": return <CreateManagerModal onClose={close}/>
+        case "userView": return <UserViewModal user={modal.user} onClose={close} deleteUser={modal.deleteUser}/>
         default: return null;
     }
 }

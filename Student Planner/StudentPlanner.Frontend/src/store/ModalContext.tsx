@@ -1,6 +1,7 @@
 import { createContext, type ReactNode } from "react";
 import { useReducer } from "react";
 import type { personalEventResponse } from "../types/personalEventTypes";
+import type { userResponse } from "../types/admin.types";
 
 
 
@@ -12,6 +13,8 @@ export type ModalType =
     | { type: "createRequest", startTime?: string;}
     | { type: "viewRequest", requestId: string;}
     | { type: "editRequest", requestId: string;}
+    | { type: "createManager"}
+    | { type: "userView", user: userResponse, deleteUser: (userId: string) => void }
     | null
 
 

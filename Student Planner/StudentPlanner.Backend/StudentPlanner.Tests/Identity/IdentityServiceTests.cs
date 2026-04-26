@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using StudentPlanner.Core.Entities;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using StudentPlanner.Core.Domain.RepositoryContracts;
 
 namespace StudentPlanner.Tests.Identity;
 
@@ -23,9 +24,11 @@ public class IdentityServiceTests : IDisposable
     private readonly Mock<RoleManager<ApplicationRole>> _roleManagerMock;
     private readonly ApplicationDbContext _context;
     private readonly IIdentityService _identityService;
+    private readonly Mock<IUserRepository> _userRepositoryMock;
 
     public IdentityServiceTests()
     {
+        _userRepositoryMock = new Mock<IUserRepository>();
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
@@ -43,7 +46,7 @@ public class IdentityServiceTests : IDisposable
         var roleStore = new Mock<IRoleStore<ApplicationRole>>();
         _roleManagerMock = new Mock<RoleManager<ApplicationRole>>(roleStore.Object, null!, null!, null!, null!);
 
-        _identityService = new IdentityService(_userManagerMock.Object, _signInManagerMock.Object, _roleManagerMock.Object);
+        _identityService = new IdentityService(_userManagerMock.Object, _signInManagerMock.Object, _roleManagerMock.Object, _userRepositoryMock.Object);
     }
 
     [Fact]

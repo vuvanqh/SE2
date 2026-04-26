@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StudentPlanner.Core.Application.Authentication;
 using StudentPlanner.Core.Domain.Entities;
+using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Core.Entities;
 using StudentPlanner.Infrastructure.IdentityEntities;
 using System.Data;
@@ -13,12 +14,15 @@ public class IdentityService : IIdentityService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
+    private readonly IUserRepository _userRepository;
 
-    public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager)
+    public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, 
+        RoleManager<ApplicationRole> roleManager, IUserRepository userRepository)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
+        _userRepository = userRepository;
     }
     public async Task<User> SignInAsync(string email, string password)
     {
@@ -135,11 +139,9 @@ public class IdentityService : IIdentityService
         var appUser = await _userManager.FindByIdAsync(userId.ToString());
         if (appUser == null)
             throw new KeyNotFoundException("User not found!");
-        var result = await _userManager.DeleteAsync(appUser);
-        if (!result.Succeeded)
-        {
-            throw new InvalidOperationException(string.Join("; ", result.Errors.Select(e => e.Description)));
-        }
+        var roles = await _userManager.GetRolesAsync(appUser);
+        var roleName = roles[0];
+        await _userRepository.DeleteUserAsync(appUser.ToUser(roleName));
     }
 
     public async Task<User?> GetUserByEmailAsync(string email)

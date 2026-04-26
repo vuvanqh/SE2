@@ -22,9 +22,28 @@ public class UserRepository : IUserRepository
         _userManager = userManager;
     }
 
-    public Task DeleteUserAsync(User user)
+    public async Task DeleteUserAsync(User user)
     {
-        throw new NotImplementedException();
+        var tsx = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            var u = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+            if (u == null)
+                return;
+            if (user.Role == "Manager")
+            {
+                var requests = await _context.EventRequests.Where(r => r.ManagerId == user.Id).ToListAsync();
+                _context.EventRequests.RemoveRange(requests);
+            }
+            _context.Users.Remove(u);
+            await _context.SaveChangesAsync();
+            await tsx.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            await tsx.RollbackAsync();
+            throw new Exception("Error deleting user: " + ex.Message);
+        }
     }
 
     public Task<List<User>> GetFacultyUsersAsync(Guid facultyId)
@@ -36,7 +55,6 @@ public class UserRepository : IUserRepository
     {
         ApplicationUser? user = await _context.Users.Include(u => u.Faculty).FirstOrDefaultAsync(user => user.Email == email);
         return await GetUserWithRole(user);
-
     }
 
     public async Task<User?> GetUserByRefreshToken(string token)

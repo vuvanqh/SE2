@@ -1,0 +1,83 @@
+.modal-title{
+  margin:0 0 1.35rem 0;
+  padding-bottom:.85rem;
+
+  font-size:1.35rem;
+  font-weight:700;
+  color:var(--navy);
+
+  border-bottom:1px solid rgba(0,0,0,.07);
+}
+
+.modal-form{
+  display:flex;
+  flex-direction:column;
+  gap:1.1rem;
+}
+
+.input-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1rem;
+}
+
+/* react-select */
+.react-select__control{
+  min-height:48px !important;
+  border-radius:12px !important;
+  border:1px solid var(--glass-border) !important;
+  background:rgba(255,255,255,.55) !important;
+  box-shadow:none !important;
+}
+
+.react-select__control--is-focused{
+  border-color:rgba(30,41,59,.25) !important;
+  box-shadow:0 0 0 3px rgba(30,41,59,.08) !important;
+}
+
+/* buttons */
+.manager-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:.75rem;
+
+  padding-top:.8rem;
+  margin-top:.25rem;
+
+  border-top:1px solid rgba(0,0,0,.06);
+}
+
+.manager-actions button{
+  min-width:120px;
+}
+
+/* errors */
+.error-list{
+  margin:0;
+  padding:.8rem 1rem;
+
+  list-style:none;
+
+  border-radius:12px;
+  background:rgba(220,38,38,.08);
+  border:1px solid rgba(220,38,38,.18);
+}
+
+.error-list li{
+  color:#991b1b;
+  font-size:.85rem;
+}
+
+@media(max-width:700px){
+  .input-row{
+    grid-template-columns:1fr;
+  }
+
+  .manager-actions{
+    flex-direction:column-reverse;
+  }
+
+  .manager-actions button{
+    width:100%;
+  }
+}

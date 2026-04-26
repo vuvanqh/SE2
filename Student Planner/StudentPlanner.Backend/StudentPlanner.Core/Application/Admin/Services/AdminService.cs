@@ -120,7 +120,7 @@ public class AdminService : IAdminService
         if (string.IsNullOrWhiteSpace(request.LastName))
             throw new ArgumentException("Last name is required.");
 
-        var faculty = await _facultyRepository.GetFacultyByUsosIdAsync(request.FacultyId);
+        var faculty = await _facultyRepository.GetFacultyByIdAsync(request.FacultyId);
         if (faculty == null)
             throw new InvalidOperationException("Faculty not found.");
 
@@ -198,6 +198,7 @@ public class AdminService : IAdminService
             LastName = u.LastName,
             UserRole = u.Role,
             Email = u.Email,
+            FacultyId = u.Faculty?.Id,
             FacultyCode = u.Faculty?.FacultyCode,
         }).ToList();
     }
@@ -211,6 +212,7 @@ public class AdminService : IAdminService
             LastName = u.LastName,
             UserRole = u.Role,
             Email = u.Email,
+            FacultyId = u.Faculty?.Id,
             FacultyCode = u.Faculty?.FacultyCode,
         }).ToList();
     }
