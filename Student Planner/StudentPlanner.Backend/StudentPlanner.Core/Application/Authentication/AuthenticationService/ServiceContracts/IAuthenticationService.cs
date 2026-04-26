@@ -7,4 +7,5 @@ public interface IAuthenticationService
     Task ForgotPasswordAsync(ForgotPasswordRequestDto request);
     Task ResetPasswordAsync(ResetPasswordRequestDto request);
     Task<RefreshTokenResponse> RotateRefreshToken(string refreshToken);
+    Task LogOut(string id);
 }

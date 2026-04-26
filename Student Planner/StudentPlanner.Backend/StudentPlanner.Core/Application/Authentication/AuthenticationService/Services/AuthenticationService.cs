@@ -118,4 +118,9 @@ public class AuthenticationService : IAuthenticationService
             ExpirationDate = refreshTokenResult.ExpirationDate
         };
     }
+
+    public async Task LogOut(string id)
+    {
+        await _identityService.LogOut(id);
+    }
 }

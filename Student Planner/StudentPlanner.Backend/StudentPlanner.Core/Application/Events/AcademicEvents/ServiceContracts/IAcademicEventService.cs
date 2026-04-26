@@ -7,7 +7,7 @@ namespace StudentPlanner.Core.Application.AcademicEvents.ServiceContracts;
 
 public interface IAcademicEventService
 {
-    Task<IEnumerable<AcademicEventResponse>> GetAllEventsAsync();
+    Task<IEnumerable<AcademicEventResponse>> GetAllEventsAsync(Guid id);
     Task<IEnumerable<AcademicEventResponse>> GetEventsForUserAsync(Guid userId);
     Task<AcademicEventResponse?> GetEventByIdAsync(Guid id, Guid userId);
     Task SubscribeAsync(Guid eventId, Guid userId);

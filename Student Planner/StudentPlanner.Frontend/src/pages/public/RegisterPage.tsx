@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import Modal from '../../components/modals/Modal'
 import Input from '../../components/common/Input';
 import { useAuth } from '../../global-hooks/authHooks';
+import { emailValidator } from '../../api/helpers';
 
 type stateType = {
   email: string,
@@ -60,16 +61,6 @@ export default function RegisterPage() {
       }
   }
 
-  
-  function emailValidator(e: React.ChangeEvent<HTMLInputElement>){
-        const input = e.currentTarget;
-        const valid = /^[^@]+@pw\.edu\.pl$/.test(input.value);
-
-        input.setCustomValidity(valid ? "" : "Use @pw.edu.pl email");
-        input.reportValidity();
-  }
-
-  //TO-DO: DISABLE CREATE BUTTON WHILE IS PENDING
   return (
     <Modal open={isRegisterOpen} className="register-page" onClose={()=>navigate("/")}>    
         <p>Join Student Planner today</p>

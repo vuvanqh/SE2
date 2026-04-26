@@ -1,10 +1,10 @@
 import Calendar from "../../../components/calendar/Calendar";
-import type { personalEventResponse } from "../../../types/personalEventTypes";
 import { useContext } from "react";
 import { ModalContext } from "../../../store/ModalContext";
+import type { eventPreviewResponse } from "../../../types/eventPreviewResponse";
 
 type managerCalendarProps = {
-    events: personalEventResponse[],
+    events: eventPreviewResponse[],
 }
 
 export default function ManagerCalendar({events}: managerCalendarProps){

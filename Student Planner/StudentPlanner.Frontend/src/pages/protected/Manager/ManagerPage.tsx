@@ -37,7 +37,7 @@ export default function ManagerPage(){
         return null;
     return <DashboardLayout navItems={<>
         <NavLink to="" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Calendar</NavLink>
-        <NavLink to="/requests" onClick={(e)=>e.preventDefault()} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Events</NavLink>
-        <NavLink to="/events" onClick={(e)=>e.preventDefault()} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>My Requests</NavLink>
+        <NavLink to="requests" onClick={(e)=>e.preventDefault()} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Events</NavLink>
+        <NavLink to="events" onClick={(e)=>e.preventDefault()} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>My Requests</NavLink>
     </>}/>
 } 

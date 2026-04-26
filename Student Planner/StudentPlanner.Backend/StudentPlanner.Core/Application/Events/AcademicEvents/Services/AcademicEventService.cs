@@ -20,8 +20,20 @@ public class AcademicEventService : IAcademicEventService
         _userRepository = userRepository;
     }
 
-    public async Task<IEnumerable<AcademicEventResponse>> GetAllEventsAsync()
+    public async Task<IEnumerable<AcademicEventResponse>> GetAllEventsAsync(Guid id)
     {
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user == null)
+            throw new KeyNotFoundException("User not found.");
+
+        if (user.Role != UserRoleOptions.Admin.ToString())
+        {
+            if (user.Faculty == null)
+                return Enumerable.Empty<AcademicEventResponse>();
+            var e = await _academicEventRepository.GetByFacultyIdAsync(user.Faculty.Id);
+            return e.Select(e => e.ToAcademicEventResponse());
+        }
+
         var events = await _academicEventRepository.GetAllAsync();
         return events.Select(e => e.ToAcademicEventResponse());
     }

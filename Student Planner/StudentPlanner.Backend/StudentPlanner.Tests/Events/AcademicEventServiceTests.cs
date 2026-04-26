@@ -11,6 +11,7 @@ using StudentPlanner.Core.Domain;
 using StudentPlanner.Core.Entities;
 using StudentPlanner.Core.Domain.Entities;
 using StudentPlanner.Core;
+using StudentPlanner.Infrastructure.IdentityEntities;
 
 namespace StudentPlanner.Tests.Events;
 
@@ -51,31 +52,92 @@ public class AcademicEventServiceTests
     [Fact]
     public async Task GetAllEventsAsync_ShouldReturnAllEvents()
     {
-        var events = new List<AcademicEvent>
+        var userId = Guid.NewGuid();
+        var facultyId = Guid.NewGuid();
+
+        var user = new User
         {
-            GenerateTestEvent(Guid.NewGuid(), Guid.NewGuid()),
-            GenerateTestEvent(Guid.NewGuid(), Guid.NewGuid())
+            Id = userId,
+            Role = UserRoleOptions.Student.ToString(),
+            Email = "student@pw.edu.pl",
+            FirstName = "John",
+            LastName = "Doe",
+            Faculty = new Faculty
+            {
+                Id = facultyId,
+                FacultyId = "FAC001",
+                FacultyCode = "EN",
+                FacultyName = "Engineering"
+            }
         };
 
-        _academicEventRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(events);
+        var events = new List<AcademicEvent>
+    {
+        GenerateTestEvent(Guid.NewGuid(), facultyId),
+        GenerateTestEvent(Guid.NewGuid(), facultyId)
+    };
 
-        var result = await _academicEventService.GetAllEventsAsync();
+        _userRepositoryMock
+            .Setup(repo => repo.GetByIdAsync(userId))
+            .ReturnsAsync(user);
+
+        _academicEventRepositoryMock
+            .Setup(repo => repo.GetByFacultyIdAsync(facultyId))
+            .ReturnsAsync(events);
+
+        var result = await _academicEventService.GetAllEventsAsync(userId);
 
         result.Should().NotBeNull();
         result.Should().HaveCount(2);
-        _academicEventRepositoryMock.Verify(repo => repo.GetAllAsync(), Times.Once);
+
+        _userRepositoryMock.Verify(
+            repo => repo.GetByIdAsync(userId),
+            Times.Once);
+
+        _academicEventRepositoryMock.Verify(
+            repo => repo.GetByFacultyIdAsync(facultyId),
+            Times.Once);
     }
+
 
     [Fact]
     public async Task GetAllEventsAsync_ShouldReturnEmptyList_WhenNoEventsExist()
     {
-        _academicEventRepositoryMock.Setup(repo => repo.GetAllAsync())
+        var userId = Guid.NewGuid();
+        var facultyId = Guid.NewGuid();
+
+        var user = new User
+        {
+            Id = userId,
+            Role = UserRoleOptions.Student.ToString(),
+            Email = "student@pw.edu.pl",
+            FirstName = "John",
+            LastName = "Doe",
+            Faculty = new Faculty
+            {
+                Id = facultyId,
+                FacultyId = "FAC001",
+                FacultyCode = "EN",
+                FacultyName = "Engineering"
+            }
+        };
+
+        _userRepositoryMock
+            .Setup(repo => repo.GetByIdAsync(userId))
+            .ReturnsAsync(user);
+
+        _academicEventRepositoryMock
+            .Setup(repo => repo.GetByFacultyIdAsync(facultyId))
             .ReturnsAsync(new List<AcademicEvent>());
 
-        var result = await _academicEventService.GetAllEventsAsync();
+        var result = await _academicEventService.GetAllEventsAsync(userId);
 
         result.Should().NotBeNull();
         result.Should().BeEmpty();
+
+        _academicEventRepositoryMock.Verify(
+            repo => repo.GetByFacultyIdAsync(facultyId),
+            Times.Once);
     }
 
     [Fact]

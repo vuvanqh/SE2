@@ -1,5 +1,5 @@
-import type { createEventRequest as creteType } from "../types/eventRequestTypes";
-import { apiClient } from "./apiClient";
+import type { createEventRequest as creteType } from "../../types/eventRequestTypes";
+import { apiClient } from "../apiClient";
 
 const requestUrl = "/event-requests";
 

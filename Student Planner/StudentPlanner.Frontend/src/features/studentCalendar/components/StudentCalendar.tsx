@@ -1,9 +1,9 @@
 import Calendar from "../../../components/calendar/Calendar";
-import type { personalEventResponse } from "../../../types/personalEventTypes";
 import { useContext } from "react";
 import { ModalContext } from "../../../store/ModalContext";
+import type { eventPreviewResponse } from "../../../types/eventPreviewResponse";
 
-export default function StudentCalendar({events}:{events: personalEventResponse[]}){
+export default function StudentCalendar({events}:{events: eventPreviewResponse[]}){
     const {open} = useContext(ModalContext);
 
     return <>

@@ -1,22 +1,25 @@
 import { useState,  useContext , type ReactNode} from "react";
 import EventPanel from "../../../components/calendar/EventPanel";
 import ManagerCalendar from "../../../features/managerCalendar/components/ManagerCalendar";
-import type { personalEventResponse } from "../../../types/personalEventTypes";
 import { useMyEventRequests } from "../../../features/eventRequests/hooks/eventRequestHooks";
 import { EventPreview } from "../../../features/events/components/EventPreview";
 import { EventRequestPreview } from "../../../features/eventRequests/components/EventRequestPreview";
 import { ModalContext } from "../../../store/ModalContext";
+import useEventPreviews from "../../../global-hooks/eventPreviewHooks";
+import type { eventPreviewResponse } from "../../../types/eventPreviewResponse";
 
 export default function ManagerCalendarPage(){
     const [viewRequests, setVievRequests] = useState(false);
     const {eventRequests} = useMyEventRequests();
     const {open} = useContext(ModalContext);
-    const top10:personalEventResponse[] = [];
-    // [...events].sort((a, b) => {
-    //     const dateA = new Date(a.startTime);
-    //     const dateB = new Date(b.startTime);
-    //     return dateB.getTime() - dateA.getTime();
-    // }).filter(d => new Date(d.startTime).getTime() > Date.now()).slice(0, 10);
+    const {eventPreviews} = useEventPreviews();
+    
+        const top10:eventPreviewResponse[] = [...eventPreviews].sort((a, b) => {
+            const dateA = new Date(a.startTime);
+            const dateB = new Date(b.startTime);
+            return dateB.getTime() - dateA.getTime();
+        }).filter(d => new Date(d.startTime).getTime() > Date.now()).slice(0, 10);
+        console.log(top10, eventPreviews);
 
     let content: ReactNode;
 

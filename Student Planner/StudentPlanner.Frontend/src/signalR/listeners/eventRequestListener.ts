@@ -2,10 +2,12 @@
 import { erConnection as connection, startConnections } from "../connections/eventRequestConnection";
 import { queryClient } from "../../api/queryClient";
 import { successMessage } from "../../toast/toastNotifications";
+import { infoMessage } from "../../toast/toastNotifications";
 
 const handler = () => {
     console.log("signalR")
-    queryClient.invalidateQueries({ queryKey: ["eventRequests", "all"] })
+    infoMessage("Event request updated");
+    queryClient.invalidateQueries({ queryKey: ["eventRequests", "all"] });
     successMessage("Event requests refreshed");
 };
     

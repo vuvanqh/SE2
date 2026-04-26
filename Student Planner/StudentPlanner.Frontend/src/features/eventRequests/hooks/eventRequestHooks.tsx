@@ -1,7 +1,8 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { approveEventRequest, createEventRequest, deleteEventRequest, getAllEventRequests, getEventRequestById, getMyRequests, rejectEventRequest } from "../../../api/eventRequestApi";
+import { approveEventRequest, createEventRequest, deleteEventRequest, getAllEventRequests, getEventRequestById, getMyRequests, rejectEventRequest } from "../../../api/events/eventRequestApi";
 import type { createEventRequest as createRequestType, eventRequestResponse } from "../../../types/eventRequestTypes";
 import { queryClient } from "../../../api/queryClient";
+import { infoMessage } from "../../../toast/toastNotifications";
 
 export function useMyEventRequests(){
     const {data, isPending} = useQuery<eventRequestResponse[]>({
@@ -32,6 +33,7 @@ export function useCreateRequest(){
         mutationFn: (payload: createRequestType) => createEventRequest(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ["eventRequests", "all"]})
+            infoMessage("Event request created successfully");
         }
     })
 
@@ -50,6 +52,7 @@ export function useEventRequest(requestId: string){
         mutationFn: () => deleteEventRequest(requestId),
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ["eventRequests", "all"]})
+            infoMessage("Event request deleted successfully");
         }
     })
 

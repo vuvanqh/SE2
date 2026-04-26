@@ -77,24 +77,25 @@ public class AdminServiceTests
     [Fact]
     public async Task CreateManagerAsync_ShouldCreateManager_WhenRequestIsValid()
     {
+        Guid FacultyId = Guid.NewGuid();
         var request = new CreateManagerRequestDto
         {
             FirstName = "Anna",
             LastName = "Nowak",
-            FacultyId = "FAC001",
+            FacultyId = FacultyId,
             Email = "anna.nowak@pw.edu.pl"
         };
 
         var faculty = new Faculty
         {
-            Id = Guid.NewGuid(),
-            FacultyId = "FAC001",
+            Id = FacultyId,
+            FacultyId = "somestring",
             FacultyName = "Electronics",
             FacultyCode = "EL"
         };
 
         _facultyRepositoryMock
-            .Setup(x => x.GetFacultyByUsosIdAsync(request.FacultyId))
+            .Setup(x => x.GetFacultyByIdAsync(request.FacultyId))
             .ReturnsAsync(faculty);
 
         var result = await _adminService.CreateManagerAsync(request);
@@ -131,12 +132,12 @@ public class AdminServiceTests
         {
             FirstName = "Anna",
             LastName = "Nowak",
-            FacultyId = Guid.NewGuid().ToString(),
+            FacultyId = Guid.NewGuid(),
             Email = "anna.nowak@pw.edu.pl"
         };
 
         _facultyRepositoryMock
-            .Setup(x => x.GetFacultyByUsosIdAsync(request.FacultyId))
+            .Setup(x => x.GetFacultyByIdAsync(request.FacultyId))
             .ReturnsAsync((Faculty?)null);
 
         var act = async () => await _adminService.CreateManagerAsync(request);
@@ -155,6 +156,7 @@ public class AdminServiceTests
     [Fact]
     public async Task SyncUsersWithUsosAsync_ShouldTreatAdminAndManagerAsValidWithoutUsosChecks()
     {
+
         var adminUser = new User
         {
             Id = Guid.NewGuid(),
@@ -195,14 +197,16 @@ public class AdminServiceTests
         var faculty = new Faculty
         {
             Id = Guid.NewGuid(),
-            FacultyId = "FAC001",
+            FacultyId = "FacultyId",
             FacultyName = "Electronics",
             FacultyCode = "EL"
         };
 
+        var userId = Guid.NewGuid();
+
         var student = new User
         {
-            Id = Guid.NewGuid(),
+            Id = userId,
             Email = "student@pw.edu.pl",
             FirstName = "Jan",
             LastName = "Kowalski",
@@ -216,7 +220,7 @@ public class AdminServiceTests
             .ReturnsAsync(new List<User> { student });
 
         _usosClientMock
-            .Setup(x => x.GetStudentsByFacultyAsync(student.UsosToken!, faculty.FacultyId))
+            .Setup(x => x.GetStudentsByFacultyAsync(student.UsosToken!, faculty.FacultyId.ToString()))
             .ThrowsAsync(new Exception("USOS error"));
 
         var result = await _adminService.SyncUsersWithUsosAsync();
@@ -232,7 +236,7 @@ public class AdminServiceTests
         var faculty = new Faculty
         {
             Id = Guid.NewGuid(),
-            FacultyId = "FAC001",
+            FacultyId = "FacultyId",
             FacultyName = "Electronics",
             FacultyCode = "EL"
         };
@@ -314,7 +318,7 @@ public class AdminServiceTests
         var faculty = new Faculty
         {
             Id = Guid.NewGuid(),
-            FacultyId = "FAC001",
+            FacultyId = "FacultyId",
             FacultyName = "Electronics",
             FacultyCode = "EL"
         };

@@ -1,7 +1,8 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { createPersonalEvent, getPersonalEventById, getPersonalEvents, deletePersonalEvent, updatePersonalEvent } from "../../../api/personalEventClient";
+import { createPersonalEvent, getPersonalEventById, getPersonalEvents, deletePersonalEvent, updatePersonalEvent } from "../../../api/events/personalEventClient";
 import type { personalEventResponse, updatePersonalEventRequest } from "../../../types/personalEventTypes";
 import { queryClient } from "../../../api/queryClient";
+import { errorMessage, infoMessage } from "../../../toast/toastNotifications";
 
 export function useGetAllPersonalEvents(){
     const {data, isLoading} = useQuery<personalEventResponse[]>({
@@ -13,7 +14,9 @@ export function useGetAllPersonalEvents(){
         mutationFn: createPersonalEvent,
         onSuccess: () => {
             invalidatePE();
-        }
+            infoMessage("Event created successfully")
+        },
+        onError: () => errorMessage("Failed to create event")
     })
     return {
         events: data??[],
@@ -33,14 +36,18 @@ export function useGetPersonalEvent(eventId:string){
         mutationFn: (request: updatePersonalEventRequest) => updatePersonalEvent(eventId, request),
         onSuccess: () => {
             invalidatePE()
-        }
+            infoMessage("Event updated successfully")
+        },
+        onError: () => errorMessage("Failed to create event")
     })
 
     const {mutateAsync: deleteEvent} = useMutation({
         mutationFn: () => deletePersonalEvent(eventId),
         onSuccess: () => {
             invalidatePE()
-        }
+            infoMessage("Event deleted successfully")
+        },
+        onError: () => errorMessage("Failed to create event")
     })
 
     return {

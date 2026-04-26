@@ -77,3 +77,11 @@ export function formatDate(input: string) {
 
   return `${datePart} ${startTime}`;
 }
+
+export function emailValidator(e: React.ChangeEvent<HTMLInputElement>){
+  const input = e.currentTarget;
+  const valid = /^[^@]+@pw\.edu\.pl$/.test(input.value);
+
+  input.setCustomValidity(valid ? "" : "Use @pw.edu.pl email");
+  input.reportValidity();
+}
