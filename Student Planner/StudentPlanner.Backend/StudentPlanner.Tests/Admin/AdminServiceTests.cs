@@ -156,6 +156,7 @@ public class AdminServiceTests
     [Fact]
     public async Task SyncUsersWithUsosAsync_ShouldTreatAdminAndManagerAsValidWithoutUsosChecks()
     {
+
         var adminUser = new User
         {
             Id = Guid.NewGuid(),
@@ -201,9 +202,11 @@ public class AdminServiceTests
             FacultyCode = "EL"
         };
 
+        var userId = Guid.NewGuid();
+
         var student = new User
         {
-            Id = Guid.NewGuid(),
+            Id = userId,
             Email = "student@pw.edu.pl",
             FirstName = "Jan",
             LastName = "Kowalski",
