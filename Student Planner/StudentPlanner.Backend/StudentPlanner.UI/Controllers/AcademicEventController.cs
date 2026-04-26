@@ -36,9 +36,12 @@ public class AcademicEventController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetAllEvents()
     {
+        var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (id == null)
+            return Unauthorized(new { Message = "Unauthorized access" });
         try
         {
-            var result = await _academicEventService.GetAllEventsAsync();
+            var result = await _academicEventService.GetAllEventsAsync(Guid.Parse(id));
             return Ok(result);
         }
         catch (Exception)
