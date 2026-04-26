@@ -26,10 +26,9 @@ public class AcademicEventController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all academic events in the system. Accessible only by Admins.
+    /// Retrieves all academic events in the system.
     /// </summary>
     /// <returns>A list of all academic events.</returns>
-    [Authorize(Roles = nameof(UserRoleOptions.Admin))]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -54,7 +53,6 @@ public class AcademicEventController : ControllerBase
     /// Retrieves all academic events relevant to the authenticated user's faculty.
     /// </summary>
     /// <returns>A list of academic events for the user's faculty.</returns>
-    [Authorize]
     [HttpGet("faculty")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -84,7 +82,6 @@ public class AcademicEventController : ControllerBase
     /// </summary>
     /// <param name="id">The unique identifier of the academic event.</param>
     /// <returns>The event details if found; otherwise, Not Found.</returns>
-    [Authorize]
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
