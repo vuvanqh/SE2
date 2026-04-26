@@ -212,7 +212,7 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> Logout()
     {
         var userId = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-        if(userId==null)
+        if (userId == null)
             return Unauthorized("User not authenticated");
 
         string? token = Request.Cookies["refreshToken"];

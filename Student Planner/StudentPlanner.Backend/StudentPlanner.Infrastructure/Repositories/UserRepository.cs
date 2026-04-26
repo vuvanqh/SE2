@@ -42,7 +42,7 @@ public class UserRepository : IUserRepository
         catch (Exception ex)
         {
             await tsx.RollbackAsync();
-            throw new Exception("Error deleting user: " + ex.Message);
+            throw new DbUpdateException("Error deleting user: " + ex.Message);
         }
     }
 
