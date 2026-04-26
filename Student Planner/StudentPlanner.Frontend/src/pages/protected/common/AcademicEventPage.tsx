@@ -1,11 +1,11 @@
-import type { academicEventResponse } from "../../../types/academicEventTypes"
 import AcademicEventCard from "../../../features/events/components/AcademicEventCard"
+import { useGetAcademicEventByFaculty } from "../../../features/events/hooks/academicEventHook"
 
 export default function AcademicEventPage(){
-    const academicEvents: academicEventResponse[] = [] //TODO: hook
+    const {events} = useGetAcademicEventByFaculty()
     return <>
         <h1>Academic Events</h1>
-        {academicEvents.map(event => <AcademicEventCard key={event.id} event={event}/>)}
+        {events.map(event => <AcademicEventCard key={event.id} event={event}/>)}
          <aside className="user-panel">
             <input className="search-input" placeholder="Search by event..."/>
 

@@ -1,4 +1,4 @@
-export type academiEventResponse = {
+export type academicEventResponse = {
     id: string,
     facultyId: string,
     title: string,
