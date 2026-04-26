@@ -3,6 +3,7 @@ import { useNavigate, useLocation, NavLink } from 'react-router-dom'
 import Modal from '../../components/modals/Modal'
 import Input from '../../components/common/Input';
 import { useAuth } from '../../global-hooks/authHooks';
+import { emailValidator } from '../../api/helpers';
 
 type stateType = {
   email: string,
@@ -17,12 +18,6 @@ const initial_state = {
   errors: null
 }
 
-// const mockUsers = [{
-//     email: "hehe@pw.edu.pl",
-//     password: "qwerty1234"
-// }]
-
-//TO-DO: Handle login and Registeration code duplication after discussion
 export default function LoginPage() {
   const location = useLocation();
   const isLoginOpen = location.pathname == "/login";
@@ -46,7 +41,6 @@ export default function LoginPage() {
       }
     }
 
-    //submit data
     try {
       await login(data);
       return {
@@ -71,14 +65,6 @@ export default function LoginPage() {
         errors: ["invalid credentials", ...errors]
       }
     }
-  }
-
-  function emailValidator(e: React.ChangeEvent<HTMLInputElement>){
-        const input = e.currentTarget;
-        const valid = /^[^@]+@pw\.edu\.pl$/.test(input.value);
-
-        input.setCustomValidity(valid ? "" : "Use @pw.edu.pl email");
-        input.reportValidity();
   }
 
   return (

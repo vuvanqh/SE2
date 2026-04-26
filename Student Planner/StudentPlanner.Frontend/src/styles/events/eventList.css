@@ -7,6 +7,13 @@
   list-style: none;
 }
 
+.event-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  overflow: hidden;
+}
+
 .event-item {
   width: 100%;
   text-align: left;

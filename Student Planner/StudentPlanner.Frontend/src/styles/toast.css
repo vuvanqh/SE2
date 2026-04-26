@@ -1,0 +1,113 @@
+/* container */
+.Toastify__toast-container{
+  padding:.75rem;
+}
+
+/* base card */
+.app-toast{
+  min-height:auto;
+  border-radius:16px;
+  padding:.8rem 1rem !important;
+
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+
+  border:1px solid rgba(255,255,255,.18);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.35);
+
+  font-size:.92rem;
+  font-weight:500;
+
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease;
+}
+
+.app-toast:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.22),
+    inset 0 1px 0 rgba(255,255,255,.4);
+}
+
+/* remove default harsh toast styling */
+.Toastify__toast-icon{
+  margin-inline-end:.7rem;
+}
+
+.Toastify__close-button{
+  opacity:.55;
+}
+
+.Toastify__close-button:hover{
+  opacity:1;
+}
+
+
+/* SUCCESS */
+.app-toast-success{
+  background:
+   linear-gradient(
+      135deg,
+      rgba(220,252,231,.95),
+      rgba(187,247,208,.92)
+   );
+
+  color:#14532d;
+}
+
+
+/* ERROR */
+.app-toast-error{
+  background:
+   linear-gradient(
+      135deg,
+      rgba(254,226,226,.95),
+      rgba(fecaca,.92)
+   );
+
+  color:#7f1d1d;
+}
+
+
+/* INFO (my favorite) */
+.app-toast-info{
+  background:
+    linear-gradient(
+      135deg,
+      rgba(30,41,59,.95),
+      rgba(51,65,85,.92)
+    );
+
+  color:#f8fafc;
+}
+
+/* custom info content */
+.system-toast{
+  display:flex;
+  align-items:center;
+  gap:.65rem;
+}
+
+.system-toast-icon{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+
+  display:grid;
+  place-items:center;
+
+  font-weight:700;
+  font-size:1rem;
+
+  background:rgba(255,255,255,.12);
+}
+
+
+/* optional subtle progress if you re-enable it later */
+.Toastify__progress-bar{
+  opacity:.5;
+}

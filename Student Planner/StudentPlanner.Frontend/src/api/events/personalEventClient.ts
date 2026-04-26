@@ -1,5 +1,5 @@
-import type { createPersonalEventRequest, updatePersonalEventRequest } from "../types/personalEventTypes";
-import { apiClient } from "./apiClient";
+import type { createPersonalEventRequest, updatePersonalEventRequest } from "../../types/personalEventTypes";
+import { apiClient } from "../apiClient";
 
 const personalEventUrl = "/personal-event";
 

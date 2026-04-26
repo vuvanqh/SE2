@@ -17,11 +17,6 @@ public static class IdentitySeeder
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
 
-        if (!await roleManager.RoleExistsAsync(UserRoleOptions.Manager.ToString()))
-            await roleManager.CreateAsync(new ApplicationRole { Name = UserRoleOptions.Manager.ToString() });
-
-
-
         if (!await roleManager.RoleExistsAsync(UserRoleOptions.Admin.ToString()))
             await roleManager.CreateAsync(new ApplicationRole { Name = UserRoleOptions.Admin.ToString() });
 

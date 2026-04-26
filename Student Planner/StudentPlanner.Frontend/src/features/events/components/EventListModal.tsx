@@ -1,9 +1,9 @@
 import Modal from "../../../components/modals/Modal";
 import { useContext } from "react";
 import { ModalContext } from "../../../store/ModalContext";
-import type { personalEventResponse } from "../../../types/personalEventTypes";
+import type { eventPreviewResponse } from "../../../types/eventPreviewResponse";
 
-export default function EventListModal({events}:{events: personalEventResponse[]}){
+export default function EventListModal({events}:{events: eventPreviewResponse[]}){
     const {close, open} = useContext(ModalContext);
 
     return <Modal open onClose={close}>
@@ -11,7 +11,7 @@ export default function EventListModal({events}:{events: personalEventResponse[]
         <ul className="event-list">
             {events.map(e => (
                 <li key={e.id}>
-                    <button className="event-item" onClick={() => open({type: "view", eventId: e.id})}>
+                    <button className="event-item" onClick={() => open({type: "view", eventPreview: e})}>
                         <span className="event-title">{e.title}</span>
                         <span className="event-time">
                         {e.startTime} - {e.endTime}

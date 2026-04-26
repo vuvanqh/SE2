@@ -43,7 +43,15 @@ export function useAuth(){
         onError: (error)=> {errorMessage(error.message)}
     })
 
-    const {mutateAsync: registerUser, isPending: isRegisterPending} = useMutation({
+    const {mutateAsync: logout} = useMutation({
+        mutationFn: async() => {
+            await localStorage.clear();
+            queryClient.setQueryData(["user"], undefined);
+            navigate("/")
+        }
+    })
+
+    const {mutate: registerUser, isPending: isRegisterPending} = useMutation({
         mutationFn: register,
         onSuccess: () => {
             successMessage("Registered in successfully! Feel free to log in now.");
@@ -54,6 +62,7 @@ export function useAuth(){
 
     return {
         login: mutateAsync, 
+        logout,
         registerUser,
         sendResetToken,
         resetPassword,

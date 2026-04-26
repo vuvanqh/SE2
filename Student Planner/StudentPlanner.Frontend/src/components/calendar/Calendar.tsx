@@ -4,16 +4,15 @@ import interactionPlugin from "@fullcalendar/interaction"  // needed for dayClic
 import type { EventContentArg } from '@fullcalendar/core'
 import type { DateClickArg } from '@fullcalendar/interaction'
 import type { EventClickArg } from '@fullcalendar/core'
-import type { personalEventResponse } from '../../types/personalEventTypes'
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { useRef, useContext, useState } from "react";
 import { ModalContext } from '../../store/ModalContext'
 import { isSameDay, toLocalInput } from '../../api/helpers'
 import useEventPreviews from '../../global-hooks/eventPreviewHooks';
-//import useUsosEvents from '../../global-hooks/usosHooks'
+import type { eventPreviewResponse } from '../../types/eventPreviewResponse'
 
 type calendarProps = {
-  events: personalEventResponse[],
+  events: eventPreviewResponse[],
   onDateClick: (date:string) => void
 }
 
@@ -40,7 +39,7 @@ export default function Calendar({events, onDateClick}:calendarProps) {
   };
 
   const handleEventClick = (arg: EventClickArg) => {
-    open({type: "view", eventId: arg.event.id});
+    open({type: "view", eventPreview: arg.event.extendedProps as eventPreviewResponse});
   }
 
   const handleDateClick = (arg: DateClickArg) => {
@@ -62,8 +61,13 @@ export default function Calendar({events, onDateClick}:calendarProps) {
     start: new Date(e.startTime),
     end: new Date(e.endTime),
     extendedProps: {
+      id: e.id,
+      title: e.title,
+      startTime: e.startTime,
+      endTime: e.endTime,
       description: e.description,
-      location: e.location
+      location: e.location,
+      eventType: e.eventType,
     }
   }));
 

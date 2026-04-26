@@ -1,18 +1,18 @@
-import { useGetAllPersonalEvents } from "../../../features/events/hooks/personalEventHooks";
 import EventPanel from "../../../components/calendar/EventPanel";
 import { formatDate } from "../../../api/helpers";
 import StudentCalendar from "../../../features/studentCalendar/components/StudentCalendar";
+import useEventPreviews from "../../../global-hooks/eventPreviewHooks";
 
 export default function StudentCalendarPage(){
-    const {events} = useGetAllPersonalEvents();
-     const top10 = [...events].sort((a, b) => {
+    const {eventPreviews} = useEventPreviews();
+     const top10 = [...eventPreviews].sort((a, b) => {
         const dateA = new Date(a.startTime);
         const dateB = new Date(b.startTime);
         return dateB.getTime() - dateA.getTime();
     }).filter(d => new Date(d.startTime).getTime() > Date.now()).slice(0, 10);
 
     return <>
-        <StudentCalendar events={events}/>
+        <StudentCalendar events={eventPreviews}/>
         <EventPanel label="Upcoming Events">
             {top10.length==0?<p>No upcoming events...</p>:
             <ul className="events-list">

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getEventPreviews } from "../api/eventPreviewClient";
+import { getEventPreviews } from "../api/events/eventPreviewClient";
 import type { eventPreviewResponse } from "../types/eventPreviewResponse";
 
 export default function useEventPreviews(from?: Date, to?: Date){

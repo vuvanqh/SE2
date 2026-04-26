@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { eventPreviewResponse } from "../types/eventPreviewResponse";
-import { getUsosEvents } from "../api/usos-events";
+import { getUsosEvents } from "../api/events/usos-events";
 
 export default function useUsosEvents(from?: Date, to?: Date){
     const {data, isPending} = useQuery<eventPreviewResponse[]>({

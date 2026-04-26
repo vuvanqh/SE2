@@ -18,4 +18,5 @@ public interface IIdentityService
     Task<List<User>> GetAllUsersAsync();
     Task DeleteUserAsync(Guid userId);
     Task<User?> GetUserByEmailAsync(string email);
+    Task LogOut(string id);
 }

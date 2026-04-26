@@ -57,7 +57,7 @@ export default function ViewEventRequestModal({ requestId, onClose }: createEven
                     <button className="btn-primary" onClick={() =>open({type: "editRequest", requestId})}>Edit</button>
             </div>}
 
-            {user && user.userRole=="Admin" &&
+            {user && user.userRole=="Admin" && eventRequest.status=="Pending" &&
             <div>
                 <button>Approve</button>
                 <button>Reject</button>

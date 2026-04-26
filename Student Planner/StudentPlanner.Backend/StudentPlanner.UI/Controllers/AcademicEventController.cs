@@ -26,19 +26,21 @@ public class AcademicEventController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all academic events in the system. Accessible only by Admins.
+    /// Retrieves all academic events in the system.
     /// </summary>
     /// <returns>A list of all academic events.</returns>
-    [Authorize(Roles = nameof(UserRoleOptions.Admin))]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetAllEvents()
     {
+        var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (id == null)
+            return Unauthorized(new { Message = "Unauthorized access" });
         try
         {
-            var result = await _academicEventService.GetAllEventsAsync();
+            var result = await _academicEventService.GetAllEventsAsync(Guid.Parse(id));
             return Ok(result);
         }
         catch (Exception)
@@ -51,7 +53,7 @@ public class AcademicEventController : ControllerBase
     /// Retrieves all academic events relevant to the authenticated user's faculty.
     /// </summary>
     /// <returns>A list of academic events for the user's faculty.</returns>
-    [Authorize]
+    [Authorize(Roles = nameof(UserRoleOptions.Admin))]
     [HttpGet("faculty")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -81,7 +83,6 @@ public class AcademicEventController : ControllerBase
     /// </summary>
     /// <param name="id">The unique identifier of the academic event.</param>
     /// <returns>The event details if found; otherwise, Not Found.</returns>
-    [Authorize]
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

@@ -9,6 +9,9 @@
 @import "./uiElements/navlink.css";
 @import "./uiElements/sidebar.css";
 @import "./events/adminRequest.css";
+@import "./admin/userManagementPage.css";
+@import "./admin/managerModal.css";
+@import "./toast.css";
 
 *,
 *::before,
@@ -426,3 +429,14 @@ dialog[open] {
 
   margin: 0.5rem 0 0.8rem 0;
 }
+
+.app-shell{
+ min-height:100vh;
+ display:flex;
+ flex-direction:column;
+}
+
+.app-shell > :first-child{
+ flex:1;
+}
+
