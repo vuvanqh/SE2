@@ -27,7 +27,7 @@ public class Program
 
         builder.Services.ConfigureBaseline(builder.Configuration);
         builder.Services.ConfigureServices(builder.Configuration);
-        builder.Services.AddMemoryCache();
+
 
         builder.Host.UseSerilog((HostBuilderContext context, IServiceProvider services, LoggerConfiguration loggerConfiguration) =>
         {

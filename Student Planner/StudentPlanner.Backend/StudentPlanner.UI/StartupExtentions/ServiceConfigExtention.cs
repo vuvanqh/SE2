@@ -56,6 +56,8 @@ public static class ServiceConfigExtention
         services.AddScoped<IUsosEventRepository, UsosEventRepository>();
         services.AddScoped<IEventPreviewService, EventPreviewService>();
         services.AddScoped<IFacultyService, FacultyService>();
+        services.AddMemoryCache();
+
         //notification services
         services.AddScoped<IEventRequestNotificationService, EventRequestNotificationService>();
 

@@ -22,7 +22,7 @@ public class UsosEventService : IUsosEventService
         _userRepository = userRepository;
     }
 
-    public async Task<List<UsosEventResponseDto>> SyncAndGetEventsAsync(Guid userId, DateOnly start, int days )
+    public async Task<List<UsosEventResponseDto>> SyncAndGetEventsAsync(Guid userId, DateOnly start, int days)
     {
         string cacheKey = $"usos-events-{userId}-{start:yyyyMMdd}-{days}";
         if (_cache.TryGetValue(cacheKey, out List<UsosEventResponseDto>? cachedEvents))
@@ -41,7 +41,7 @@ public class UsosEventService : IUsosEventService
             cacheKey,
             fetchedEvents,
             TimeSpan.FromMinutes(30) // the duration of the token should be matched with the duration of the jwt token
-        ); 
+        );
         return fetchedEvents;
     }
 }

@@ -129,5 +129,5 @@ public class UsosEventsControllerTests
             s => s.SyncAndGetEventsAsync(userId, new DateOnly(2025, 10, 1), 7),
             Times.Once);
     }
-    
+
 }

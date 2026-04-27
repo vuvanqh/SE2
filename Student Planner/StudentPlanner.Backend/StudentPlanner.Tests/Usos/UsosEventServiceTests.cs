@@ -70,29 +70,29 @@ public class UsosEventServiceTests
     }
 
     [Fact]
-public async Task SyncAndGetEventsAsync_ShouldReturnEvents_WhenCacheDoesNotContainData()
-{
-    // Arrange
-    var userRepositoryMock = new Mock<IUserRepository>();
-    var usosClientMock = new Mock<IUsosClient>();
-
-    var cache = new MemoryCache(new MemoryCacheOptions());
-
-    var userId = Guid.NewGuid();
-    var start = new DateOnly(2025, 10, 1);
-    var days = 7;
-
-    var user = new User
+    public async Task SyncAndGetEventsAsync_ShouldReturnEvents_WhenCacheDoesNotContainData()
     {
-        Id = userId,
-        FirstName = "Anna",
-        LastName = "Nowak",
-        Email = "email@pw.edu.pl",
-        Role = "Student",
-        UsosToken = "test-token"
-    };
+        // Arrange
+        var userRepositoryMock = new Mock<IUserRepository>();
+        var usosClientMock = new Mock<IUsosClient>();
 
-    var fetchedEvents = new List<UsosEventResponseDto>
+        var cache = new MemoryCache(new MemoryCacheOptions());
+
+        var userId = Guid.NewGuid();
+        var start = new DateOnly(2025, 10, 1);
+        var days = 7;
+
+        var user = new User
+        {
+            Id = userId,
+            FirstName = "Anna",
+            LastName = "Nowak",
+            Email = "email@pw.edu.pl",
+            Role = "Student",
+            UsosToken = "test-token"
+        };
+
+        var fetchedEvents = new List<UsosEventResponseDto>
     {
         new()
         {
@@ -109,33 +109,33 @@ public async Task SyncAndGetEventsAsync_ShouldReturnEvents_WhenCacheDoesNotConta
         }
     };
 
-    userRepositoryMock
-        .Setup(x => x.GetByIdAsync(userId))
-        .ReturnsAsync(user);
+        userRepositoryMock
+            .Setup(x => x.GetByIdAsync(userId))
+            .ReturnsAsync(user);
 
-    usosClientMock
-        .Setup(x => x.GetTimetableAsync("test-token", start, days))
-        .ReturnsAsync(fetchedEvents);
+        usosClientMock
+            .Setup(x => x.GetTimetableAsync("test-token", start, days))
+            .ReturnsAsync(fetchedEvents);
 
-    var service = new UsosEventService(
-        usosClientMock.Object,
-        cache,
-        userRepositoryMock.Object
-    );
+        var service = new UsosEventService(
+            usosClientMock.Object,
+            cache,
+            userRepositoryMock.Object
+        );
 
-    // Act
-    var result = await service.SyncAndGetEventsAsync(userId, start, days);
+        // Act
+        var result = await service.SyncAndGetEventsAsync(userId, start, days);
 
-    // Assert
-    result.Should().BeSameAs(fetchedEvents);
+        // Assert
+        result.Should().BeSameAs(fetchedEvents);
 
-    usosClientMock.Verify(
-        x => x.GetTimetableAsync("test-token", start, days),
-        Times.Once);
+        usosClientMock.Verify(
+            x => x.GetTimetableAsync("test-token", start, days),
+            Times.Once);
 
-    userRepositoryMock.Verify(
-        x => x.GetByIdAsync(userId),
-        Times.Once);
-}
+        userRepositoryMock.Verify(
+            x => x.GetByIdAsync(userId),
+            Times.Once);
+    }
 
 }
