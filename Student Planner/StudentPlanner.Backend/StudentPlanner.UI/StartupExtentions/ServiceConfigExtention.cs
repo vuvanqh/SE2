@@ -53,7 +53,6 @@ public static class ServiceConfigExtention
         services.AddScoped<IEmailService, MailtrapEmailService>();
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IUsosEventService, UsosEventService>();
-        services.AddScoped<IUsosEventRepository, UsosEventRepository>();
         services.AddScoped<IEventPreviewService, EventPreviewService>();
         services.AddScoped<INotificationPreferenceService, NotificationPreferenceService>();
 
