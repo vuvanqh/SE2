@@ -16,12 +16,12 @@ export default function AdminCalendarPage(){
     const {faculties} = useFaculties();
     const [selectedFaculties, setSelectedFaculties] = useState<string[]>([]);
     const [appliedFaculties, setAppliedFaculties] = useState<string[]>([]);
-    const [range, setRange] = useState<{ from?: Date; to?: Date;}>({});
+    const [range, setRange] = useState<{ from?: Date; days?: number;}>({});
 
     const {eventPreviews} = useEventPreviews({
         facultyIds: appliedFaculties,
         from: range.from,
-        to: range.to,
+        days: range.days,
     });
 
     function toggleValue(value: string, setter: React.Dispatch<React.SetStateAction<string[]>>) {
@@ -85,7 +85,7 @@ export default function AdminCalendarPage(){
                 Clear
             </button>
         </aside>
-        <Calendar events={eventPreviews} onRangeChange={(from, to) =>setRange({ from, to })}/>
+        <Calendar events={eventPreviews} onRangeChange={(from, days) =>setRange({ from, days })}/>
         <EventPanel label={viewRequests?"Recent Requests":"Upcoming events"}> 
             <div className="events-controls">
                 <div className="toggle-group">

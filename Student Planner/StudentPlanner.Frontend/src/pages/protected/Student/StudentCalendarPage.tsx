@@ -9,17 +9,17 @@ import { getNEvents } from "../../../api/helpers";
 
 export default function StudentCalendarPage(){
     const {open} = useContext(ModalContext);
-    const [range, setRange] = useState<{ from?: Date; to?: Date;}>({});
-    
+    const [range, setRange] = useState<{ from?: Date; days?: number;}>({});
+        
     const {eventPreviews} = useEventPreviews({
         from: range.from,
-        to: range.to,
+        days: range.days,
     });
     const top10:eventPreviewResponse[] = getNEvents(eventPreviews,10);
-
+    console.log(eventPreviews);
     return <>
         <Calendar events={eventPreviews} onDateClick={(start: string) => open({type: "createPersonal", startTime: start})}
-            onRangeChange={(from, to) =>setRange({ from, to })}/>
+            onRangeChange={(from, days) =>setRange({ from, days })}/>
         <EventPanel label="Upcoming Events">
             {top10.length==0?<p>No upcoming events...</p>:
             <ul className="events-list">

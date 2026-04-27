@@ -2,12 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getEventPreviews } from "../api/events/eventPreviewClient";
 import type { eventPreviewResponse } from "../types/eventPreviewResponse";
 
-export default function useEventPreviews({from,to,facultyIds}:{from?: Date, to?: Date, facultyIds?: string[]}){
+export default function useEventPreviews({from,days,facultyIds}:{from?: Date, days?: number, facultyIds?: string[]}){
     const {data, isPending} = useQuery<eventPreviewResponse[]>({
-        queryKey: ["eventPreviews", from, to, facultyIds],
-        queryFn: () => getEventPreviews(from, to, facultyIds)
+        queryKey: ["eventPreviews", from, days, facultyIds],
+        queryFn: () => getEventPreviews(from, days, facultyIds)
     })
-
+    
     return {
         eventPreviews: data??[],
         isPending

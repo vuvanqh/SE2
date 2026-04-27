@@ -10,4 +10,5 @@ public interface IUsosClient
     Task<List<Faculty>> GetFacultiesAsync();
     Task<List<UsosEventResponseDto>> GetTimetableAsync(string usosToken, DateOnly start, int days);
     Task<List<UsosStudentDto>> GetStudentsByFacultyAsync(string usosToken, string facultyId);
+    Task<UsosEventResponseDto> GetEventAsync(string usosToken, string eventId);
 }

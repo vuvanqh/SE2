@@ -15,6 +15,7 @@ function filterByDateRange(rows, start, days) {
 }
 function mapTimetableRow(row) {
   return {
+    usos_event_id: String(row.usos_event_id),
     title: row.title,
     start_time: row.start_time,
     end_time: row.end_time,
@@ -30,6 +31,7 @@ function mapTimetableRow(row) {
 function getUserTimetable(user_id, start, days) {
   const rows = db.prepare(`
     SELECT
+      se.usos_event_id,
       se.title,
       se.start_time,
       se.end_time,
@@ -102,8 +104,47 @@ function getCourseTimetable(course_id, term_id, start, days) {
   return filterByDateRange(rows, start, days).map(mapTimetableRow);
 }
 
+
+function getEventById(eventId, userId) {
+  const row = db.prepare(`
+    SELECT
+      se.usos_event_id,
+      se.title,
+      se.start_time,
+      se.end_time,
+      se.course_id,
+      se.class_type,
+      se.group_number,
+      r.room_id,
+      r.room_number,
+      b.building_id,
+      b.building_name
+    FROM enrollments e
+    JOIN usos_schedule_events se
+      ON se.course_id = e.course_id
+     AND se.group_number = e.group_number
+     AND se.class_type = e.class_type
+     AND se.term_id = e.term_id
+    LEFT JOIN usos_rooms r
+      ON r.room_id = se.room_id
+    LEFT JOIN usos_buildings b
+      ON b.building_id = r.building_id
+    WHERE
+      e.student_id = ?
+      AND se.usos_event_id = ?
+  `).get(userId, eventId);
+
+
+  if (!row) {
+    return null;
+  }
+
+  return mapTimetableRow(row);
+}
+
 module.exports = {
   getUserTimetable,
   getRoomTimetable,
-  getCourseTimetable
+  getCourseTimetable,
+  getEventById
 };

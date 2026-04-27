@@ -100,4 +100,62 @@ public class UsosEventsController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    /// <summary>
+    /// Retrieves details of a specific USOS event belonging to
+    /// the authenticated student.
+    /// </summary>
+    /// <param name="id">
+    /// The unique identifier of the USOS event.
+    /// </param>
+    /// <returns>
+    /// The requested USOS event details.
+    /// </returns>
+    /// <response code="200">
+    /// Event successfully retrieved.
+    /// </response>
+    /// <response code="401">
+    /// If the user is not authenticated.
+    /// </response>
+    /// <response code="404">
+    /// If the event does not exist or is not accessible
+    /// to the authenticated user.
+    /// </response>
+    /// <response code="502">
+    /// If communication with the external USOS system fails.
+    /// </response>
+    [HttpGet("{id:required}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status502BadGateway)]
+    public async Task<IActionResult> GetEventById([FromQuery] string id)
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(userIdClaim))
+                return Unauthorized(new { message = "User id claim not found." });
+
+            if (!Guid.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user id claim format." });
+
+            var e = await _usosEventService.GetEventByIdAsync(userId, id);
+
+            return Ok(e);
+        }
+        catch (UsosException ex)
+        {
+            return StatusCode(StatusCodes.Status502BadGateway, new { message = ex.Message });
+        }
+        catch (InvalidResponseException ex)
+        {
+            return StatusCode(StatusCodes.Status502BadGateway, new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }

@@ -37,8 +37,8 @@ public class EventPreviewController : ControllerBase
     /// <param name="from">
     /// Optional start date filter. Only events occurring after this date are included.
     /// </param>
-    /// <param name="to">
-    /// Optional end date filter. Only events occurring before this date are included.
+    /// <param name="days">
+    /// Optional days indicates the range date starting from the starting ending on start date + days, from which events are to be included.
     /// </param>
     /// /// <param name="facultyIds">
     /// Optional faculty filter. Only events of faculties with faculty ids included in the parameter are returned.
@@ -48,7 +48,7 @@ public class EventPreviewController : ControllerBase
     /// <response code="400">If the user role is invalid.</response>
     /// <response code="401">If the user is not authenticated.</response>
     [HttpGet]
-    public async Task<IActionResult> GetPreviews(DateTime? from, DateTime? to, [FromQuery] List<Guid> facultyIds)
+    public async Task<IActionResult> GetPreviews(DateTime? from, int? days, [FromQuery] List<Guid> facultyIds)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var role = User.FindFirst(ClaimTypes.Role)?.Value;
@@ -61,6 +61,6 @@ public class EventPreviewController : ControllerBase
         if (!Enum.TryParse<UserRoleOptions>(role, true, out var parsedRole))
             return BadRequest("Invalid role");
 
-        return Ok((await _eventPreviewService.GetForUserAsync(new UserContext { Id = Guid.Parse(userId), Role = parsedRole }, new EventPreviewQuery { From = from, To = to, FacultyIds = facultyIds })));
+        return Ok((await _eventPreviewService.GetForUserAsync(new UserContext { Id = Guid.Parse(userId), Role = parsedRole }, new EventPreviewQuery { From = from, Days = days, FacultyIds = facultyIds })));
     }
 }

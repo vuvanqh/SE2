@@ -13,11 +13,11 @@ export default function ManagerCalendarPage(){
     const [viewRequests, setVievRequests] = useState(false);
     const {eventRequests} = useMyEventRequests();
     const {open} = useContext(ModalContext);
-    const [range, setRange] = useState<{ from?: Date; to?: Date;}>({});
+    const [range, setRange] = useState<{ from?: Date; days?: number;}>({});
     
     const {eventPreviews} = useEventPreviews({
         from: range.from,
-        to: range.to,
+        days: range.days,
     });
     
     const top10:eventPreviewResponse[] = getNEvents(eventPreviews,10);
@@ -55,7 +55,7 @@ export default function ManagerCalendarPage(){
     
     return <>
         <Calendar events={top10??[]} onDateClick={(start: string) => open({type: "createRequest", startTime: start})}
-            onRangeChange={(from, to) =>setRange({ from, to })}/>
+            onRangeChange={(from, days) =>setRange({ from, days })}/>
         <EventPanel label={viewRequests?"Recent Requests":"Upcoming events"}>
             <div className="events-controls">
                 <button className="primary-action" onClick={()=>open({type:"createRequest"})}>+ Create Request</button>

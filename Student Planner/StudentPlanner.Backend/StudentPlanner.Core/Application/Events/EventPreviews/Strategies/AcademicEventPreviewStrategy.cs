@@ -33,7 +33,7 @@ public class AcademicEventPreviewStrategy : IEventPreviewStrategy
         {
             EndTime = e.EventDetails.EndTime,
             StartTime = e.EventDetails.StartTime,
-            Id = e.Id,
+            Id = e.Id.ToString(),
             Location = e.EventDetails.Location,
             Title = e.EventDetails.Title,
             EventType = ValueObjects.EventPreveiwType.AcademicEvent

@@ -53,6 +53,7 @@ public static class ServiceConfigExtention
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IUsosEventService, UsosEventService>();
         services.AddScoped<IFacultyService, FacultyService>();
+        services.AddScoped<IEventPreviewService, EventPreviewService>();
         services.AddMemoryCache();
 
         //notification services
@@ -76,6 +77,7 @@ public static class ServiceConfigExtention
         services.AddTransient<IEventRequestApprovalStrategy, StudentPlanner.Core.Application.EventRequests.Strategies.DeleteApprovalStrategy>();
         services.AddTransient<IEventPreviewStrategy, PersonalEventPreveiwStrategy>();
         services.AddTransient<IEventPreviewStrategy, AcademicEventPreviewStrategy>();
+        services.AddTransient<IEventPreviewStrategy, UsosEventPreviewStrategy>();
 
         //hosted
         services.AddHostedService<FacultyBootstrapService>();
