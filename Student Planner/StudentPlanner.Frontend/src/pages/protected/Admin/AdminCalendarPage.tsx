@@ -1,24 +1,40 @@
 import { useState, type ReactNode} from "react";
 import EventPanel from "../../../components/calendar/EventPanel";
-import ManagerCalendar from "../../../features/managerCalendar/components/ManagerCalendar";
+import Calendar from "../../../components/calendar/Calendar";
 import { useAllEventRequests } from "../../../features/eventRequests/hooks/eventRequestHooks";
 import { EventPreview } from "../../../features/events/components/EventPreview";
 import AdminRequestPreview from "../../../features/eventRequests/components/AdminRequestPreview";
 import type { eventPreviewResponse } from "../../../types/eventPreviewResponse";
 import useEventPreviews from "../../../global-hooks/eventPreviewHooks";
+import FilterOption from "../../../components/common/FilterOption";
+import { useFaculties } from "../../../global-hooks/facultyHooks";
+import { getNEvents } from "../../../api/helpers";
 
 export default function AdminCalendarPage(){
     const [viewRequests, setVievRequests] = useState(false);
     const {eventRequests} = useAllEventRequests();
-    const {eventPreviews} = useEventPreviews();
+    const {faculties} = useFaculties();
+    const [selectedFaculties, setSelectedFaculties] = useState<string[]>([]);
+    const [appliedFaculties, setAppliedFaculties] = useState<string[]>([]);
+    const [range, setRange] = useState<{ from?: Date; to?: Date;}>({});
 
-    const top10:eventPreviewResponse[] = [...eventPreviews].sort((a, b) => {
-        const dateA = new Date(a.startTime);
-        const dateB = new Date(b.startTime);
-        return dateB.getTime() - dateA.getTime();
-    }).filter(d => new Date(d.startTime).getTime() > Date.now()).slice(0, 10);
-    console.log(top10, eventPreviews);
+    const {eventPreviews} = useEventPreviews({
+        facultyIds: appliedFaculties,
+        from: range.from,
+        to: range.to,
+    });
+
+    function toggleValue(value: string, setter: React.Dispatch<React.SetStateAction<string[]>>) {
+        setter(prev =>
+            prev.includes(value)
+            ? prev.filter(v => v !== value)
+            : [...prev, value]
+        );
+    }
+
+    const top10:eventPreviewResponse[] = getNEvents(eventPreviews,10);
     let content: ReactNode;
+
 
     if (viewRequests) {
     content =
@@ -47,10 +63,29 @@ export default function AdminCalendarPage(){
         </ul>
         );
     }
-    
+
+    const filtersChanged = selectedFaculties.slice().sort().join(",") !== appliedFaculties.slice().sort().join(",");
+
     
     return <>
-        <ManagerCalendar events={[]}/>
+        <aside className="user-panel">
+            <h3 className="filter-title">
+                Faculty Filters
+            </h3>
+            <div className="filter-group">
+                <p className="filter-title">Faculties</p>
+                {faculties.map(f => <FilterOption key={f.facultyId} label={f.facultyName}
+                        value={selectedFaculties.includes(f.facultyId)} 
+                        onChange={() => toggleValue(f.facultyId, setSelectedFaculties)}/>)}
+            </div>
+            <button onClick={()=>setAppliedFaculties([...selectedFaculties])} disabled={!filtersChanged}>
+                Apply
+            </button>
+            <button onClick={() => {setSelectedFaculties([]); setAppliedFaculties([]);}}>
+                Clear
+            </button>
+        </aside>
+        <Calendar events={eventPreviews} onRangeChange={(from, to) =>setRange({ from, to })}/>
         <EventPanel label={viewRequests?"Recent Requests":"Upcoming events"}> 
             <div className="events-controls">
                 <div className="toggle-group">

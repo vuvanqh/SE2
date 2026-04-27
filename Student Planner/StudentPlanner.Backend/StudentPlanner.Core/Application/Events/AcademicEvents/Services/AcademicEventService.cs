@@ -20,21 +20,25 @@ public class AcademicEventService : IAcademicEventService
         _userRepository = userRepository;
     }
 
-    public async Task<IEnumerable<AcademicEventResponse>> GetAllEventsAsync(Guid id)
+    public async Task<IEnumerable<AcademicEventResponse>> GetAccessibleEventsAsync(Guid id, string role, List<Guid>? facultyIds)
     {
         var user = await _userRepository.GetByIdAsync(id);
         if (user == null)
             throw new KeyNotFoundException("User not found.");
 
-        if (user.Role != UserRoleOptions.Admin.ToString())
+        IEnumerable<AcademicEvent> events;
+        if (role != UserRoleOptions.Admin.ToString())
         {
             if (user.Faculty == null)
                 return Enumerable.Empty<AcademicEventResponse>();
-            var e = await _academicEventRepository.GetByFacultyIdAsync(user.Faculty.Id);
-            return e.Select(e => e.ToAcademicEventResponse());
+            events = await _academicEventRepository.GetByFacultyIdAsync(user.Faculty.Id);
         }
-
-        var events = await _academicEventRepository.GetAllAsync();
+        else
+        {
+            events = facultyIds != null && facultyIds.Count > 0 ?
+                await _academicEventRepository.GetByFacultiesAsync(facultyIds) :
+                await _academicEventRepository.GetAllAsync();
+        }
         return events.Select(e => e.ToAcademicEventResponse());
     }
 
@@ -54,18 +58,5 @@ public class AcademicEventService : IAcademicEventService
         }
 
         return e.ToAcademicEventResponse();
-    }
-
-    public async Task<IEnumerable<AcademicEventResponse>> GetEventsForUserAsync(Guid userId)
-    {
-        var user = await _userRepository.GetByIdAsync(userId);
-        if (user == null)
-            throw new KeyNotFoundException("User not found.");
-
-        if (user.Faculty == null)
-            return Enumerable.Empty<AcademicEventResponse>();
-
-        var events = await _academicEventRepository.GetByFacultyIdAsync(user.Faculty.Id);
-        return events.Select(e => e.ToAcademicEventResponse());
     }
 }

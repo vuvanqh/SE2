@@ -1,8 +1,8 @@
 import AcademicEventCard from "../../../features/events/components/AcademicEventCard"
-import { useGetAcademicEventByFaculty } from "../../../features/events/hooks/academicEventHook"
+import { useAccessibleAcademicEvents } from "../../../features/events/hooks/academicEventHook"
 
 export default function AcademicEventPage(){
-    const {events} = useGetAcademicEventByFaculty()
+    const {events} = useAccessibleAcademicEvents()
     return <>
         <h1>Academic Events</h1>
         {events.map(event => <AcademicEventCard key={event.id} event={event}/>)}

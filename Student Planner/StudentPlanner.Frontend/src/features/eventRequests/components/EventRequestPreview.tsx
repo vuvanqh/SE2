@@ -10,7 +10,7 @@ export function EventRequestPreview({ eventRequest }: { eventRequest: eventReque
         <button className="event-item" onClick={()=>open({type:"viewRequest", requestId:eventRequest.id})}>
             <div className="event-title">
                 <span>{details.title}</span>
-                <span className={`event-badge ${status.toLowerCase()}`}>
+                <span className={`event-badge ${eventRequest.status.toLowerCase()}`}>
                 {eventRequest.status}
                 </span>
             </div>
