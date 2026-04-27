@@ -66,7 +66,11 @@ export default function ManagerCalendarPage(){
                 </div>
             </div>
             
-            {content}
+          
+
+            <div className="events-scroll">
+                {content}
+            </div>
         </EventPanel>
     </>
 }
