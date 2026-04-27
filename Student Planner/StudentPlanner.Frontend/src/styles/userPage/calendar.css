@@ -2,6 +2,11 @@
   margin-top: 6.5rem; /* slightly larger than navbar height */
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+
+  gap: 2rem;
+
+  height: auto;
 }
 
 .calendar-wrapper {
@@ -249,12 +254,13 @@
 
 /* right panel */
 .events-panel {
-  flex: 0 1 25%;
-  max-width: 320px;
-  min-width: 240px;
+  flex: 0 0 320px;
+  width: 320px;
 
+  align-self: flex-start; 
   padding: 1rem;
   border-radius: 18px;
+  overflow: hidden;
 
   background:
     linear-gradient(
@@ -272,6 +278,8 @@
 
   display: flex;
   flex-direction: column;
+
+  overflow: hidden; /* critical */
 }
 
 /* header */
@@ -361,6 +369,13 @@
   flex-direction: column;
   gap: 0.5rem;
   margin-bottom: 0.8rem;
+}
+
+.events-scroll {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0; /* critical in flexbox */
+  padding-right: 0.35rem;
 }
 
 /* ===== PRIMARY BUTTON ===== */

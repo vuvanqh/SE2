@@ -5,7 +5,7 @@ namespace StudentPlanner.Core.Application.Events.EventPreveiws;
 
 public record EventPreveiwDto
 {
-    [Required] public Guid Id { get; set; }
+    [Required] public string Id { get; set; } = null!;
     [Required] public string Title { get; set; } = null!;
     [Required] public string? Location { get; set; }
     [Required] public DateTime StartTime { get; set; }

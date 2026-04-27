@@ -14,7 +14,7 @@ type calendarProps = {
   events: eventPreviewResponse[],
   onRangeChange?: (
     from: Date,
-    to: Date
+    days: number
   ) => void;
   onDateClick?: (date:string) => void
 }
@@ -26,7 +26,12 @@ export default function Calendar({events, onDateClick, onRangeChange}: calendarP
     const to = new Date(arg.end);
     to.setDate(to.getDate() - 1);
 
-    onRangeChange?.(from, to);
+    const msPerDay = 1000 * 60 * 60 * 24;
+
+    const days = Math.round(
+      (arg.end.getTime() - from.getTime()) / msPerDay
+    );
+    onRangeChange?.(from, days);
   };
 
 

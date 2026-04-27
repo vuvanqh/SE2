@@ -139,4 +139,29 @@ public class UsosClient : IUsosClient
 
         return result;
     }
+
+    public async Task<UsosEventResponseDto> GetEventAsync(string usosToken, string eventId)
+    {
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"/services/tt/event/{eventId}");
+
+        request.Headers.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", usosToken);
+
+        var response = await _httpClient.SendAsync(request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogWarning("Fetching USOS event failed. Status: {StatusCode}", response.StatusCode);
+            throw new UsosException($"Fetching event failed with status {response.StatusCode}");
+        }
+
+        var result = await response.Content.ReadFromJsonAsync<UsosEventResponseDto>();
+
+        if (result == null)
+            throw new InvalidResponseException("USOS returned empty event response.");
+
+        return result;
+    }
 }

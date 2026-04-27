@@ -3,6 +3,6 @@
 public record EventPreviewQuery
 {
     public DateTime? From { get; init; }
-    public DateTime? To { get; init; }
+    public int? Days { get; init; } = 31;
     public List<Guid>? FacultyIds { get; init; }
 }
