@@ -43,7 +43,7 @@ public class UsosEventService : IUsosEventService
             _cache.Set(
                 cacheKey2,
                 e,
-                TimeSpan.FromMinutes(30) 
+                TimeSpan.FromMinutes(30)
             );
         }
         _cache.Set(
@@ -60,7 +60,7 @@ public class UsosEventService : IUsosEventService
 
         if (_cache.TryGetValue(cacheKey, out UsosEventResponseDto? cachedEvent))
             return cachedEvent!;
-        
+
 
         var user = await _userRepository.GetByIdAsync(userId);
 

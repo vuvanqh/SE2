@@ -4,7 +4,7 @@ namespace StudentPlanner.Core.Application.ClientContracts.DTO;
 public record UsosEventResponseDto
 {
     [JsonPropertyName("usos_event_id")]
-    public string Id { get; set; } =  null!;
+    public string Id { get; set; } = null!;
     [JsonPropertyName("title")]
     public string? Title { get; set; }
 

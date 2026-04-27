@@ -24,7 +24,7 @@ public class UsosEventPreviewStrategy : IEventPreviewStrategy
         var now = DateTime.UtcNow;
         var from = query.From ?? new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var days = query.Days ?? 31;
-        string cacheKey =$"usos-preview:{user.Id}:{from:yyyyMMdd}:{days}";
+        string cacheKey = $"usos-preview:{user.Id}:{from:yyyyMMdd}:{days}";
 
         IEnumerable<UsosEventResponseDto> events;
 
