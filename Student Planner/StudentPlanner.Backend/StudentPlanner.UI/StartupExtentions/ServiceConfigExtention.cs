@@ -17,7 +17,6 @@ using StudentPlanner.Core.Application.Services;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Infrastructure.Identity;
 using StudentPlanner.Infrastructure.Repositories;
-using StudentPlanner.Infrastructure.Repositories.Events;
 using StudentPlanner.Infrastructure.Services;
 using StudentPlanner.Infrastructure.Services.Settings;
 using StudentPlanner.UI.NotificationServices;
@@ -53,8 +52,6 @@ public static class ServiceConfigExtention
         services.AddScoped<IEmailService, MailtrapEmailService>();
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IUsosEventService, UsosEventService>();
-        services.AddScoped<IUsosEventRepository, UsosEventRepository>();
-        services.AddScoped<IEventPreviewService, EventPreviewService>();
         services.AddScoped<IFacultyService, FacultyService>();
         services.AddMemoryCache();
 
@@ -79,7 +76,6 @@ public static class ServiceConfigExtention
         services.AddTransient<IEventRequestApprovalStrategy, StudentPlanner.Core.Application.EventRequests.Strategies.DeleteApprovalStrategy>();
         services.AddTransient<IEventPreviewStrategy, PersonalEventPreveiwStrategy>();
         services.AddTransient<IEventPreviewStrategy, AcademicEventPreviewStrategy>();
-        services.AddTransient<IEventPreviewStrategy, UsosEventPreviewStrategy>();
 
         //hosted
         services.AddHostedService<FacultyBootstrapService>();

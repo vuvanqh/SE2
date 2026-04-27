@@ -225,50 +225,6 @@ namespace StudentPlanner.Infrastructure.Migrations
                     b.ToTable("PersonalEvents", (string)null);
                 });
 
-            modelBuilder.Entity("StudentPlanner.Core.Domain.UsosEvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BuildingId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BuildingName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClassType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CourseId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ExternalKey")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("GroupNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RoomId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RoomNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("UserId", "ExternalKey")
-                        .IsUnique();
-
-                    b.ToTable("UsosEvents", (string)null);
-                });
-
             modelBuilder.Entity("StudentPlanner.Infrastructure.ApplicationRole", b =>
                 {
                     b.Property<Guid>("Id")

@@ -2,7 +2,6 @@ using StudentPlanner.Core.Application.ClientContracts;
 using StudentPlanner.Core.Application.ClientContracts.DTO;
 using StudentPlanner.Core.Application.Events.UsosEvents.ServiceContracts;
 using StudentPlanner.Core.Domain.RepositoryContracts;
-using StudentPlanner.Core.Application.Events.UsosEvents.Mapping;
 using Microsoft.Extensions.Caching.Memory;
 namespace StudentPlanner.Core.Application.Events.UsosEvents.Services;
 
