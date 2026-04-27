@@ -5,5 +5,6 @@ export type academicEventResponse = {
     description?: string,
     startTime: string,
     endTime: string,
-    location?: string
+    location?: string,
+    isSubscribed: boolean
 }

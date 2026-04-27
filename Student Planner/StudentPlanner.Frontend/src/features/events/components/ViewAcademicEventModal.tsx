@@ -1,6 +1,7 @@
 import Modal from "../../../components/modals/Modal";
-import { useGetAcademicEvent } from "../hooks/academicEventHook";
+import { formatDate } from "../../../api/helpers";
 import { useUser } from "../../../global-hooks/authHooks";
+import { useGetAcademicEvent, useSubscribeToAcademicEvent, useUnsubscribeFromAcademicEvent } from "../hooks/academicEventHook";
 
 type createEventProps = {
     requiresRole?: ("Student" | "Manager" | "Admin") [],
@@ -12,6 +13,19 @@ type createEventProps = {
 export default function ViewAcademicEventModal({ eventId, onClose }: createEventProps) {
     const { event, isLoading} = useGetAcademicEvent(eventId);
     const {user} = useUser();
+    const {subscribeToEvent, isPending: isSubscribePending} = useSubscribeToAcademicEvent(eventId);
+    const {unsubscribeFromEvent, isPending: isUnsubscribePending} = useUnsubscribeFromAcademicEvent(eventId);
+
+    async function handleSubscription(){
+        if (!event) return;
+
+        if (event.isSubscribed) {
+            await unsubscribeFromEvent();
+            return;
+        }
+
+        await subscribeToEvent();
+    }
 
     if (isLoading || !event) return <Modal open>Loading...</Modal>;
     return (
@@ -22,7 +36,7 @@ export default function ViewAcademicEventModal({ eventId, onClose }: createEvent
                 <p className="view-label">Details</p>
                 <div className="view-content">
                     <p><strong>Location:</strong> {event.location}</p>
-                    <p>{event.startTime} - {event.endTime}</p>
+                    <p>{formatDate(event.startTime)} - {formatDate(event.endTime)}</p>
                 </div>
             </div>
 
@@ -32,7 +46,9 @@ export default function ViewAcademicEventModal({ eventId, onClose }: createEvent
             </div>
 
            {user?.userRole=="Student" && <div className="modal-actions">
-                <button className="btn-secondary">Unsubscribe</button>
+                <button className="btn-secondary" onClick={handleSubscription} disabled={isSubscribePending || isUnsubscribePending}>
+                    {event.isSubscribed ? "Unsubscribe" : "Subscribe"}
+                </button>
            </div>}
         </Modal>
     );

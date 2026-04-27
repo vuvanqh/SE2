@@ -45,6 +45,14 @@ public class AcademicEventRepository : IAcademicEventRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<HashSet<Guid>> GetSubscribedEventIdsAsync(Guid userId)
+    {
+        return await _context.AcademicEventSubscribers
+            .Where(s => s.UserId == userId)
+            .Select(s => s.AcademicEventId)
+            .ToHashSetAsync();
+    }
+
     public async Task<bool> IsSubscribedAsync(Guid eventId, Guid userId)
     {
         return await _context.AcademicEventSubscribers

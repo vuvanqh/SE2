@@ -39,7 +39,9 @@ public class AcademicEventService : IAcademicEventService
                 await _academicEventRepository.GetByFacultiesAsync(facultyIds) :
                 await _academicEventRepository.GetAllAsync();
         }
-        return events.Select(e => e.ToAcademicEventResponse());
+
+        var subscribedEventIds = await _academicEventRepository.GetSubscribedEventIdsAsync(id);
+        return events.Select(e => e.ToAcademicEventResponse(subscribedEventIds.Contains(e.Id)));
     }
 
     public async Task<AcademicEventResponse?> GetEventByIdAsync(Guid id, Guid userId)
@@ -57,7 +59,8 @@ public class AcademicEventService : IAcademicEventService
             return null;
         }
 
-        return e.ToAcademicEventResponse();
+        var isSubscribed = await _academicEventRepository.IsSubscribedAsync(id, userId);
+        return e.ToAcademicEventResponse(isSubscribed);
     }
 
     public async Task<IEnumerable<AcademicEventResponse>> GetEventsForUserAsync(Guid userId)
@@ -70,7 +73,8 @@ public class AcademicEventService : IAcademicEventService
             return Enumerable.Empty<AcademicEventResponse>();
 
         var events = await _academicEventRepository.GetByFacultyIdAsync(user.Faculty.Id);
-        return events.Select(e => e.ToAcademicEventResponse());
+        var subscribedEventIds = await _academicEventRepository.GetSubscribedEventIdsAsync(userId);
+        return events.Select(e => e.ToAcademicEventResponse(subscribedEventIds.Contains(e.Id)));
     }
 
     public async Task SubscribeAsync(Guid eventId, Guid userId)
