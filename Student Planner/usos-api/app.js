@@ -78,7 +78,7 @@ app.use('/services/faculties', facultiesRoutes);
 const PORT = process.env.PORT || 3000;
 if (require.main == module){
 app.listen(PORT, () => {
-    console.log(`API działa na http://localhost:${PORT}`);
+    console.log(`API is running on port http://localhost:${PORT}`);
 });
 }
 module.exports = app;
