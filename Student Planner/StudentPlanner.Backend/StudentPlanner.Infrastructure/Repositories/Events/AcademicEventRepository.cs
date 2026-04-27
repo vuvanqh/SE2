@@ -73,7 +73,7 @@ public class AcademicEventRepository : IAcademicEventRepository
 
         if (subscription == null)
             return;
-    
+
         _context.AcademicEventSubscribers.Remove(subscription);
         await _context.SaveChangesAsync();
     }
