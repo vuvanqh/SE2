@@ -1,3 +1,4 @@
+import type { eventPreviewResponse } from "../types/eventPreviewResponse";
 import type { createPersonalEventRequest } from "../types/personalEventTypes";
 
 export function extractErrors(err: any): string[] {
@@ -84,4 +85,12 @@ export function emailValidator(e: React.ChangeEvent<HTMLInputElement>){
 
   input.setCustomValidity(valid ? "" : "Use @pw.edu.pl email");
   input.reportValidity();
+}
+
+export function getNEvents(eventPreviews: eventPreviewResponse[], n: number){
+  return [...eventPreviews].sort((a, b) => {
+      const dateA = new Date(a.startTime);
+      const dateB = new Date(b.startTime);
+      return dateB.getTime() - dateA.getTime();
+  }).filter(d => new Date(d.startTime).getTime() > Date.now()).slice(0, n);
 }

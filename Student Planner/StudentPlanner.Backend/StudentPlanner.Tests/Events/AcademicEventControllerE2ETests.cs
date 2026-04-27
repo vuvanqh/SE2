@@ -59,6 +59,7 @@ public class AcademicEventControllerE2ETests : IntegrationTestBase
             }
         }
 
+
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new LoginRequestDto
         {
             Email = email,
@@ -113,7 +114,107 @@ public class AcademicEventControllerE2ETests : IntegrationTestBase
     }
 
     [Fact]
-    public async Task GetAllEvents_Admin_Returns200_AndContainsData()
+    public async Task GetAccessibleEvents_StudentWithoutFilters_Returns200()
+    {
+        var token = await RegisterAndLoginUserAsync(
+            "student_ok@test.com",
+            "Password123!"
+        );
+
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var response =
+            await _client.GetAsync("/api/academic-events", TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should()
+            .Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task GetAccessibleEvents_StudentWithFacultyFilter_Returns403()
+    {
+        var token = await RegisterAndLoginUserAsync(
+            "student_filter@test.com",
+            "Password123!"
+        );
+
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var facultyId = Guid.NewGuid();
+
+        var response =
+            await _client.GetAsync(
+                $"/api/academic-events?facultyIds={facultyId}", TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should()
+            .Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task GetAccessibleEvents_AdminWithFacultyFilter_ReturnsFilteredEvents()
+    {
+        var faculty1 = Guid.NewGuid();
+        var faculty2 = Guid.NewGuid();
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db =
+                scope.ServiceProvider
+                    .GetRequiredService<ApplicationDbContext>();
+
+            db.Faculties.AddRange(
+                new AppFaculty
+                {
+                    Id = faculty1,
+                    FacultyId = "F1",
+                    FacultyName = "Faculty1",
+                    FacultyCode = "F1"
+                },
+                new AppFaculty
+                {
+                    Id = faculty2,
+                    FacultyId = "F2",
+                    FacultyName = "Faculty2",
+                    FacultyCode = "F2"
+                });
+
+            await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+
+        var event1 = Guid.NewGuid();
+        var event2 = Guid.NewGuid();
+
+        await SeedEventAsync(event1, faculty1);
+        await SeedEventAsync(event2, faculty2);
+
+        var token = await RegisterAndLoginUserAsync(
+            "admin_filter@test.com",
+            "Password123!",
+            "Admin"
+        );
+
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var response =
+            await _client.GetAsync(
+                $"/api/academic-events?facultyIds={faculty1}", TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should()
+            .Be(HttpStatusCode.OK);
+
+        var events =
+            await response.Content.ReadFromJsonAsync<
+                List<AcademicEventResponse>>(cancellationToken: TestContext.Current.CancellationToken);
+
+        events.Should().Contain(e => e.Id == event1);
+        events.Should().NotContain(e => e.Id == event2);
+    }
+
+    [Fact]
+    public async Task GetAccessibleEvents_Admin_Returns200_AndContainsData()
     {
         var eventId = Guid.NewGuid();
         var facultyId = Guid.NewGuid();
@@ -143,7 +244,7 @@ public class AcademicEventControllerE2ETests : IntegrationTestBase
     }
 
     [Fact]
-    public async Task GetAllEvents_Student_Returns403()
+    public async Task GetAccessibleEvents_Student_Returns403()
     {
         var token = await RegisterAndLoginUserAsync("student_no_access@pw.edu.pl", "Password123!", "Student");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -154,78 +255,10 @@ public class AcademicEventControllerE2ETests : IntegrationTestBase
     }
 
     [Fact]
-    public async Task GetAllEvents_Unauthorized_Returns401()
+    public async Task GetAccessibleEvents_Unauthorized_Returns401()
     {
         _client.DefaultRequestHeaders.Authorization = null;
         var response = await _client.GetAsync("/api/academic-events", TestContext.Current.CancellationToken);
-
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task GetFacultyEvents_Student_ReturnsOnlyOwnFacultyEvents()
-    {
-        var token = await RegisterAndLoginUserAsync("faculty_student@pw.edu.pl", "Password123!");
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-        var myEventId = Guid.NewGuid();
-        var foreignEventId = Guid.NewGuid();
-
-        using (var scope = _factory.Services.CreateScope())
-        {
-            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            // ensure the student's faculty exists (test-faculty is returned by USOS Mock)
-            var myFaculty = await EnsureFacultyExistsAsync("test-faculty");
-
-            // add a "foreign" faculty 
-            var foreignFaculty = new AppFaculty { Id = Guid.NewGuid(), FacultyId = "FOREIGN_FAC", FacultyName = "Other", FacultyCode = "OF" };
-            db.Faculties.Add(foreignFaculty);
-            await db.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-            // seed one event in my faculty, and one in the foreign faculty
-            await SeedEventAsync(myEventId, myFaculty.Id);
-            await SeedEventAsync(foreignEventId, foreignFaculty.Id);
-        }
-
-        var response = await _client.GetAsync("/api/academic-events/faculty", TestContext.Current.CancellationToken);
-
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var returnedEvents = await response.Content.ReadFromJsonAsync<List<AcademicEventResponse>>(TestContext.Current.CancellationToken);
-        returnedEvents.Should().NotBeNull();
-
-        // we see event
-        returnedEvents.Should().Contain(e => e.Id == myEventId);
-
-        // we don't see foreign event
-        returnedEvents.Should().NotContain(e => e.Id == foreignEventId);
-    }
-
-    [Fact]
-    public async Task GetFacultyEvents_Manager_Returns200_AndContainsData()
-    {
-        var token = await RegisterAndLoginUserAsync("faculty_manager@pw.edu.pl", "Password123!", "Manager");
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-        var eventId = Guid.NewGuid();
-        var userFaculty = await EnsureFacultyExistsAsync("test-faculty");
-        await SeedEventAsync(eventId, userFaculty.Id);
-
-        var response = await _client.GetAsync("/api/academic-events/faculty", TestContext.Current.CancellationToken);
-
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var returnedEvents = await response.Content.ReadFromJsonAsync<List<AcademicEventResponse>>(TestContext.Current.CancellationToken);
-        returnedEvents.Should().NotBeNull();
-        returnedEvents.Should().Contain(e => e.Id == eventId);
-    }
-
-    [Fact]
-    public async Task GetFacultyEvents_Unauthorized_Returns401()
-    {
-        _client.DefaultRequestHeaders.Authorization = null;
-        var response = await _client.GetAsync("/api/academic-events/faculty", TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }

@@ -1,18 +1,25 @@
 import EventPanel from "../../../components/calendar/EventPanel";
 import { formatDate } from "../../../api/helpers";
-import StudentCalendar from "../../../features/studentCalendar/components/StudentCalendar";
+import Calendar from "../../../components/calendar/Calendar";
 import useEventPreviews from "../../../global-hooks/eventPreviewHooks";
+import { useContext, useState } from "react";
+import { ModalContext } from "../../../store/ModalContext";
+import type { eventPreviewResponse } from "../../../types/eventPreviewResponse";
+import { getNEvents } from "../../../api/helpers";
 
 export default function StudentCalendarPage(){
-    const {eventPreviews} = useEventPreviews();
-     const top10 = [...eventPreviews].sort((a, b) => {
-        const dateA = new Date(a.startTime);
-        const dateB = new Date(b.startTime);
-        return dateB.getTime() - dateA.getTime();
-    }).filter(d => new Date(d.startTime).getTime() > Date.now()).slice(0, 10);
+    const {open} = useContext(ModalContext);
+    const [range, setRange] = useState<{ from?: Date; to?: Date;}>({});
+    
+    const {eventPreviews} = useEventPreviews({
+        from: range.from,
+        to: range.to,
+    });
+    const top10:eventPreviewResponse[] = getNEvents(eventPreviews,10);
 
     return <>
-        <StudentCalendar events={eventPreviews}/>
+        <Calendar events={eventPreviews} onDateClick={(start: string) => open({type: "createPersonal", startTime: start})}
+            onRangeChange={(from, to) =>setRange({ from, to })}/>
         <EventPanel label="Upcoming Events">
             {top10.length==0?<p>No upcoming events...</p>:
             <ul className="events-list">

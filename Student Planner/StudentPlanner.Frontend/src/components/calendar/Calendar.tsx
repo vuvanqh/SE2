@@ -5,57 +5,51 @@ import type { EventContentArg } from '@fullcalendar/core'
 import type { DateClickArg } from '@fullcalendar/interaction'
 import type { EventClickArg } from '@fullcalendar/core'
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { useRef, useContext, useState } from "react";
+import { useRef, useContext } from "react";
 import { ModalContext } from '../../store/ModalContext'
 import { isSameDay, toLocalInput } from '../../api/helpers'
-import useEventPreviews from '../../global-hooks/eventPreviewHooks';
 import type { eventPreviewResponse } from '../../types/eventPreviewResponse'
 
 type calendarProps = {
   events: eventPreviewResponse[],
-  onDateClick: (date:string) => void
+  onRangeChange?: (
+    from: Date,
+    to: Date
+  ) => void;
+  onDateClick?: (date:string) => void
 }
-
-export default function Calendar({events, onDateClick}:calendarProps) {
-  const {open} = useContext(ModalContext);
-  const [range, setRange] = useState<{from?: string, to?: string}>({});
-  
-  let from = range.from? new Date(range.from): new Date(Date.now());
-  var date = new Date(from);
-  let to = range.to? new Date(range.to): new Date(date.setMonth(date.getMonth() + 1));
-  const { eventPreviews } = useEventPreviews(from, to);
-  //const {usosEvents} = useUsosEvents(from, to);
+export default function Calendar({events, onDateClick, onRangeChange}: calendarProps) {
+  const { open } = useContext(ModalContext);
   const handleDatesSet = (arg: any) => {
-    const from = toLocalInput(arg.start);
+    const from = arg.start;
 
-    const end = new Date(arg.end);
-    end.setDate(end.getDate() - 1);
-    const to = toLocalInput(end);
+    const to = new Date(arg.end);
+    to.setDate(to.getDate() - 1);
 
-    setRange(prev => {
-      if (prev.from === from && prev.to === to) return prev;
-      return { from, to };
-    });
+    onRangeChange?.(from, to);
   };
 
+
   const handleEventClick = (arg: EventClickArg) => {
-    open({type: "view", eventPreview: arg.event.extendedProps as eventPreviewResponse});
-  }
+    open({ type: "view", eventPreview: arg.event.extendedProps as eventPreviewResponse });
+  };
 
   const handleDateClick = (arg: DateClickArg) => {
-    if (arg.view.type !== "timeGridWeek")
-    {
-      const filtered = events.filter(e => isSameDay(e.startTime, arg.date));
-      open({type: "eventList", events: filtered})
+    if (arg.view.type !== "timeGridWeek") {
+      const filtered = events.filter(e =>
+        isSameDay(e.startTime, arg.date)
+      );
+
+      open({type: "eventList", events: filtered});
       return;
     }
 
     const start = new Date(arg.date);
-    onDateClick(toLocalInput(start));
-  }
+    onDateClick?.(toLocalInput(start));
+  };
 
 
-  const mappedEvents = eventPreviews.map(e => ({
+  const mappedEvents = events.map(e => ({
     id: e.id,
     title: e.title,
     start: new Date(e.startTime),
@@ -71,40 +65,40 @@ export default function Calendar({events, onDateClick}:calendarProps) {
     }
   }));
 
+
   const calendarRef = useRef<any>(null);
 
-  return <>
-  <div className="calendar-wrapper">
-    <FullCalendar
-     ref={calendarRef}
-     headerToolbar={{
-        left: "title",
-        center: "",
-        right: "dayGridMonth,timeGridWeek,today prev,next"
-      }}
-      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-      initialView="dayGridMonth"
-      weekends={true}
-      firstDay={1}
-      eventContent={renderEventContent}   
-      events={[
-          { title: 'event 1', start: '2026-03-28' },
-          { title: 'event 2', start: '2019-04-02' },
-          ...mappedEvents
-      ]}
-      eventClick={handleEventClick}
-      dateClick={handleDateClick}
-      eventTimeFormat={{
-        hour: 'numeric',
-        minute: '2-digit',
-        meridiem: 'short'
-      }}
-      datesSet={handleDatesSet}
-    />
-  </div>
-  </>
+  return (
+    <div className="calendar-wrapper">
+      <FullCalendar
+        ref={calendarRef}
+        headerToolbar={{
+          left: "title",
+          center: "",
+          right: "dayGridMonth,timeGridWeek,today prev,next"
+        }}
+        plugins={[
+          dayGridPlugin,
+          timeGridPlugin,
+          interactionPlugin
+        ]}
+        initialView="dayGridMonth"
+        weekends={true}
+        firstDay={1}
+        eventContent={renderEventContent}
+        events={mappedEvents}
+        eventClick={handleEventClick}
+        dateClick={handleDateClick}
+        datesSet={handleDatesSet}
+        eventTimeFormat={{
+          hour: "numeric",
+          minute: "2-digit",
+          meridiem: "short"
+        }}
+      />
+    </div>
+  );
 }
-
 
 
 function renderEventContent(eventInfo: EventContentArg) {

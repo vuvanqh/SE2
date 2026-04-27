@@ -9,6 +9,7 @@ public interface IAcademicEventRepository
     Task<AcademicEvent?> GetByIdAsync(Guid eventId);
     Task<IEnumerable<AcademicEvent>> GetAllAsync();
     Task<IEnumerable<AcademicEvent>> GetByFacultyIdAsync(Guid facultyId);
+    Task<IEnumerable<AcademicEvent>> GetByFacultiesAsync(List<Guid> facultyIds);
     Task AddAsync(AcademicEvent academicEvent);
     Task UpdateAsync(AcademicEvent academicEvent);
     Task DeleteAsync(Guid eventId);

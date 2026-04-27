@@ -26,55 +26,47 @@ public class AcademicEventController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all academic events in the system.
+    /// Retrieves academic events accessible to the authenticated user.
     /// </summary>
-    /// <returns>A list of all academic events.</returns>
+    /// <remarks>
+    /// Non-admin users receive events associated only with their faculty.
+    /// Admin users may retrieve all events or optionally restrict results
+    /// to one or more faculties using the <c>facultyIds</c> query parameter.
+    /// </remarks>
+    /// <param name="facultyIds">
+    /// Optional administrator-only faculty filters. When omitted, administrators
+    /// receive all events. Non-admin users may not supply this parameter.
+    /// </param>
+    /// <returns>
+    /// A collection of academic events visible to the authenticated user.
+    /// </returns>
+    /// <response code="200">Returns the requested academic events.</response>
+    /// <response code="401">If the user is not authenticated.</response>
+    /// <response code="403">
+    /// If a non-admin user attempts to filter events by faculty.
+    /// </response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> GetAllEvents()
+    public async Task<IActionResult> GetAccessibleEvents([FromQuery] List<Guid> facultyIds)
     {
         var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (id == null)
+        var role = User.FindFirst(ClaimTypes.Role)?.Value;
+        if (id == null || role == null)
             return Unauthorized(new { Message = "Unauthorized access" });
+
+        if (role != UserRoleOptions.Admin.ToString() && facultyIds.Any())
+            return Forbid();
+
         try
         {
-            var result = await _academicEventService.GetAllEventsAsync(Guid.Parse(id));
+            var result = await _academicEventService.GetAccessibleEventsAsync(Guid.Parse(id), role, facultyIds);
             return Ok(result);
         }
         catch (Exception)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while retrieving events." });
-        }
-    }
-
-    /// <summary>
-    /// Retrieves all academic events relevant to the authenticated user's faculty.
-    /// </summary>
-    /// <returns>A list of academic events for the user's faculty.</returns>
-    [Authorize(Roles = nameof(UserRoleOptions.Admin))]
-    [HttpGet("faculty")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> GetFacultyEvents()
-    {
-        try
-        {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
-                return Unauthorized(new { Message = "Unauthorized access" });
-
-            var result = await _academicEventService.GetEventsForUserAsync(Guid.Parse(userId));
-            return Ok(result);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { Message = ex.Message });
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while retrieving faculty events." });
         }
     }
 

@@ -1,5 +1,7 @@
-﻿using StudentPlanner.Core.Domain.RepositoryContracts;
+﻿using StudentPlanner.Core.Domain;
+using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Core.Entities;
+using System.ComponentModel.Design;
 
 namespace StudentPlanner.Core.Application.Events.EventPreveiws;
 
@@ -17,9 +19,15 @@ public class AcademicEventPreviewStrategy : IEventPreviewStrategy
         if (user.FacultyId == null && user.Role != UserRoleOptions.Admin)
             throw new InvalidDataException("FacultyId is required.");
 
-        var events = user.Role == UserRoleOptions.Admin ?
-            (await _academicEventRepo.GetAllAsync()) :
-            (await _academicEventRepo.GetByFacultyIdAsync(user.FacultyId!.Value));
+        IEnumerable<AcademicEvent> events;
+        if (user.Role == UserRoleOptions.Admin)
+        {
+            events = query.FacultyIds?.Count > 0 ?
+                (await _academicEventRepo.GetByFacultiesAsync(query.FacultyIds)) :
+                await _academicEventRepo.GetAllAsync();
+        }
+        else
+            events = (await _academicEventRepo.GetByFacultyIdAsync(user.FacultyId!.Value));
 
         return events.Select(e => new EventPreveiwDto
         {

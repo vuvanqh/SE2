@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import type { academicEventResponse } from "../../../types/academic-event.types";
-import { getAcademicEvent, getAcademicEventByFaculty, getAcademicEvents } from "../../../api/academic-events.api";
-import { useUser } from "../../../global-hooks/authHooks";
+import { getAcademicEvent, getAcademicEvents } from "../../../api/events/academic-events.api";
 
-export function useGetAllAcademicEvents(){
+export function useAccessibleAcademicEvents(facultyIds?: string[]){
+    facultyIds?.slice().sort().join(",")
     const {data, isLoading} = useQuery<academicEventResponse[]>({
-        queryKey: ["academic-events"],
-        queryFn: getAcademicEvents
+        queryKey: ["academic-events", facultyIds],
+        queryFn: () =>getAcademicEvents(facultyIds)
     })
     return {
         events: data??[],
@@ -16,25 +16,13 @@ export function useGetAllAcademicEvents(){
 
 export function useGetAcademicEvent(eventId:string){
     const {data, isLoading} = useQuery<academicEventResponse>({
-        queryKey: ["academic-event", eventId],
+        queryKey: ["academic-events", "event",eventId],
         queryFn: () => getAcademicEvent(eventId),
+        enabled: !!eventId
     })
 
     return {
         event: data as academicEventResponse,
-        isLoading,
-    }
-}
-
-export function useGetAcademicEventByFaculty(){
-    const {user} = useUser();
-    const {data, isLoading} = useQuery<academicEventResponse[]>({
-        queryKey: ["academic-event", user? user.facultyId: "faculty"],
-        queryFn: getAcademicEventByFaculty
-    })
-
-    return {
-        events: data?? [],
         isLoading,
     }
 }

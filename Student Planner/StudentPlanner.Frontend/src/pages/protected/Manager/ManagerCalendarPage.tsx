@@ -1,25 +1,26 @@
 import { useState,  useContext , type ReactNode} from "react";
 import EventPanel from "../../../components/calendar/EventPanel";
-import ManagerCalendar from "../../../features/managerCalendar/components/ManagerCalendar";
+import Calendar from "../../../components/calendar/Calendar";
 import { useMyEventRequests } from "../../../features/eventRequests/hooks/eventRequestHooks";
 import { EventPreview } from "../../../features/events/components/EventPreview";
 import { EventRequestPreview } from "../../../features/eventRequests/components/EventRequestPreview";
 import { ModalContext } from "../../../store/ModalContext";
 import useEventPreviews from "../../../global-hooks/eventPreviewHooks";
 import type { eventPreviewResponse } from "../../../types/eventPreviewResponse";
+import { getNEvents } from "../../../api/helpers";
 
 export default function ManagerCalendarPage(){
     const [viewRequests, setVievRequests] = useState(false);
     const {eventRequests} = useMyEventRequests();
     const {open} = useContext(ModalContext);
-    const {eventPreviews} = useEventPreviews();
+    const [range, setRange] = useState<{ from?: Date; to?: Date;}>({});
     
-        const top10:eventPreviewResponse[] = [...eventPreviews].sort((a, b) => {
-            const dateA = new Date(a.startTime);
-            const dateB = new Date(b.startTime);
-            return dateB.getTime() - dateA.getTime();
-        }).filter(d => new Date(d.startTime).getTime() > Date.now()).slice(0, 10);
-        console.log(top10, eventPreviews);
+    const {eventPreviews} = useEventPreviews({
+        from: range.from,
+        to: range.to,
+    });
+    
+    const top10:eventPreviewResponse[] = getNEvents(eventPreviews,10);
 
     let content: ReactNode;
 
@@ -53,7 +54,8 @@ export default function ManagerCalendarPage(){
     
     
     return <>
-        <ManagerCalendar events={[]}/>
+        <Calendar events={top10??[]} onDateClick={(start: string) => open({type: "createRequest", startTime: start})}
+            onRangeChange={(from, to) =>setRange({ from, to })}/>
         <EventPanel label={viewRequests?"Recent Requests":"Upcoming events"}>
             <div className="events-controls">
                 <button className="primary-action" onClick={()=>open({type:"createRequest"})}>+ Create Request</button>

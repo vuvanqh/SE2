@@ -40,21 +40,27 @@ public class EventPreviewController : ControllerBase
     /// <param name="to">
     /// Optional end date filter. Only events occurring before this date are included.
     /// </param>
+    /// /// <param name="facultyIds">
+    /// Optional faculty filter. Only events of faculties with faculty ids included in the parameter are returned.
+    /// </param>
     /// <returns>A collection of event previews matching the specified criteria.</returns>
     /// <response code="200">Returns the list of event previews.</response>
     /// <response code="400">If the user role is invalid.</response>
     /// <response code="401">If the user is not authenticated.</response>
     [HttpGet]
-    public async Task<IActionResult> GetPreviews(DateTime? from, DateTime? to)
+    public async Task<IActionResult> GetPreviews(DateTime? from, DateTime? to, [FromQuery] List<Guid> facultyIds)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userId == null)
-            return Unauthorized();
-
         var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+        if (userId == null || role == null)
+            return Unauthorized();
+        if (role != UserRoleOptions.Admin.ToString() && facultyIds.Any())
+            return Forbid();
+
         if (!Enum.TryParse<UserRoleOptions>(role, true, out var parsedRole))
             return BadRequest("Invalid role");
 
-        return Ok((await _eventPreviewService.GetForUserAsync(new UserContext { Id = Guid.Parse(userId), Role = parsedRole }, new EventPreviewQuery { From = from, To = to })));
+        return Ok((await _eventPreviewService.GetForUserAsync(new UserContext { Id = Guid.Parse(userId), Role = parsedRole }, new EventPreviewQuery { From = from, To = to, FacultyIds = facultyIds })));
     }
 }
