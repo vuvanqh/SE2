@@ -6,13 +6,12 @@ import {images} from "../../assets/index";
 
 
 const authors = [
-  { name: "Przech Katarzyna", image_src: images.authors.kasia, img_pos:"img-kasia"},
-  { name: "Rubayet Rafsan", image_src: images.authors.rafsan,  img_pos:"img-rafsan"},
-  { name: "Shpylovyi Sviatoslav", image_src: images.authors.sviat, img_pos:"img-sviat"},
-  { name: "Staszewska Barbara", image_src: images.authors.basia, img_pos:"img-basia"},
-  { name: "Vu Van Quoc Hoang", image_src: images.authors.hoang, img_pos:"img-hoang"},
+  { name: "Przech Katarzyna", imageSrc: images.authors.kasia, imgPos:"img-kasia"},
+  { name: "Rubayet Rafsan", imageSrc: images.authors.rafsan,  imgPos:"img-rafsan"},
+  { name: "Shpylovyi Sviatoslav", imageSrc: images.authors.sviat, imgPos:"img-sviat"},
+  { name: "Staszewska Barbara", imageSrc: images.authors.basia, imgPos:"img-basia"},
+  { name: "Vu Van Quoc Hoang", imageSrc: images.authors.hoang, imgPos:"img-hoang"},
 ]
-
 
 function IntroPage() {
   const navigate = useNavigate();
@@ -54,7 +53,7 @@ function IntroPage() {
 
       <div className='authors-container'>
         {authors.map(author => (
-          <AuthorsCard key={author.name} image_src={author.image_src} fullName={author.name} img_pos={author.img_pos}/>
+          <AuthorsCard key={author.name} imageSrc={author.imageSrc} fullName={author.name} imgPos={author.imgPos}/>
         ))}
       </div>
     </div>
