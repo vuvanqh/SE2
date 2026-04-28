@@ -1,4 +1,4 @@
-﻿using StudentPlanner.Core.Domain.Entities;
+using StudentPlanner.Core.Domain.Entities;
 using StudentPlanner.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,6 +13,7 @@ public class AppFaculty
     public required string FacultyName { get; set; }
     public required string FacultyCode { get; set; }
 
+    [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();
 
     public Faculty ToFaculty()

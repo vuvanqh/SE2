@@ -19,22 +19,29 @@ public class AcademicEventServiceTests
 {
     private readonly Mock<IAcademicEventRepository> _academicEventRepositoryMock;
     private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IFacultyRepository> _facultyRepositoryMock;
     private readonly AcademicEventService _academicEventService;
 
     public AcademicEventServiceTests()
     {
         _academicEventRepositoryMock = new Mock<IAcademicEventRepository>();
         _userRepositoryMock = new Mock<IUserRepository>();
+        _facultyRepositoryMock = new Mock<IFacultyRepository>();
 
         _academicEventService = new AcademicEventService(
             _academicEventRepositoryMock.Object,
-            _userRepositoryMock.Object
+            _userRepositoryMock.Object,
+            _facultyRepositoryMock.Object
         );
+
+        _academicEventRepositoryMock
+            .Setup(repo => repo.GetSubscribedEventIdsAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(new HashSet<Guid>());
     }
 
     private AcademicEvent GenerateTestEvent(Guid id, Guid facultyId)
     {
-        return new AcademicEvent
+        return new FacultyEvent
         {
             Id = id,
             FacultyId = facultyId,
@@ -85,10 +92,17 @@ public class AcademicEventServiceTests
             .Setup(repo => repo.GetByFacultyIdAsync(facultyId))
             .ReturnsAsync(events);
 
+        var subscribedEventId = events[0].Id;
+        _academicEventRepositoryMock
+            .Setup(repo => repo.GetSubscribedEventIdsAsync(userId))
+            .ReturnsAsync(new HashSet<Guid> { subscribedEventId });
+
         var result = await _academicEventService.GetAccessibleEventsAsync(userId, UserRoleOptions.Student.ToString(), null);
 
         result.Should().NotBeNull();
         result.Should().HaveCount(2);
+        result.First(e => e.Id == subscribedEventId).IsSubscribed.Should().BeTrue();
+        result.First(e => e.Id != subscribedEventId).IsSubscribed.Should().BeFalse();
 
         _userRepositoryMock.Verify(
             repo => repo.GetByIdAsync(userId),
@@ -432,6 +446,7 @@ public class AcademicEventServiceTests
 
         _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
         _academicEventRepositoryMock.Setup(repo => repo.GetByFacultyIdAsync(facultyId)).ReturnsAsync(events);
+        _academicEventRepositoryMock.Setup(repo => repo.GetSubscribedEventIdsAsync(userId)).ReturnsAsync(events.Select(e => e.Id).ToHashSet());
 
         var result = await _academicEventService.GetEventsForUserAsync(userId);
 

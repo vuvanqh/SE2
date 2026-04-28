@@ -111,7 +111,10 @@ public class IdentityService : IIdentityService
 
     public async Task<User?> GetUserByIdAsync(Guid userId)
     {
-        var appUser = await _userManager.FindByIdAsync(userId.ToString());
+        var appUser = await _userManager.Users
+            .Include(u => u.Faculty)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
         if (appUser == null)
         {
             return null;
@@ -146,7 +149,10 @@ public class IdentityService : IIdentityService
 
     public async Task<User?> GetUserByEmailAsync(string email)
     {
-        var appUser = await _userManager.FindByEmailAsync(email);
+        var appUser = await _userManager.Users
+            .Include(u => u.Faculty)
+            .FirstOrDefaultAsync(u => u.Email == email);
+
         if (appUser == null)
         {
             return null;

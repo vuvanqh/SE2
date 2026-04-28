@@ -8,5 +8,6 @@ public class UsersResultDto
     public string UserRole { get; set; } = null!;
     public string Email { get; set; } = null!;
     public Guid? FacultyId { get; set; }
+    public string? Faculty { get; set; }
     public string? FacultyCode { get; set; }
 }

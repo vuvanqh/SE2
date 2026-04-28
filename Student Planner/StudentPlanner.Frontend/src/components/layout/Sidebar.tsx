@@ -1,10 +1,10 @@
 import { useAuth, useUser } from "../../global-hooks/authHooks";
 import { useNotificationPreferences } from "../../features/settings/hooks/notificationPreferencesHooks";
 
-export default function Sidebar({open}: {open: boolean}){
-    const {user} = useUser();
-    const {logout} = useAuth();
-    const {preferences, isLoading, isPending, updatePreferences} = useNotificationPreferences(!!user);
+export default function Sidebar({ open }: { open: boolean }) {
+    const { user } = useUser();
+    const { logout } = useAuth();
+    const { preferences, isLoading, isPending, updatePreferences } = useNotificationPreferences(!!user);
 
     async function handleNotificationToggle() {
         if (!preferences) return;
@@ -16,10 +16,10 @@ export default function Sidebar({open}: {open: boolean}){
 
     return <aside className={`sidebar ${open ? "open" : ""}`} onClick={(e) => e.stopPropagation()}>
         <div className="user-details">
-            <img/>
+            <img />
             <div>
                 <p>{user?.firstName} {user?.lastName}</p>
-                <p>{user?.userRole} {user?.facultyCode?` - ${user.facultyCode}`:""}</p>
+                <p>{user?.userRole} {user?.facultyCode ? ` - ${user.facultyCode}` : ""}</p>
             </div>
         </div>
 
@@ -36,9 +36,8 @@ export default function Sidebar({open}: {open: boolean}){
         </section>
 
         <div className="sidebar-actions">
-            <button>Change Passwd</button>
             <button className="danger">Delete Account</button>
-            <button className="danger" onClick={async ()=>{await logout()}}>Log out</button>
+            <button className="danger" onClick={async () => { await logout() }}>Log out</button>
         </div>
     </aside>
 }

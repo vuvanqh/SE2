@@ -1,21 +1,18 @@
 import Modal from "../../../components/modals/Modal";
 import { useEventRequest } from "../hooks/eventRequestHooks";
-import { useContext } from "react";
-import { ModalContext } from "../../../store/ModalContext";
 import { formatDate } from "../../../api/helpers";
 import { useUser } from "../../../global-hooks/authHooks"
 
 type createEventProps = {
-    requiresRole?: ("Student" | "Manager" | "Admin") [],
+    requiresRole?: ("Student" | "Manager" | "Admin")[],
     requestId: string,
     onClose: () => void
 }
 
 //NOTE: TRY TO CLEAN THE CONDITIONAL LOGIC BLOCK
 export default function ViewEventRequestModal({ requestId, onClose }: createEventProps) {
-    const { eventRequest, isPending, deleteRequest} = useEventRequest(requestId);
-    const {open} = useContext(ModalContext);
-    const {user} = useUser();
+    const { eventRequest, isPending, deleteRequest } = useEventRequest(requestId);
+    const { user } = useUser();
 
     if (isPending || !eventRequest) return <Modal open>Loading...</Modal>;
 
@@ -23,7 +20,7 @@ export default function ViewEventRequestModal({ requestId, onClose }: createEven
         await deleteRequest();
         onClose();
     }
-    
+
     const eventDetails = eventRequest.eventDetails;
 
     return (
@@ -51,17 +48,16 @@ export default function ViewEventRequestModal({ requestId, onClose }: createEven
                 <p className="view-text">{eventDetails.description}</p>
             </div>
 
-            {user && user.userRole=="Manager" &&
-            <div className="modal-actions">
+            {user && user.userRole == "Manager" && eventRequest.status == "Pending" &&
+                <div className="modal-actions">
                     <button className="btn-secondary" onClick={handleDelete}>Delete</button>
-                    <button className="btn-primary" onClick={() =>open({type: "editRequest", requestId})}>Edit</button>
-            </div>}
+                </div>}
 
-            {user && user.userRole=="Admin" && eventRequest.status=="Pending" &&
-            <div>
-                <button>Approve</button>
-                <button>Reject</button>
-            </div>}
+            {user && user.userRole == "Admin" && eventRequest.status == "Pending" &&
+                <div>
+                    <button>Approve</button>
+                    <button>Reject</button>
+                </div>}
         </Modal>
     );
 }

@@ -1,10 +1,25 @@
-using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+// using StudentPlanner.Core.Domain.Entities; // Reverted
 
 namespace StudentPlanner.Core.Domain;
 
-public class AcademicEvent : Event
+public abstract class AcademicEvent : Event
 {
-    public required Guid FacultyId { get; set; }
+    public Guid? FacultyId { get; set; }
+
+
     public ICollection<AcademicEventSubscriber> Subscribers { get; set; } = new List<AcademicEventSubscriber>();
+}
+
+public class FacultyEvent : AcademicEvent
+{
+    public FacultyEvent() { }
+    public FacultyEvent(Guid facultyId)
+    {
+        FacultyId = facultyId;
+    }
+}
+
+public class UniversityEvent : AcademicEvent
+{
 }

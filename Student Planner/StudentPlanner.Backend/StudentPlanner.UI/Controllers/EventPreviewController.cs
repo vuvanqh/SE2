@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StudentPlanner.Core.Application.Events;
 using StudentPlanner.Core.Application.Events.EventPreveiws;
@@ -61,6 +61,14 @@ public class EventPreviewController : ControllerBase
         if (!Enum.TryParse<UserRoleOptions>(role, true, out var parsedRole))
             return BadRequest("Invalid role");
 
-        return Ok((await _eventPreviewService.GetForUserAsync(new UserContext { Id = Guid.Parse(userId), Role = parsedRole }, new EventPreviewQuery { From = from, Days = days, FacultyIds = facultyIds })));
+        try
+        {
+            var result = await _eventPreviewService.GetForUserAsync(new UserContext { Id = Guid.Parse(userId), Role = parsedRole }, new EventPreviewQuery { From = from, Days = days, FacultyIds = facultyIds });
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while retrieving previews.", Details = ex.Message });
+        }
     }
 }

@@ -3,6 +3,7 @@ using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Core.Application.EventRequests.Strategies;
 using System.Collections.Generic;
 using StudentPlanner.Core.Application.Notifications.ServiceContracts;
+using StudentPlanner.Core.Entities;
 
 namespace StudentPlanner.Core.Application.EventRequests;
 
@@ -11,15 +12,18 @@ public class EventRequestService : IEventRequestService
     private readonly IEventRequestRepository _eventRequestRepository;
     private readonly IReadOnlyDictionary<RequestType, IEventRequestApprovalStrategy> _strategies;
     private readonly IEventRequestNotificationService _notify;
+    private readonly IUserRepository _userRepository;
 
     public EventRequestService(
         IEventRequestRepository eventRequestRepository,
         IEnumerable<IEventRequestApprovalStrategy> strategies,
-        IEventRequestNotificationService notify)
+        IEventRequestNotificationService notify,
+        IUserRepository userRepository)
     {
         _eventRequestRepository = eventRequestRepository;
         _strategies = strategies.ToDictionary(s => s.RequestType, s => s);
         _notify = notify;
+        _userRepository = userRepository;
     }
 
     public async Task<Guid> CreateAsync(Guid managerId, CreateEventRequestRequest request)
@@ -33,6 +37,14 @@ public class EventRequestService : IEventRequestService
         {
             throw new ArgumentException("Update and Delete requests must contain EventId.");
         }
+        var manager = await _userRepository.GetByIdAsync(managerId);
+        if (manager == null) throw new KeyNotFoundException("Manager not found.");
+
+        if (manager.Faculty?.Id != request.FacultyId)
+        {
+            throw new UnauthorizedAccessException("You do not have permission to create event requests for this scope.");
+        }
+
         EventRequest eventRequest = request.ToEventRequest(managerId);
         await _eventRequestRepository.AddAsync(eventRequest);
 
@@ -63,12 +75,17 @@ public class EventRequestService : IEventRequestService
             .ToList();
     }
 
-    public async Task<EventRequestResponse?> GetByIdAsync(Guid requestId)
+    public async Task<EventRequestResponse?> GetByIdAsync(Guid requestId, Guid userId, string role)
     {
         EventRequest? eventRequest = await _eventRequestRepository.GetByIdAsync(requestId);
 
         if (eventRequest == null)
             throw new ArgumentException("Event request does not exist.");
+
+        if (role != UserRoleOptions.Admin.ToString() && eventRequest.ManagerId != userId)
+        {
+            throw new UnauthorizedAccessException("You do not have permission to view this event request.");
+        }
 
         return eventRequest.ToEventRequestResponse();
     }

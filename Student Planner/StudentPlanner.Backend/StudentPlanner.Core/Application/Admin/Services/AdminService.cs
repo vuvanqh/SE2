@@ -7,6 +7,7 @@ using StudentPlanner.Core.Entities;
 using StudentPlanner.Core.Application.Exceptions;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using System.Security.Cryptography;
+using StudentPlanner.Core.Domain.Entities;
 namespace StudentPlanner.Core;
 
 public class AdminService : IAdminService
@@ -120,9 +121,13 @@ public class AdminService : IAdminService
         if (string.IsNullOrWhiteSpace(request.LastName))
             throw new ArgumentException("Last name is required.");
 
-        var faculty = await _facultyRepository.GetFacultyByIdAsync(request.FacultyId);
-        if (faculty == null)
-            throw new InvalidOperationException("Faculty not found.");
+        Faculty? faculty = null;
+        if (request.FacultyId.HasValue)
+        {
+            faculty = await _facultyRepository.GetFacultyByIdAsync(request.FacultyId.Value);
+            if (faculty == null)
+                throw new InvalidOperationException("Faculty not found.");
+        }
 
         var temporaryPassword = GenerateTemporaryPassword();
 
@@ -140,7 +145,7 @@ public class AdminService : IAdminService
         await _identityService.RegisterUser(
             managerUser,
             temporaryPassword,
-            faculty.Id,
+            faculty?.Id,
             UserRoleOptions.Manager.ToString());
 
         return new ManagerCreationResultDto
@@ -199,6 +204,7 @@ public class AdminService : IAdminService
             UserRole = u.Role,
             Email = u.Email,
             FacultyId = u.Faculty?.Id,
+            Faculty = u.Faculty?.FacultyName ?? "University",
             FacultyCode = u.Faculty?.FacultyCode,
         }).ToList();
     }
@@ -213,6 +219,7 @@ public class AdminService : IAdminService
             UserRole = u.Role,
             Email = u.Email,
             FacultyId = u.Faculty?.Id,
+            Faculty = u.Faculty?.FacultyName ?? "University",
             FacultyCode = u.Faculty?.FacultyCode,
         }).ToList();
     }

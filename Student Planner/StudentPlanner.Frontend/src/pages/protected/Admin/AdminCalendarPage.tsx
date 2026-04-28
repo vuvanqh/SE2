@@ -74,6 +74,8 @@ export default function AdminCalendarPage(){
             </h3>
             <div className="filter-group">
                 <p className="filter-title">Faculties</p>
+                <FilterOption label="University" value={selectedFaculties.includes("00000000-0000-0000-0000-000000000000")}
+                        onChange={() => toggleValue("00000000-0000-0000-0000-000000000000", setSelectedFaculties)}/>
                 {faculties.map(f => <FilterOption key={f.facultyId} label={f.facultyName}
                         value={selectedFaculties.includes(f.facultyId)} 
                         onChange={() => toggleValue(f.facultyId, setSelectedFaculties)}/>)}

@@ -36,7 +36,8 @@ export default function UserManagementPage(){
 
         const matchesFaculty =
         selectedFaculties.length === 0 ||
-        (user.facultyCode && selectedFaculties.includes(user.facultyCode));
+        (user.facultyId && selectedFaculties.includes(user.facultyId)) ||
+        (!user.facultyId && selectedFaculties.includes("00000000-0000-0000-0000-000000000000"));
 
         return (
         matchesSearch &&
@@ -61,7 +62,7 @@ export default function UserManagementPage(){
                                 <span className="role-badge">{u.userRole}</span>
                             </p>
 
-                            <p className="user-meta">{u.email} {u.facultyCode && `• ${u.facultyCode}`}</p>
+                            <p className="user-meta">{u.email} • {u.faculty}</p>
                         </button>
                     </li>
                 ))}
@@ -81,6 +82,8 @@ export default function UserManagementPage(){
             </div>
             <div className="filter-group">
                 <p className="filter-title">Faculties</p>
+                <FilterOption label="University" value={selectedFaculties.includes("00000000-0000-0000-0000-000000000000")}
+                    onChange={() => toggleValue("00000000-0000-0000-0000-000000000000", setSelectedFaculties)}/>
                 {faculties.map(f => <FilterOption key={f.facultyId} label={f.facultyName}
                      value={selectedFaculties.includes(f.facultyId)} 
                      onChange={() => toggleValue(f.facultyId, setSelectedFaculties)}/>)}

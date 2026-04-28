@@ -3,10 +3,11 @@ import { getAllFaculties, getFacultyById } from "../api/facultyApi";
 import type { facultyResponse } from "../types/facultyTypes";
 
 
-export function useFaculty({facultyId}: {facultyId: string}){
+export function useFaculty({facultyId}: {facultyId: string | undefined}){
     const {data, isPending} = useQuery<facultyResponse>({
         queryKey: ["faculty", facultyId],
-        queryFn: () => getFacultyById(facultyId)
+        queryFn: () => getFacultyById(facultyId!),
+        enabled: !!facultyId
     })
 
     return {
