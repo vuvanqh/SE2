@@ -48,7 +48,7 @@ public class StrategyTests
         await strategy.ExecuteAsync(eventRequest);
 
         Assert.NotNull(capturedEvent);
-        Assert.Equal(eventRequest.FacultyId, capturedEvent.FacultyId);
+        Assert.Equal(eventRequest.FacultyId, (capturedEvent as FacultyEvent)?.FacultyId);
         Assert.Equal(eventRequest.EventDetails.Title, capturedEvent.EventDetails.Title);
         Assert.Equal(capturedEvent.Id, eventRequest.EventId);
         _academicEventRepoMock.Verify(r => r.AddAsync(It.IsAny<AcademicEvent>()), Times.Once);
@@ -59,17 +59,18 @@ public class StrategyTests
     {
         var strategy = new UpdateApprovalStrategy(_academicEventRepo);
         var eventId = Guid.NewGuid();
-        var existingEvent = new AcademicEvent
+        var facultyId = Guid.NewGuid();
+        var existingEvent = new FacultyEvent
         {
             Id = eventId,
-            FacultyId = Guid.NewGuid(),
+            FacultyId = facultyId,
             EventDetails = new EventDetails { Title = "Old Title", Location = "Old Location", StartTime = DateTime.UtcNow, EndTime = DateTime.UtcNow.AddHours(1) }
         };
 
         var eventRequest = new EventRequest
         {
             Id = Guid.NewGuid(),
-            FacultyId = Guid.NewGuid(),
+            FacultyId = facultyId,
             ManagerId = Guid.NewGuid(),
             EventId = eventId,
             EventDetails = new EventDetails
@@ -94,7 +95,7 @@ public class StrategyTests
         await strategy.ExecuteAsync(eventRequest);
 
         Assert.Equal(eventRequest.EventDetails.Title, existingEvent.EventDetails.Title);
-        Assert.Equal(eventRequest.FacultyId, existingEvent.FacultyId);
+        Assert.Equal(eventRequest.FacultyId, (existingEvent as FacultyEvent)?.FacultyId);
         _academicEventRepoMock.Verify(r => r.UpdateAsync(It.Is<AcademicEvent>(
             e => e.Id == eventId &&
             e.EventDetails.Title == "New Title")), Times.Once);
@@ -105,7 +106,7 @@ public class StrategyTests
     {
         var strategy = new DeleteApprovalStrategy(_academicEventRepo);
         var eventId = Guid.NewGuid();
-        var existingEvent = new AcademicEvent
+        var existingEvent = new FacultyEvent
         {
             Id = eventId,
             FacultyId = Guid.NewGuid(),
@@ -205,7 +206,7 @@ public class StrategyTests
         };
 
         _academicEventRepoMock.Setup(r => r.GetByIdAsync(eventId))
-            .ReturnsAsync(new AcademicEvent
+            .ReturnsAsync(new FacultyEvent
             {
                 Id = eventId,
                 FacultyId = Guid.NewGuid(),

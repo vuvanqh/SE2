@@ -25,7 +25,7 @@ export default function AcademicEventCard({event}: academicEventCardProps){
     return <article>
         <div>
             <h2>{event.title}</h2>
-            <p>{event.facultyId}</p>
+            <p>{event.facultyName ?? "University Event"}</p>
         </div>
         <div>
             <p>{event.location}</p>

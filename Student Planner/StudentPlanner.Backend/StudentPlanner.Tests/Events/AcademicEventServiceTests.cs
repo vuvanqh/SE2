@@ -19,22 +19,29 @@ public class AcademicEventServiceTests
 {
     private readonly Mock<IAcademicEventRepository> _academicEventRepositoryMock;
     private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IFacultyRepository> _facultyRepositoryMock;
     private readonly AcademicEventService _academicEventService;
 
     public AcademicEventServiceTests()
     {
         _academicEventRepositoryMock = new Mock<IAcademicEventRepository>();
         _userRepositoryMock = new Mock<IUserRepository>();
+        _facultyRepositoryMock = new Mock<IFacultyRepository>();
 
         _academicEventService = new AcademicEventService(
             _academicEventRepositoryMock.Object,
-            _userRepositoryMock.Object
+            _userRepositoryMock.Object,
+            _facultyRepositoryMock.Object
         );
+
+        _academicEventRepositoryMock
+            .Setup(repo => repo.GetSubscribedEventIdsAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(new HashSet<Guid>());
     }
 
     private AcademicEvent GenerateTestEvent(Guid id, Guid facultyId)
     {
-        return new AcademicEvent
+        return new FacultyEvent
         {
             Id = id,
             FacultyId = facultyId,

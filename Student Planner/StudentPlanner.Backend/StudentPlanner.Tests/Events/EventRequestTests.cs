@@ -8,6 +8,8 @@ using StudentPlanner.UI.NotificationServices;
 using StudentPlanner.UI.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using StudentPlanner.Core.Application.Notifications.ServiceContracts;
+using StudentPlanner.Core.Entities;
+using StudentPlanner.Core.Domain.Entities;
 
 namespace StudentPlanner.Tests;
 
@@ -20,6 +22,7 @@ public class EventRequestTests
     private readonly Mock<IEventRequestApprovalStrategy> _deleteStrategyMock;
     private readonly Mock<IHubContext<EventRequestHub>> _erHubMock;
     private readonly Mock<INotificationPreferenceService> _notificationPreferenceServiceMock;
+    private readonly Mock<IUserRepository> _userRepoMock;
 
     public EventRequestTests()
     {
@@ -40,6 +43,8 @@ public class EventRequestTests
         clientsMock.Setup(c => c.Group(It.IsAny<string>())).Returns(clientProxyMock.Object);
         clientsMock.Setup(c => c.User(It.IsAny<string>())).Returns(clientProxyMock.Object);
         _erHubMock.Setup(h => h.Clients).Returns(clientsMock.Object);
+
+        _userRepoMock = new Mock<IUserRepository>();
     }
 
     private EventRequestService CreateService()
@@ -53,7 +58,8 @@ public class EventRequestTests
                 _deleteStrategyMock.Object
             }, new EventRequestNotificationService(
                 _erHubMock.Object,
-                _notificationPreferenceServiceMock.Object)
+                _notificationPreferenceServiceMock.Object),
+            _userRepoMock.Object
         );
     }
 
@@ -81,6 +87,9 @@ public class EventRequestTests
         _eventRequestRepoMock.Setup(r => r.AddAsync(It.IsAny<EventRequest>()))
             .Callback<EventRequest>(e => result = e)
             .Returns(Task.CompletedTask);
+
+        _userRepoMock.Setup(u => u.GetByIdAsync(managerId))
+            .ReturnsAsync(new User { Id = managerId, Email = "m@m.com", Role = "Manager", FirstName = "F", LastName = "L", Faculty = new Faculty { Id = request.FacultyId!.Value, FacultyId = "F", FacultyName = "F", FacultyCode = "F" } });
 
         EventRequestService service = CreateService();
 
@@ -117,6 +126,9 @@ public class EventRequestTests
             }
         };
 
+        _userRepoMock.Setup(u => u.GetByIdAsync(managerId))
+            .ReturnsAsync(new User { Id = managerId, Email = "m@m.com", Role = "Manager", FirstName = "F", LastName = "L", Faculty = new Faculty { Id = request.FacultyId!.Value, FacultyId = "F", FacultyName = "F", FacultyCode = "F" } });
+
         EventRequestService service = CreateService();
         await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(managerId, request));
     }
@@ -140,6 +152,9 @@ public class EventRequestTests
                 Description = "Description"
             }
         };
+
+        _userRepoMock.Setup(u => u.GetByIdAsync(managerId))
+            .ReturnsAsync(new User { Id = managerId, Email = "m@m.com", Role = "Manager", FirstName = "F", LastName = "L", Faculty = new Faculty { Id = request.FacultyId!.Value, FacultyId = "F", FacultyName = "F", FacultyCode = "F" } });
 
         EventRequestService service = CreateService();
 
@@ -278,7 +293,7 @@ public class EventRequestTests
 
         EventRequestService service = CreateService();
 
-        await Assert.ThrowsAsync<ArgumentException>(() => service.GetByIdAsync(requestId));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.GetByIdAsync(requestId, Guid.NewGuid(), "Admin"));
     }
 
     [Fact]
@@ -312,7 +327,7 @@ public class EventRequestTests
 
         EventRequestService service = CreateService();
 
-        EventRequestResponse? result = await service.GetByIdAsync(requestId);
+        EventRequestResponse? result = await service.GetByIdAsync(requestId, eventRequest.ManagerId, "Manager");
 
         Assert.NotNull(result);
         Assert.Equal(requestId, result!.Id);

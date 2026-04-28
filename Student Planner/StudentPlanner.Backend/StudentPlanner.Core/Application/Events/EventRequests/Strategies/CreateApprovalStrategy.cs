@@ -19,12 +19,26 @@ public class CreateApprovalStrategy : IEventRequestApprovalStrategy
     public async Task ExecuteAsync(EventRequest eventRequest)
     {
         EventRequestValidationHelper.ValidateEventDetails(eventRequest.EventDetails);
-        var newEvent = new AcademicEvent
+        
+        AcademicEvent newEvent;
+        if (eventRequest.FacultyId.HasValue)
         {
-            Id = Guid.NewGuid(),
-            FacultyId = eventRequest.FacultyId,
-            EventDetails = eventRequest.EventDetails
-        };
+            newEvent = new FacultyEvent
+            {
+                Id = Guid.NewGuid(),
+                FacultyId = eventRequest.FacultyId.Value,
+                EventDetails = eventRequest.EventDetails
+            };
+        }
+        else
+        {
+            newEvent = new UniversityEvent
+            {
+                Id = Guid.NewGuid(),
+                EventDetails = eventRequest.EventDetails
+            };
+        }
+
         await _academicEventRepository.AddAsync(newEvent);
         eventRequest.EventId = newEvent.Id;
     }

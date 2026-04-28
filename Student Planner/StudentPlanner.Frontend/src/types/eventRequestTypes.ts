@@ -3,7 +3,7 @@
 export type eventRequestResponse = {
     id: string,
     status: "Pending" | "Approved" | "Rejected" ,
-    facultyId: string, 
+    facultyId?: string, 
     managerId: string,
     reviewedBy?: string,
     createdAt: string,
@@ -31,7 +31,7 @@ export type eventRequest = createEventRequestResponse | updateEventRequestRespon
 
 
 export type createEventRequest = {
-    facultyId: string,
+    facultyId?: string,
     eventId?: string,
     requestType: "Create" | "Update" | "Delete",
     eventDetails: eventDetails

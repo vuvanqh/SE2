@@ -95,10 +95,12 @@ public class EventRequestController : ControllerBase
         try
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
             if (userId == null)
                 return Unauthorized(new { Message = "Unauthorized access" });
 
-            var response = await _eventRequestService.GetByIdAsync(requestId);
+            var response = await _eventRequestService.GetByIdAsync(requestId, Guid.Parse(userId), role ?? "");
             return Ok(response);
         }
         catch (ArgumentException ex) when (ex.Message.Contains("exist", StringComparison.OrdinalIgnoreCase))

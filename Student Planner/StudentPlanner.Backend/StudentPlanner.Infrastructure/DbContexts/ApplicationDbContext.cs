@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using StudentPlanner.Core.Domain;
+using StudentPlanner.Core.Domain.Entities;
 using StudentPlanner.Infrastructure.IdentityEntities;
 
 namespace StudentPlanner.Infrastructure;

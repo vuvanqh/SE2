@@ -95,7 +95,7 @@ public class AdminServiceTests
         };
 
         _facultyRepositoryMock
-            .Setup(x => x.GetFacultyByIdAsync(request.FacultyId))
+            .Setup(x => x.GetFacultyByIdAsync(request.FacultyId!.Value))
             .ReturnsAsync(faculty);
 
         var result = await _adminService.CreateManagerAsync(request);
@@ -137,7 +137,7 @@ public class AdminServiceTests
         };
 
         _facultyRepositoryMock
-            .Setup(x => x.GetFacultyByIdAsync(request.FacultyId))
+            .Setup(x => x.GetFacultyByIdAsync(request.FacultyId!.Value))
             .ReturnsAsync((Faculty?)null);
 
         var act = async () => await _adminService.CreateManagerAsync(request);
@@ -373,5 +373,35 @@ public class AdminServiceTests
             Email = "jan.kowalski@pw.edu.pl",
             FacultyCode = null
         });
+    }
+
+    [Fact]
+    public async Task CreateManagerAsync_ShouldCreateUniversityManager_WhenFacultyIdIsNull()
+    {
+        var request = new CreateManagerRequestDto
+        {
+            FirstName = "Piotr",
+            LastName = "Kowal",
+            FacultyId = null,
+            Email = "piotr.kowal@pw.edu.pl"
+        };
+
+        var result = await _adminService.CreateManagerAsync(request);
+
+        result.Should().NotBeNull();
+        result.Email.Should().Be(request.Email);
+        result.Role.Should().Be(UserRoleOptions.Manager.ToString());
+
+        _identityServiceMock.Verify(x => x.RegisterUser(
+            It.Is<User>(u =>
+                u.FirstName == request.FirstName &&
+                u.LastName == request.LastName &&
+                u.Email == request.Email &&
+                u.Role == UserRoleOptions.Manager.ToString() &&
+                u.Faculty == null &&
+                u.UsosToken == null),
+            It.IsAny<string>(),
+            null,
+            UserRoleOptions.Manager.ToString()), Times.Once);
     }
 }

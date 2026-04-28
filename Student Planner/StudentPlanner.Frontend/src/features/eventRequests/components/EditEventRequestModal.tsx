@@ -36,8 +36,9 @@ export default function EditEventRequestModal({ requestId, onClose }: createEven
         if(data.location?.trim().length==0)
             errors.push("Location must be specified.");
         
+        const storedFacultyId = localStorage.getItem("facultyId");
         const payload: createEventRequest = {
-            facultyId: localStorage.getItem("facultyId")!,
+            facultyId: storedFacultyId && storedFacultyId !== "" ? storedFacultyId : undefined,
             requestType: "Update",
             eventDetails: data,
             eventId: eventRequest.id

@@ -6,7 +6,7 @@ namespace StudentPlanner.Core.Application.AcademicEvents.Mapping;
 
 public static class AcademicEventExtentions
 {
-    public static AcademicEventResponse ToAcademicEventResponse(this AcademicEvent academicEvent, bool isSubscribed = false)
+    public static AcademicEventResponse ToAcademicEventResponse(this AcademicEvent academicEvent, string? facultyName = null, bool isSubscribed = false)
     {
         return new AcademicEventResponse
         {
@@ -17,7 +17,8 @@ public static class AcademicEventExtentions
             StartTime = academicEvent.EventDetails.StartTime,
             EndTime = academicEvent.EventDetails.EndTime,
             Location = academicEvent.EventDetails.Location,
-            IsSubscribed = isSubscribed
+            IsSubscribed = isSubscribed,
+            FacultyName = facultyName ?? "University Event"
         };
     }
 }

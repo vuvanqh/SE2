@@ -27,17 +27,28 @@ public class AcademicEventRepository : IAcademicEventRepository
 
     public async Task<AcademicEvent?> GetByIdAsync(Guid eventId)
     {
-        return await _context.AcademicEvents.FirstOrDefaultAsync(e => e.Id == eventId);
+        return await _context.AcademicEvents
+            .FirstOrDefaultAsync(e => e.Id == eventId);
     }
 
     public async Task<IEnumerable<AcademicEvent>> GetAllAsync()
     {
-        return await _context.AcademicEvents.ToListAsync();
+        return await _context.AcademicEvents
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<AcademicEvent>> GetByFacultyIdAsync(Guid facultyId)
     {
-        return await _context.AcademicEvents.Where(e => e.FacultyId == facultyId).ToListAsync();
+        return await _context.AcademicEvents
+            .Where(e => e is FacultyEvent && e.FacultyId == facultyId)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<AcademicEvent>> GetUniversityEventsAsync()
+    {
+        return await _context.AcademicEvents
+            .Where(e => e is UniversityEvent)
+            .ToListAsync();
     }
 
     public async Task UpdateAsync(AcademicEvent academicEvent)
@@ -88,6 +99,8 @@ public class AcademicEventRepository : IAcademicEventRepository
 
     public async Task<IEnumerable<AcademicEvent>> GetByFacultiesAsync(List<Guid> facultyIds)
     {
-        return await _context.AcademicEvents.Where(e => facultyIds.Contains(e.FacultyId)).ToListAsync();
+        return await _context.AcademicEvents
+            .Where(e => e is FacultyEvent && e.FacultyId.HasValue && facultyIds.Contains(e.FacultyId.Value))
+            .ToListAsync();
     }
 }

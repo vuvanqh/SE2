@@ -92,7 +92,7 @@ public class EventRequestControllerE2ETests : IntegrationTestBase
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        db.AcademicEvents.Add(new StudentPlanner.Core.Domain.AcademicEvent
+        db.AcademicEvents.Add(new FacultyEvent
         {
             Id = id,
             FacultyId = facultyId,
@@ -167,7 +167,7 @@ public class EventRequestControllerE2ETests : IntegrationTestBase
 
         var createdEvent = await db.AcademicEvents.FirstOrDefaultAsync(e => e.EventDetails.Title == "New E2E Event", TestContext.Current.CancellationToken);
         createdEvent.Should().NotBeNull();
-        createdEvent!.FacultyId.Should().Be(faculty.Id);
+        (createdEvent as FacultyEvent)!.FacultyId.Should().Be(faculty.Id);
     }
 
     [Fact]

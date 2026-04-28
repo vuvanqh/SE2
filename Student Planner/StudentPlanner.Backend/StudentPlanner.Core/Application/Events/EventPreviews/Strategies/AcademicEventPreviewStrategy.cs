@@ -1,4 +1,4 @@
-﻿using StudentPlanner.Core.Domain;
+using StudentPlanner.Core.Domain;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Core.Entities;
 using System.ComponentModel.Design;
@@ -16,25 +16,56 @@ public class AcademicEventPreviewStrategy : IEventPreviewStrategy
 
     public async Task<IEnumerable<EventPreveiwDto>> GetAsync(UserContext user, EventPreviewQuery query)
     {
-        if (user.FacultyId == null && user.Role != UserRoleOptions.Admin)
-            throw new InvalidDataException("FacultyId is required.");
-
         IEnumerable<AcademicEvent> events;
+
         if (user.Role == UserRoleOptions.Admin)
         {
-            events = query.FacultyIds?.Count > 0 ?
-                (await _academicEventRepo.GetByFacultiesAsync(query.FacultyIds)) :
-                await _academicEventRepo.GetAllAsync();
+            if (query.FacultyIds == null || !query.FacultyIds.Any())
+            {
+                events = await _academicEventRepo.GetAllAsync();
+            }
+            else
+            {
+                var hasUniversity = query.FacultyIds.Contains(Guid.Empty);
+                var actualFacultyIds = query.FacultyIds.Where(id => id != Guid.Empty).ToList();
+
+                var facultyEvents = actualFacultyIds.Any()
+                    ? await _academicEventRepo.GetByFacultiesAsync(actualFacultyIds)
+                    : Enumerable.Empty<AcademicEvent>();
+
+                var universityEvents = hasUniversity
+                    ? await _academicEventRepo.GetUniversityEventsAsync()
+                    : Enumerable.Empty<AcademicEvent>();
+
+                events = facultyEvents.Concat(universityEvents);
+            }
+        }
+        else if (user.Role == UserRoleOptions.Manager)
+        {
+            if (user.FacultyId == null)
+            {
+                // University Manager
+                events = await _academicEventRepo.GetUniversityEventsAsync();
+            }
+            else
+            {
+                // Faculty Manager
+                events = await _academicEventRepo.GetByFacultyIdAsync(user.FacultyId.Value);
+            }
+        }
+        else if (user.Role == UserRoleOptions.Student)
+        {
+            // Students see their faculty events + university events
+            var universityEvents = await _academicEventRepo.GetUniversityEventsAsync();
+            var facultyEvents = user.FacultyId.HasValue 
+                ? await _academicEventRepo.GetByFacultyIdAsync(user.FacultyId.Value)
+                : Enumerable.Empty<AcademicEvent>();
+            
+            events = universityEvents.Concat(facultyEvents);
         }
         else
         {
-            events = await _academicEventRepo.GetByFacultyIdAsync(user.FacultyId!.Value);
-
-            if (user.Role == UserRoleOptions.Student)
-            {
-                var subscribedEventIds = await _academicEventRepo.GetSubscribedEventIdsAsync(user.Id);
-                events = events.Where(e => subscribedEventIds.Contains(e.Id));
-            }
+            events = Enumerable.Empty<AcademicEvent>();
         }
 
         return events.Select(e => new EventPreveiwDto
@@ -46,6 +77,5 @@ public class AcademicEventPreviewStrategy : IEventPreviewStrategy
             Title = e.EventDetails.Title,
             EventType = ValueObjects.EventPreveiwType.AcademicEvent
         });
-
     }
 }

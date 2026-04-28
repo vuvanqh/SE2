@@ -11,7 +11,7 @@ type stateType = {
     firstName: string,
     lastName: string,
     email: string,
-    facultyId: string,
+    facultyId: string | undefined,
     errors: string[]
 }
 
@@ -36,11 +36,12 @@ export default function CreateManagerModal({onClose}: {onClose: () => void}){
             firstName: formData.get("firstName") as string,
             lastName: formData.get("lastName") as string,
             email: formData.get("email") as string,
-            facultyId: formData.get("facultyId") as string,
+            facultyId: (formData.get("facultyId") as string) || undefined,
         };
 
-        if (!Object.values(data).every(Boolean)){
-            return { ...data, errors: ["All fields are required"] };
+        const { facultyId, ...otherFields } = data;
+        if (!Object.values(otherFields).every(Boolean)){
+            return { ...data, errors: ["First name, last name and email are required"] };
         }
         try{
             const result = await createManager(data);
@@ -52,7 +53,7 @@ export default function CreateManagerModal({onClose}: {onClose: () => void}){
         }
     }, initialValues);
 
-    const selectedFaculty =faculties.find(f => f.facultyId === state.facultyId)
+    const selectedFaculty = state.facultyId && faculties.find(f => f.facultyId === state.facultyId)
     ? {
         value: state.facultyId,
         label: faculties.find(f => f.facultyId === state.facultyId)!.facultyName
