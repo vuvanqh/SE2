@@ -11,7 +11,7 @@ export default function Input({label, id, className = '', error = '', ...props}:
             {label}
         </label>
 
-        <input name={id} className="input-field" {...props} required/>
+        <input id={id} name={id} className="input-field" {...props} required/>
         {error && <small className="error-text">{error}</small>}
     </div>
 }

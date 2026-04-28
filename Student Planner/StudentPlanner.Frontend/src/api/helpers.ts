@@ -88,9 +88,9 @@ export function emailValidator(e: React.ChangeEvent<HTMLInputElement>){
 }
 
 export function getNEvents(eventPreviews: eventPreviewResponse[], n: number){
-  return [...eventPreviews].sort((a, b) => {
-      const dateA = new Date(a.startTime);
-      const dateB = new Date(b.startTime);
-      return dateB.getTime() - dateA.getTime();
-  }).filter(d => new Date(d.startTime).getTime() > Date.now()).slice(0, n);
+  // Return the next N upcoming events, sorted soonest-first.
+  return [...eventPreviews]
+      .filter(d => new Date(d.startTime).getTime() > Date.now())
+      .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
+      .slice(0, n);
 }

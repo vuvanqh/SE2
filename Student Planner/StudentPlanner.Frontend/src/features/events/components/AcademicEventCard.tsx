@@ -1,5 +1,5 @@
 import { useUser } from "../../../global-hooks/authHooks"
-import type { academicEventResponse } from "../../../types/academicEventTypes"
+import type { academicEventResponse } from "../../../types/academic-event.types"
 
 type academicEventCardProps = {
     event: academicEventResponse

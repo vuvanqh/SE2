@@ -10,6 +10,10 @@ import { successMessage, errorMessage } from "../toast/toastNotifications";
 
 export function useAuth(){
     const navigate = useNavigate();
+    // Make `isAuthenticated` reactive AND survive a page refresh by sourcing
+    // the user via the same query that useUser uses (which falls back to
+    // localStorage via getStoredUser).
+    const { user } = useUser();
 
     const {mutateAsync, isPending: isLoginPending} = useMutation({
         mutationFn: async(data: loginRequest) => {
@@ -31,7 +35,8 @@ export function useAuth(){
 
     const {mutateAsync: sendResetToken, isPending: isRequestPending} = useMutation({
         mutationFn: requestResetToken,
-        onError: (error)=> {errorMessage(error.message)}
+        // No onError toast: the page intentionally swallows errors here to
+        // avoid leaking whether the email exists (account enumeration).
     })
 
     const {mutateAsync: resetPassword, isPending: isResetPending} = useMutation({
@@ -66,7 +71,7 @@ export function useAuth(){
         registerUser,
         sendResetToken,
         resetPassword,
-        isAuthenticated: !!queryClient.getQueryData(["user"]),
+        isAuthenticated: !!user,
         isLoginPending,
         isRegisterPending,
         isResetPending: isRequestPending || isResetPending
@@ -76,12 +81,12 @@ export function useAuth(){
 export function useUser(){
     const {data} = useQuery({
         queryKey: ["user"],
-        queryFn: getStoredUser,
+        queryFn: () => getStoredUser() ?? null,
         initialData: () => queryClient.getQueryData(["user"]),
         staleTime: Infinity,
     })
     return {
-        user: data
+        user: data ?? undefined
     }
 }
 
