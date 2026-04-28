@@ -39,7 +39,9 @@ public class AcademicEventService : IAcademicEventService
                 await _academicEventRepository.GetByFacultiesAsync(facultyIds) :
                 await _academicEventRepository.GetAllAsync();
         }
-        return events.Select(e => e.ToAcademicEventResponse());
+
+        var subscribedEventIds = await _academicEventRepository.GetSubscribedEventIdsAsync(id);
+        return events.Select(e => e.ToAcademicEventResponse(subscribedEventIds.Contains(e.Id)));
     }
 
     public async Task<AcademicEventResponse?> GetEventByIdAsync(Guid id, Guid userId)
@@ -57,6 +59,55 @@ public class AcademicEventService : IAcademicEventService
             return null;
         }
 
-        return e.ToAcademicEventResponse();
+        var isSubscribed = await _academicEventRepository.IsSubscribedAsync(id, userId);
+        return e.ToAcademicEventResponse(isSubscribed);
+    }
+
+    public async Task<IEnumerable<AcademicEventResponse>> GetEventsForUserAsync(Guid userId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+            throw new KeyNotFoundException("User not found.");
+
+        if (user.Faculty == null)
+            return Enumerable.Empty<AcademicEventResponse>();
+
+        var events = await _academicEventRepository.GetByFacultyIdAsync(user.Faculty.Id);
+        var subscribedEventIds = await _academicEventRepository.GetSubscribedEventIdsAsync(userId);
+        return events.Select(e => e.ToAcademicEventResponse(subscribedEventIds.Contains(e.Id)));
+    }
+
+    public async Task SubscribeAsync(Guid eventId, Guid userId)
+    {
+        await EnsureUserCanAccessEventAsync(eventId, userId);
+        await _academicEventRepository.SubscribeAsync(eventId, userId);
+    }
+
+    public async Task UnsubscribeAsync(Guid eventId, Guid userId)
+    {
+        await EnsureUserCanAccessEventAsync(eventId, userId);
+
+        bool isSubscribed = await _academicEventRepository.IsSubscribedAsync(eventId, userId);
+        if (!isSubscribed)
+            throw new KeyNotFoundException("Subscription not found.");
+
+        await _academicEventRepository.UnsubscribeAsync(eventId, userId);
+    }
+
+    private async Task EnsureUserCanAccessEventAsync(Guid eventId, Guid userId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+            throw new KeyNotFoundException("User not found.");
+
+        var academicEvent = await _academicEventRepository.GetByIdAsync(eventId);
+        if (academicEvent == null)
+            throw new KeyNotFoundException("Event not found.");
+
+        if (user.Role != UserRoleOptions.Admin.ToString()
+            && (user.Faculty == null || academicEvent.FacultyId != user.Faculty.Id))
+        {
+            throw new KeyNotFoundException("Event not found.");
+        }
     }
 }

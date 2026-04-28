@@ -27,7 +27,15 @@ public class AcademicEventPreviewStrategy : IEventPreviewStrategy
                 await _academicEventRepo.GetAllAsync();
         }
         else
-            events = (await _academicEventRepo.GetByFacultyIdAsync(user.FacultyId!.Value));
+        {
+            events = await _academicEventRepo.GetByFacultyIdAsync(user.FacultyId!.Value);
+
+            if (user.Role == UserRoleOptions.Student)
+            {
+                var subscribedEventIds = await _academicEventRepo.GetSubscribedEventIdsAsync(user.Id);
+                events = events.Where(e => subscribedEventIds.Contains(e.Id));
+            }
+        }
 
         return events.Select(e => new EventPreveiwDto
         {

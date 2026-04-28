@@ -204,7 +204,7 @@ public class AuthenticationController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogCritical(ex, "IDENTITY ERROR for {Email}: {Message}", request.Email, ex.Message);
-            return BadRequest($"DEBUG ERROR: {ex}");
+            return BadRequest("Invalid or expired token.");
         }
     }
 

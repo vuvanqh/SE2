@@ -102,4 +102,66 @@ public class AcademicEventController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while retrieving event details." });
         }
     }
+
+    /// <summary>
+    /// Subscribes the authenticated user to a specific academic event.
+    /// </summary>
+    /// <param name="id">The unique identifier of the academic event.</param>
+    /// <returns>No Content if the subscription succeeds; otherwise, Not Found.</returns>
+    [Authorize]
+    [HttpPut("{id:guid}/subscribe")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Subscribe(Guid id)
+    {
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+                return Unauthorized(new { Message = "Unauthorized access" });
+
+            await _academicEventService.SubscribeAsync(id, Guid.Parse(userId));
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { Message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while subscribing to event." });
+        }
+    }
+
+    /// <summary>
+    /// Unsubscribes the authenticated user from a specific academic event.
+    /// </summary>
+    /// <param name="id">The unique identifier of the academic event.</param>
+    /// <returns>No Content if the unsubscription succeeds; otherwise, Not Found.</returns>
+    [Authorize]
+    [HttpPut("{id:guid}/unsubscribe")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Unsubscribe(Guid id)
+    {
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+                return Unauthorized(new { Message = "Unauthorized access" });
+
+            await _academicEventService.UnsubscribeAsync(id, Guid.Parse(userId));
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { Message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while unsubscribing from event." });
+        }
+    }
 }

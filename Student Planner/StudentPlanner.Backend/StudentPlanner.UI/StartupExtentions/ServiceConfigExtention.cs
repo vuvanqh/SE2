@@ -12,6 +12,7 @@ using StudentPlanner.Core.Application.Events.UsosEvents.ServiceContracts;
 using StudentPlanner.Core.Application.Events.UsosEvents.Services;
 using StudentPlanner.Core.Application.Notifications.ServiceContracts;
 using StudentPlanner.Core.Application.PersonalEvents;
+using StudentPlanner.Core.Application.Notifications.Services;
 using StudentPlanner.Core.Application.ServiceContracts;
 using StudentPlanner.Core.Application.Services;
 using StudentPlanner.Core.Domain.RepositoryContracts;
@@ -52,6 +53,9 @@ public static class ServiceConfigExtention
         services.AddScoped<IEmailService, MailtrapEmailService>();
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IUsosEventService, UsosEventService>();
+        services.AddScoped<IEventPreviewService, EventPreviewService>();
+        services.AddScoped<INotificationPreferenceService, NotificationPreferenceService>();
+
         services.AddScoped<IFacultyService, FacultyService>();
         services.AddScoped<IEventPreviewService, EventPreviewService>();
         services.AddMemoryCache();
