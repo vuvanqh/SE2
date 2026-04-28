@@ -31,12 +31,9 @@ public class UpdateApprovalStrategy : IEventRequestApprovalStrategy
                 throw new InvalidOperationException("Cannot change the faculty of an existing Faculty Event.");
             }
         }
-        else if (existingEvent is UniversityEvent)
+        else if (existingEvent is UniversityEvent && eventRequest.FacultyId.HasValue)
         {
-            if (eventRequest.FacultyId.HasValue)
-            {
-                throw new InvalidOperationException("Cannot change a University Event to a Faculty Event.");
-            }
+            throw new InvalidOperationException("Cannot change a University Event to a Faculty Event.");
         }
 
         existingEvent.EventDetails = eventRequest.EventDetails;

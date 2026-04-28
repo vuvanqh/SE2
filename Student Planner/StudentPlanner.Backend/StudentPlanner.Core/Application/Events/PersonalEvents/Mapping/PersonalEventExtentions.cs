@@ -1,4 +1,4 @@
-﻿using StudentPlanner.Core.Domain;
+using StudentPlanner.Core.Domain;
 using StudentPlanner.Core;
 
 namespace StudentPlanner.Core.Application.PersonalEvents;
@@ -16,7 +16,7 @@ public static class CreatePersonalEventRequestExtention
                 Title = request.Title,
                 StartTime = request.StartTime,
                 EndTime = request.EndTime,
-                Location = request.Location,
+                Location = request.Location!,
                 Description = request.Description
             }
         };
@@ -36,7 +36,7 @@ public static class UpdatePersonalEventRequestExtention
                 Title = request.Title,
                 StartTime = request.StartTime,
                 EndTime = request.EndTime,
-                Location = request.Location,
+                Location = request.Location!,
                 Description = request.Description
             }
         };

@@ -39,8 +39,8 @@ public class AcademicEventService : IAcademicEventService
         if (user == null)
             throw new KeyNotFoundException("User not found.");
 
-        IEnumerable<AcademicEvent> events = Enumerable.Empty<AcademicEvent>();
-        if (role == UserRoleOptions.Admin.ToString())
+        IEnumerable<AcademicEvent> events;
+        if (string.Equals(role, UserRoleOptions.Admin.ToString(), StringComparison.OrdinalIgnoreCase))
         {
             if (facultyIds == null || !facultyIds.Any())
             {
@@ -50,19 +50,19 @@ public class AcademicEventService : IAcademicEventService
             {
                 var hasUniversity = facultyIds.Contains(Guid.Empty);
                 var actualFacultyIds = facultyIds.Where(id => id != Guid.Empty).ToList();
-                
-                var facultyEvents = actualFacultyIds.Any() 
+
+                var facultyEvents = actualFacultyIds.Any()
                     ? await _academicEventRepository.GetByFacultiesAsync(actualFacultyIds)
                     : Enumerable.Empty<AcademicEvent>();
-                
-                var universityEvents = hasUniversity 
+
+                var universityEvents = hasUniversity
                     ? await _academicEventRepository.GetUniversityEventsAsync()
                     : Enumerable.Empty<AcademicEvent>();
 
                 events = facultyEvents.Concat(universityEvents);
             }
         }
-        else if (role == UserRoleOptions.Student.ToString())
+        else if (string.Equals(role, UserRoleOptions.Student.ToString(), StringComparison.OrdinalIgnoreCase))
         {
             var universityEvents = await _academicEventRepository.GetUniversityEventsAsync();
             if (user.Faculty == null)
@@ -91,7 +91,7 @@ public class AcademicEventService : IAcademicEventService
 
         var subscribedEventIds = await _academicEventRepository.GetSubscribedEventIdsAsync(id);
         var facultyNames = await GetFacultyNamesAsync(events);
-        
+
         return events.Select(e => e.ToAcademicEventResponse(
             e.FacultyId.HasValue && facultyNames.TryGetValue(e.FacultyId.Value, out var name) ? name : null,
             subscribedEventIds.Contains(e.Id)));
@@ -106,9 +106,9 @@ public class AcademicEventService : IAcademicEventService
         var e = await _academicEventRepository.GetByIdAsync(id);
         if (e == null) return null;
 
-        if (user.Role != UserRoleOptions.Admin.ToString())
+        if (!string.Equals(user.Role, UserRoleOptions.Admin.ToString(), StringComparison.OrdinalIgnoreCase))
         {
-            if (user.Role == UserRoleOptions.Student.ToString())
+            if (string.Equals(user.Role, UserRoleOptions.Student.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 if (e is FacultyEvent fe && (user.Faculty == null || fe.FacultyId != user.Faculty.Id))
                 {
@@ -149,12 +149,12 @@ public class AcademicEventService : IAcademicEventService
         if (user == null)
             throw new KeyNotFoundException("User not found.");
 
-        IEnumerable<AcademicEvent> events = Enumerable.Empty<AcademicEvent>();
-        if (user.Role == UserRoleOptions.Admin.ToString())
+        IEnumerable<AcademicEvent> events;
+        if (string.Equals(user.Role, UserRoleOptions.Admin.ToString(), StringComparison.OrdinalIgnoreCase))
         {
             events = await _academicEventRepository.GetAllAsync();
         }
-        else if (user.Role == UserRoleOptions.Student.ToString())
+        else if (string.Equals(user.Role, UserRoleOptions.Student.ToString(), StringComparison.OrdinalIgnoreCase))
         {
             var universityEvents = await _academicEventRepository.GetUniversityEventsAsync();
             if (user.Faculty == null)
@@ -181,10 +181,7 @@ public class AcademicEventService : IAcademicEventService
 
         var subscribedEventIds = await _academicEventRepository.GetSubscribedEventIdsAsync(userId);
 
-        if (user.Role == UserRoleOptions.Student.ToString())
-        {
-            events = events.Where(e => subscribedEventIds.Contains(e.Id));
-        }
+
 
         var facultyNames = await GetFacultyNamesAsync(events);
 
@@ -220,9 +217,9 @@ public class AcademicEventService : IAcademicEventService
         if (academicEvent == null)
             throw new KeyNotFoundException("Event not found.");
 
-        if (user.Role != UserRoleOptions.Admin.ToString())
+        if (!string.Equals(user.Role, UserRoleOptions.Admin.ToString(), StringComparison.OrdinalIgnoreCase))
         {
-            if (user.Role == UserRoleOptions.Student.ToString())
+            if (string.Equals(user.Role, UserRoleOptions.Student.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 if (academicEvent is FacultyEvent fe && (user.Faculty == null || fe.FacultyId != user.Faculty.Id))
                 {

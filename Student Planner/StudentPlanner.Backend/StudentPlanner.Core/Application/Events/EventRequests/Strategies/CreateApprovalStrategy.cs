@@ -19,7 +19,7 @@ public class CreateApprovalStrategy : IEventRequestApprovalStrategy
     public async Task ExecuteAsync(EventRequest eventRequest)
     {
         EventRequestValidationHelper.ValidateEventDetails(eventRequest.EventDetails);
-        
+
         AcademicEvent newEvent;
         if (eventRequest.FacultyId.HasValue)
         {

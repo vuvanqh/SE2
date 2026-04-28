@@ -95,7 +95,7 @@ public class StrategyTests
         await strategy.ExecuteAsync(eventRequest);
 
         Assert.Equal(eventRequest.EventDetails.Title, existingEvent.EventDetails.Title);
-        Assert.Equal(eventRequest.FacultyId, (existingEvent as FacultyEvent)?.FacultyId);
+        Assert.Equal(eventRequest.FacultyId, (existingEvent)?.FacultyId);
         _academicEventRepoMock.Verify(r => r.UpdateAsync(It.Is<AcademicEvent>(
             e => e.Id == eventId &&
             e.EventDetails.Title == "New Title")), Times.Once);

@@ -57,10 +57,10 @@ public class AcademicEventPreviewStrategy : IEventPreviewStrategy
         {
             // Students see their faculty events + university events
             var universityEvents = await _academicEventRepo.GetUniversityEventsAsync();
-            var facultyEvents = user.FacultyId.HasValue 
+            var facultyEvents = user.FacultyId.HasValue
                 ? await _academicEventRepo.GetByFacultyIdAsync(user.FacultyId.Value)
                 : Enumerable.Empty<AcademicEvent>();
-            
+
             events = universityEvents.Concat(facultyEvents);
         }
         else

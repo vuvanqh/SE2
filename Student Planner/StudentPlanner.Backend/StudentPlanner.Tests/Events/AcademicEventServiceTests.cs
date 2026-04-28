@@ -91,7 +91,7 @@ public class AcademicEventServiceTests
         _academicEventRepositoryMock
             .Setup(repo => repo.GetByFacultyIdAsync(facultyId))
             .ReturnsAsync(events);
-        
+
         var subscribedEventId = events[0].Id;
         _academicEventRepositoryMock
             .Setup(repo => repo.GetSubscribedEventIdsAsync(userId))
