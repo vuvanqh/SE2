@@ -91,11 +91,18 @@ public class AcademicEventServiceTests
         _academicEventRepositoryMock
             .Setup(repo => repo.GetByFacultyIdAsync(facultyId))
             .ReturnsAsync(events);
+        
+        var subscribedEventId = events[0].Id;
+        _academicEventRepositoryMock
+            .Setup(repo => repo.GetSubscribedEventIdsAsync(userId))
+            .ReturnsAsync(new HashSet<Guid> { subscribedEventId });
 
         var result = await _academicEventService.GetAccessibleEventsAsync(userId, UserRoleOptions.Student.ToString(), null);
 
         result.Should().NotBeNull();
         result.Should().HaveCount(2);
+        result.First(e => e.Id == subscribedEventId).IsSubscribed.Should().BeTrue();
+        result.First(e => e.Id != subscribedEventId).IsSubscribed.Should().BeFalse();
 
         _userRepositoryMock.Verify(
             repo => repo.GetByIdAsync(userId),
@@ -439,6 +446,7 @@ public class AcademicEventServiceTests
 
         _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
         _academicEventRepositoryMock.Setup(repo => repo.GetByFacultyIdAsync(facultyId)).ReturnsAsync(events);
+        _academicEventRepositoryMock.Setup(repo => repo.GetSubscribedEventIdsAsync(userId)).ReturnsAsync(events.Select(e => e.Id).ToHashSet());
 
         var result = await _academicEventService.GetEventsForUserAsync(userId);
 

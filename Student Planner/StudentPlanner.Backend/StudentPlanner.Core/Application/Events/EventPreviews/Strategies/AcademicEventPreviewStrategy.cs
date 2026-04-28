@@ -68,6 +68,12 @@ public class AcademicEventPreviewStrategy : IEventPreviewStrategy
             events = Enumerable.Empty<AcademicEvent>();
         }
 
+        if (user.Role == UserRoleOptions.Student)
+        {
+            var subscribedEventIds = await _academicEventRepo.GetSubscribedEventIdsAsync(user.Id);
+            events = events.Where(e => subscribedEventIds.Contains(e.Id));
+        }
+
         return events.Select(e => new EventPreveiwDto
         {
             EndTime = e.EventDetails.EndTime,
