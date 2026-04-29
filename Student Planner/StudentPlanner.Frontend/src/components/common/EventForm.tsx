@@ -56,11 +56,11 @@ export default function EventForm({ initialValues, onClose, onSubmit, submitLabe
         </div>
 
         <div className="modal-actions">
-            <button className="btn-secondary" onClick={onClose}>
+            <button type="button" className="btn-secondary" onClick={onClose}>
                 Cancel
             </button>
 
-            <button className="btn-primary">
+            <button type="submit" className="btn-primary">
                {submitLabel}
             </button>
         </div>

@@ -12,7 +12,7 @@ export default function AcademicEventPage(){
         const matchesSearch = event.title.toLowerCase().includes(search.toLowerCase());
         const matchesSubscription = includeSubscribed || !event.isSubscribed;
         const matchesFaculty = !facultyOnly || event.facultyId !== null;
-        
+
         return matchesSearch && matchesSubscription && matchesFaculty;
     });
 
@@ -26,8 +26,8 @@ export default function AcademicEventPage(){
             )}
         </div>
          <aside className="user-panel">
-            <input 
-                className="search-input" 
+            <input
+                className="search-input"
                 placeholder="Search by event..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -36,15 +36,15 @@ export default function AcademicEventPage(){
             <div className="filter-group">
                 <p className="filter-title">Filters</p>
                 <label className="filter-option">
-                    <input 
-                        type="checkbox" 
+                    <input
+                        type="checkbox"
                         checked={includeSubscribed}
                         onChange={(e) => setIncludeSubscribed(e.target.checked)}
                     />
                     Include Subscribed
                 </label>
                 <label className="filter-option">
-                    <input 
+                    <input
                         type="checkbox"
                         checked={facultyOnly}
                         onChange={(e) => setFacultyOnly(e.target.checked)}

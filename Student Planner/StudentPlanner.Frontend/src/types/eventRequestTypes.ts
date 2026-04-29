@@ -3,7 +3,7 @@
 export type eventRequestResponse = {
     id: string,
     status: "Pending" | "Approved" | "Rejected" ,
-    facultyId?: string, 
+    facultyId?: string,
     managerId: string,
     reviewedBy?: string,
     createdAt: string,
