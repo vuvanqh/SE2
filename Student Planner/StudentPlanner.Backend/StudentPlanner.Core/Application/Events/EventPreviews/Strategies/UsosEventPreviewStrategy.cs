@@ -40,7 +40,7 @@ public class UsosEventPreviewStrategy : IEventPreviewStrategy
             throw new InvalidOperationException("User does not have a linked USOS token.");
 
         var fetchedEvents = await _usosClient.GetTimetableAsync(userEntity.UsosToken, DateOnly.FromDateTime(from), days);
-        Console.WriteLine($"[UsosEventPreviewStrategy] User {user.Id}: Fetched {fetchedEvents.Count()} events from USOS for range {from} (+{days} days)");
+        Console.WriteLine($"[UsosEventPreviewStrategy] User {user.Id}: Fetched {fetchedEvents.Count} events from USOS for range {from} (+{days} days)");
 
         var previews = fetchedEvents.Select(e => new EventPreveiwDto
         {

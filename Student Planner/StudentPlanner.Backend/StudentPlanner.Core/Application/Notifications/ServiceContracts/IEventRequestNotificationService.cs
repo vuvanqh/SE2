@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,5 +8,5 @@ public interface IEventRequestNotificationService
 {
     Task EventRequestUpdated(Guid managerId);
     Task NotifyEventRequestListChanged();
-    Task AcademicEventNotification(Guid studentId);
+    Task AcademicEventNotification(Guid studentId, string message, Guid? facultyId);
 }
