@@ -41,9 +41,9 @@ public class AcademicEventControllerE2ETests : IntegrationTestBase
 
         // If registration fails with 400 or 409, it might be because the user already exists.
         // We'll proceed to login anyway.
-        if (registerResponse.StatusCode != System.Net.HttpStatusCode.BadRequest && 
-            registerResponse.StatusCode != System.Net.HttpStatusCode.Conflict && 
-            registerResponse.StatusCode != System.Net.HttpStatusCode.OK && 
+        if (registerResponse.StatusCode != System.Net.HttpStatusCode.BadRequest &&
+            registerResponse.StatusCode != System.Net.HttpStatusCode.Conflict &&
+            registerResponse.StatusCode != System.Net.HttpStatusCode.OK &&
             registerResponse.StatusCode != System.Net.HttpStatusCode.Created)
         {
             registerResponse.EnsureSuccessStatusCode();

@@ -42,7 +42,7 @@ public class EventPreviewTests
     {
         var userContext = new UserContext { Id = Guid.NewGuid(), Role = UserRoleOptions.Student };
         var query = new EventPreviewQuery { From = DateTime.UtcNow, Days = 7 };
-        
+
         var strategy1Mock = new Mock<IEventPreviewStrategy>();
         strategy1Mock.Setup(s => s.CanHandle(userContext)).Returns(true);
         strategy1Mock.Setup(s => s.GetAsync(userContext, query))
@@ -74,7 +74,7 @@ public class EventPreviewTests
         var userContext = new UserContext { Id = userId, Role = UserRoleOptions.Student };
         var from = new DateTime(2023, 10, 1, 0, 0, 0, DateTimeKind.Utc);
         var query = new EventPreviewQuery { From = from, Days = 7 };
-        
+
         var events = new List<PersonalEvent>
         {
             new PersonalEvent { Id = Guid.NewGuid(), UserId = userId, EventDetails = new EventDetails { Title = "In Range", StartTime = from.AddDays(1), EndTime = from.AddDays(1).AddHours(1) } },
@@ -100,7 +100,7 @@ public class EventPreviewTests
     {
         var userContext = new UserContext { Id = Guid.NewGuid(), Role = UserRoleOptions.Admin };
         var query = new EventPreviewQuery();
-        
+
         var events = new List<AcademicEvent>
         {
             new FacultyEvent { Id = Guid.NewGuid(), EventDetails = new EventDetails { Title = "Admin Event", StartTime = DateTime.UtcNow, EndTime = DateTime.UtcNow.AddHours(1) } }
@@ -122,7 +122,7 @@ public class EventPreviewTests
         var facultyId = Guid.NewGuid();
         var userContext = new UserContext { Id = userId, Role = UserRoleOptions.Student, FacultyId = facultyId };
         var query = new EventPreviewQuery();
-        
+
         var eventId1 = Guid.NewGuid();
         var eventId2 = Guid.NewGuid();
         var events = new List<AcademicEvent>
@@ -134,7 +134,7 @@ public class EventPreviewTests
         _academicEventRepoMock.Setup(r => r.GetUniversityEventsAsync()).ReturnsAsync(new List<AcademicEvent>());
         _academicEventRepoMock.Setup(r => r.GetByFacultyIdAsync(facultyId)).ReturnsAsync(events);
         _academicEventRepoMock.Setup(r => r.GetSubscribedEventIdsAsync(userId)).ReturnsAsync(new HashSet<Guid> { eventId1 });
-        
+
         var strategy = new AcademicEventPreviewStrategy(_academicEventRepoMock.Object);
 
         var result = await strategy.GetAsync(userContext, query);
@@ -155,9 +155,9 @@ public class EventPreviewTests
         var userContext = new UserContext { Id = userId, Role = UserRoleOptions.Student };
         var from = DateTime.UtcNow.Date;
         var query = new EventPreviewQuery { From = from, Days = 7 };
-        var userEntity = new User 
-        { 
-            Id = userId, 
+        var userEntity = new User
+        {
+            Id = userId,
             UsosToken = "valid-token",
             FirstName = "Test",
             LastName = "User",
@@ -166,14 +166,14 @@ public class EventPreviewTests
         };
 
         _userRepoMock.Setup(r => r.GetByIdAsync(userId)).ReturnsAsync(userEntity);
-        
+
         var usosEvents = new List<UsosEventResponseDto>
         {
-            new UsosEventResponseDto 
-            { 
-                Id = "usos1", 
-                Title = "USOS Event", 
-                StartTime = from.AddHours(10).ToString("yyyy-MM-dd HH:mm:ss"), 
+            new UsosEventResponseDto
+            {
+                Id = "usos1",
+                Title = "USOS Event",
+                StartTime = from.AddHours(10).ToString("yyyy-MM-dd HH:mm:ss"),
                 EndTime = from.AddHours(12).ToString("yyyy-MM-dd HH:mm:ss"),
                 BuildingName = "Building",
                 RoomNumber = "101"
@@ -202,9 +202,9 @@ public class EventPreviewTests
     {
         var userId = Guid.NewGuid();
         var userContext = new UserContext { Id = userId, Role = UserRoleOptions.Student };
-        var userEntity = new User 
-        { 
-            Id = userId, 
+        var userEntity = new User
+        {
+            Id = userId,
             UsosToken = "",
             FirstName = "Test",
             LastName = "User",
@@ -213,7 +213,7 @@ public class EventPreviewTests
         };
 
         _userRepoMock.Setup(r => r.GetByIdAsync(userId)).ReturnsAsync(userEntity);
-        
+
         object? cacheEntry = null;
         _cacheMock.Setup(m => m.TryGetValue(It.IsAny<object>(), out cacheEntry)).Returns(false);
 

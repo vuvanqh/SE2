@@ -120,7 +120,7 @@ public class EventRequestService : IEventRequestService
         await _eventRequestRepository.UpdateAsync(eventRequest);
 
         var users = await _userRepository.GetFacultyUsersAsync(eventRequest.FacultyId) ?? new List<User>();
-        foreach(var u in users)
+        foreach (var u in users)
         {
             string message;
             switch (eventRequest.RequestType)

@@ -41,9 +41,9 @@ public class EventPreviewControllerE2ETests : IntegrationTestBase
             FacultyId = facultyId
         }, TestContext.Current.CancellationToken);
 
-        if (registerResponse.StatusCode != HttpStatusCode.BadRequest && 
-            registerResponse.StatusCode != HttpStatusCode.Conflict && 
-            registerResponse.StatusCode != HttpStatusCode.OK && 
+        if (registerResponse.StatusCode != HttpStatusCode.BadRequest &&
+            registerResponse.StatusCode != HttpStatusCode.Conflict &&
+            registerResponse.StatusCode != HttpStatusCode.OK &&
             registerResponse.StatusCode != HttpStatusCode.Created)
         {
             registerResponse.EnsureSuccessStatusCode();
@@ -91,7 +91,7 @@ public class EventPreviewControllerE2ETests : IntegrationTestBase
         {
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             db.Faculties.Add(new AppFaculty { Id = facultyId, FacultyId = "PREV_FAC", FacultyName = "Preview Faculty", FacultyCode = "PF" });
-            
+
             var eventId = Guid.NewGuid();
             db.AcademicEvents.Add(new FacultyEvent
             {
@@ -112,14 +112,14 @@ public class EventPreviewControllerE2ETests : IntegrationTestBase
         }
 
         var token = await RegisterAndLoginUserAsync("preview_student@pw.edu.pl", "Password123!", "Student", facultyId);
-        
+
         using (var scope = _factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var userManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.UserManager<ApplicationUser>>();
             var identityUser = await userManager.FindByEmailAsync("preview_student@pw.edu.pl");
             var eventId = db.AcademicEvents.First(e => e.EventDetails.Title == "Preview Academic Event").Id;
-            
+
             db.AcademicEventSubscribers.Add(new AcademicEventSubscriber
             {
                 AcademicEventId = eventId,
@@ -134,7 +134,7 @@ public class EventPreviewControllerE2ETests : IntegrationTestBase
 
         if (response.StatusCode != HttpStatusCode.OK)
         {
-            var error = await response.Content.ReadAsStringAsync();
+            var error = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
             throw new Exception($"Request failed with status {response.StatusCode}. Error: {error}");
         }
 
@@ -151,7 +151,7 @@ public class EventPreviewControllerE2ETests : IntegrationTestBase
         {
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             db.Faculties.Add(new AppFaculty { Id = facultyId, FacultyId = "ADMIN_PREV_FAC", FacultyName = "Admin Preview Faculty", FacultyCode = "APF" });
-            
+
             db.AcademicEvents.Add(new FacultyEvent
             {
                 Id = Guid.NewGuid(),
@@ -174,7 +174,7 @@ public class EventPreviewControllerE2ETests : IntegrationTestBase
 
         if (response.StatusCode != HttpStatusCode.OK)
         {
-            var error = await response.Content.ReadAsStringAsync();
+            var error = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
             throw new Exception($"Request failed with status {response.StatusCode}. Error: {error}");
         }
 

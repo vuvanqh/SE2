@@ -16,7 +16,7 @@ public class PersonalEventPreveiwStrategy : IEventPreviewStrategy
     public async Task<IEnumerable<EventPreveiwDto>> GetAsync(UserContext user, EventPreviewQuery query)
     {
         var events = await _personalEventRepo.GetEventsByUserIdAsync(user.Id);
-        
+
         var from = query.From ?? DateTime.UtcNow.Date;
         var to = from.AddDays(query.Days ?? 31);
 

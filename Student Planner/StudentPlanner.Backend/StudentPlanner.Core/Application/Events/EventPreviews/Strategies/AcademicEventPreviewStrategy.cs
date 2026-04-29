@@ -78,9 +78,9 @@ public class AcademicEventPreviewStrategy : IEventPreviewStrategy
         var to = from.AddDays(query.Days ?? 31);
 
         var filteredEvents = events.Where(e => e.EventDetails.StartTime >= from && e.EventDetails.StartTime <= to).ToList();
-        
+
         Console.WriteLine($"[AcademicEventPreviewStrategy] User {user.Id} ({user.Role}): Found {events.Count()} total events, {filteredEvents.Count} after date filtering ({from} to {to})");
-        
+
         return filteredEvents.Select(e => new EventPreveiwDto
         {
             EndTime = e.EventDetails.EndTime,

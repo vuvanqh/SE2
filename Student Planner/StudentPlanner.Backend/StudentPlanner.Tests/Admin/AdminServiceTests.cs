@@ -230,7 +230,7 @@ public class AdminServiceTests
         result.DisabledUsers.Should().Be(0);
         result.FailedChecks.Should().Be(1);
     }
-    
+
     [Fact]
     public async Task CreateManagerAsync_ShouldCreateUniversityManager_WhenFacultyIdIsNull()
     {
