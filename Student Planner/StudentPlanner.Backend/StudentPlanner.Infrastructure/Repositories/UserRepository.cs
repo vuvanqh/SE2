@@ -46,9 +46,21 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public Task<List<User>> GetFacultyUsersAsync(Guid facultyId)
+    public async Task<List<User>> GetFacultyUsersAsync(Guid? facultyId)
     {
-        throw new NotImplementedException();
+        return await (
+            from u in _context.Users
+                .Include(u => u.Faculty)
+
+            join ur in _context.UserRoles
+                on u.Id equals ur.UserId
+
+            join r in _context.Roles
+                on ur.RoleId equals r.Id
+
+            where u.FacultyId == facultyId
+            select u.ToUser(r.Name!)
+        ).ToListAsync();
     }
 
     public async Task<User?> GetUserByEmailAsync(string email)

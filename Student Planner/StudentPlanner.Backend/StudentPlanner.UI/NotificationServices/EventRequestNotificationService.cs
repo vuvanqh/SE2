@@ -73,6 +73,25 @@ public class EventRequestNotificationService : IEventRequestNotificationService
     }
 
     /// <summary>
+    /// Sends an academic event notification to a student.
+    /// </summary>
+    /// <param name="studentId">
+    /// Identifier of the student to notify.
+    /// </param>
+    /// <returns>
+    /// A task representing the asynchronous notification operation.
+    /// </returns>
+    /// <remarks>
+    /// Sends the "academicEvent" SignalR message only if
+    /// the student has notifications enabled.
+    /// </remarks>
+    public async Task AcademicEventNotification(Guid studentId)
+    {
+        if (await _notificationPreferenceService.AreNotificationsEnabledAsync(studentId))
+            await _hub.Clients.User(studentId.ToString()).SendAsync("academicEvent");
+    }
+
+    /// <summary>
     /// Notifies administrators that the event request list has changed.
     /// </summary>
     /// <returns>A task representing the asynchronous operation.</returns>

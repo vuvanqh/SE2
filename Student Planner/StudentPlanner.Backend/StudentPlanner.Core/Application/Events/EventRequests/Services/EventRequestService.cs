@@ -119,6 +119,18 @@ public class EventRequestService : IEventRequestService
         await strategy.ExecuteAsync(eventRequest);
         await _eventRequestRepository.UpdateAsync(eventRequest);
 
+        var users = await _userRepository.GetFacultyUsersAsync(eventRequest.FacultyId);
+        foreach(var u in users)
+        {
+            string message;
+            switch (eventRequest.RequestType)
+            {
+                case RequestType.Create: message = "A new academic event has been added"; break;
+                case RequestType.Update: message = $"An academic event {eventRequest.EventDetails.Title!} has been updated"; break;
+                default: message = "Academic event notification"; break;
+            }
+            await _notify.AcademicEventNotification(u.Id, message, eventRequest.FacultyId);
+        }
         await _notify.EventRequestUpdated(eventRequest.ManagerId);
     }
 

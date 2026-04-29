@@ -8,4 +8,5 @@ public interface IEventRequestNotificationService
 {
     Task EventRequestUpdated(Guid managerId);
     Task NotifyEventRequestListChanged();
+    Task AcademicEventNotification(Guid studentId);
 }
