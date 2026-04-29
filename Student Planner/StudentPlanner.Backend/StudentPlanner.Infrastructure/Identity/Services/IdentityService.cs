@@ -14,15 +14,15 @@ public class IdentityService : IIdentityService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
-    private readonly IUserRepository _userRepository;
+    private readonly IEventRequestRepository _eventRequestRepository;
 
     public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-        RoleManager<ApplicationRole> roleManager, IUserRepository userRepository)
+        RoleManager<ApplicationRole> roleManager, IEventRequestRepository eventRequestRepository)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
-        _userRepository = userRepository;
+        _eventRequestRepository = eventRequestRepository;
     }
     public async Task<User> SignInAsync(string email, string password)
     {
@@ -157,7 +157,18 @@ public class IdentityService : IIdentityService
             throw new KeyNotFoundException("User not found!");
         var roles = await _userManager.GetRolesAsync(appUser);
         var roleName = roles[0];
-        await _userRepository.DeleteUserAsync(appUser.ToUser(roleName));
+
+        if (roleName == "Manager")
+        {
+            await _eventRequestRepository.DeleteByManagerIdAsync(userId);
+        }
+
+        var result = await _userManager.DeleteAsync(appUser);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new InvalidOperationException(errors);
+        }
     }
 
     public async Task<User?> GetUserByEmailAsync(string email)

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getUsosEvent } from "../../../api/events/usos-events";
 
-type usosEventResponse = {
+export type usosEventResponse = {
     id: string,
     title: string,
     startTime: string,

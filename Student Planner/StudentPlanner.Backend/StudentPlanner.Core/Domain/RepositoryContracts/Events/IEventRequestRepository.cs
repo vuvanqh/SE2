@@ -11,4 +11,5 @@ public interface IEventRequestRepository
     Task AddAsync(EventRequest eventRequest);
     Task UpdateAsync(EventRequest eventRequest);
     Task DeleteAsync(Guid requestId);
+    Task DeleteByManagerIdAsync(Guid managerId);
 }
