@@ -135,7 +135,7 @@ public class UsosEventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status502BadGateway)]
-    public async Task<IActionResult> GetEventById([FromQuery] string id)
+    public async Task<IActionResult> GetEventById(string id)
     {
         try
         {

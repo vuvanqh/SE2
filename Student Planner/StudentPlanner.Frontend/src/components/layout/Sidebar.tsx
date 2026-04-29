@@ -36,7 +36,6 @@ export default function Sidebar({ open }: { open: boolean }) {
         </section>}
 
         <div className="sidebar-actions">
-            <button className="danger">Delete Account</button>
             <button className="danger" onClick={async () => { await logout() }}>Log out</button>
         </div>
     </aside>
