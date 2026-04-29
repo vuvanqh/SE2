@@ -56,7 +56,7 @@ public class EventPreviewController : ControllerBase
 
         if (userId == null || role == null)
             return Unauthorized();
-        if (role != UserRoleOptions.Admin.ToString() && facultyIds.Any())
+        if (role != UserRoleOptions.Admin.ToString() && (facultyIds?.Any() ?? false))
             return Forbid();
 
         if (!Enum.TryParse<UserRoleOptions>(role, true, out var parsedRole))

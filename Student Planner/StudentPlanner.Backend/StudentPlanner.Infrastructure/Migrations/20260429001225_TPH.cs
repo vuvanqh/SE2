@@ -2,21 +2,20 @@
 
 #nullable disable
 
-namespace StudentPlanner.Infrastructure.Migrations
+namespace StudentPlanner.Infrastructure.Migrations;
+
+/// <inheritdoc />
+public partial class TPH : Migration
 {
     /// <inheritdoc />
-    public partial class TPH : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-
-        }
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        // Method intentionally left empty.
     }
 }
