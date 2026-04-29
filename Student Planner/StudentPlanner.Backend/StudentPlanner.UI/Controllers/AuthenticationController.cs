@@ -84,9 +84,6 @@ public class AuthenticationController : ControllerBase
         _logger.LogInformation("/authentication/login");
         _logger.LogDebug("{Email}", loginRequest.Email);
 
-        if (User.Identity != null && User.Identity.IsAuthenticated)
-            return Ok("User is already signed in.");
-
         try
         {
             (LoginResponseDto response, RefreshTokenResult refreshTokenResult) = await _authenticationService.LoginAsync(loginRequest);
