@@ -10,7 +10,9 @@ router.get('/user', (req, res) => {
     return res.status(400).json({ error: 'Unauthorized' });
   }
 
+  console.log(`[USOS-API] GET /services/tt/user: student_id=${user_id}, start=${start}, days=${days}`);
   const timetable = getUserTimetable(user_id, start, days);
+  console.log(`[USOS-API] Found ${timetable.length} events for student ${user_id}`);
   res.json(timetable);
 });
 

@@ -13,6 +13,11 @@ export type loginResponse = {
   facultyCode?: string
 }
 
+export type usosLoginRequest = {
+    email: string,
+    password: string
+}
+
 export type registerRequest = {
     // firstName: string,
     // lastName: string,

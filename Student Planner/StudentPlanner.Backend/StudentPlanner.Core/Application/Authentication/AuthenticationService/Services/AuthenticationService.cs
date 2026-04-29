@@ -35,17 +35,7 @@ public class AuthenticationService : IAuthenticationService
         var roles = await _identityService.GetUserRolesAsync(user);
         var role = roles.FirstOrDefault() ?? UserRoleOptions.Student.ToString();
 
-        if (string.Equals(role, UserRoleOptions.Student.ToString(), StringComparison.OrdinalIgnoreCase))
-        {
-            var usosResponse = await _usosAuthService.LoginAsync(request.Email, request.Password);
-            await _identityService.UpdateUsosToken(usosResponse.Token, user);
-        }
         RefreshTokenResult refreshTokenResult = await _refreshTokenService.IssueOnLogin(user);
-        if (role == "Student")
-        {
-            UsosLoginResponse response = await _usosAuthService.LoginAsync(request.Email, request.Password);
-            await _identityService.UpdateUsosToken(response.Token, user);
-        }
         return (new LoginResponseDto
         {
             Token = _jwtService.CreateToken(user),
@@ -122,5 +112,12 @@ public class AuthenticationService : IAuthenticationService
     public async Task LogOut(string id)
     {
         await _identityService.LogOut(id);
+    }
+
+    public async Task UsosLoginAsync(UsosLoginRequestDto request, Guid userId)
+    {
+        var user = await _identityService.GetUserByIdAsync(userId) ?? throw new KeyNotFoundException("User not found");
+        var usosResponse = await _usosAuthService.LoginAsync(request.Email, request.Password);
+        await _identityService.UpdateUsosToken(usosResponse.Token, user);
     }
 }

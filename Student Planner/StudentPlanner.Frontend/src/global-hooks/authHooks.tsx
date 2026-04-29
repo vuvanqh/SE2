@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { login as loginApi, register, requestResetToken, verifyAndResetPassword } from "../api/authApi";
+import { login as loginApi, register, requestResetToken, verifyAndResetPassword, usosLogin as usosLoginApi } from "../api/authApi";
 import type { loginRequest, loginResponse } from "../types/authTypes";
 import { useNavigate } from "react-router-dom";
 import { queryClient } from "../api/queryClient";
@@ -60,6 +60,16 @@ export function useAuth(){
         onError: (error)=> {errorMessage(error.message)}
     })
 
+    const {mutateAsync: usosLogin, isPending: isUsosLoginPending} = useMutation({
+        mutationFn: usosLoginApi,
+        onSuccess: () => {
+            successMessage("USOS logged in successfully!");
+            const role = localStorage.getItem("role");
+            navigate(`/${role?.toLowerCase()}`);
+        },
+        onError: (error)=> {errorMessage(error.message)}
+    })
+
     return {
         login: mutateAsync, 
         logout,
@@ -69,7 +79,9 @@ export function useAuth(){
         isAuthenticated: !!queryClient.getQueryData(["user"]),
         isLoginPending,
         isRegisterPending,
-        isResetPending: isRequestPending || isResetPending
+        isResetPending: isRequestPending || isResetPending,
+        usosLogin,
+        isUsosLoginPending
     }
 }
 

@@ -79,7 +79,9 @@ public class UsosEventsController : ControllerBase
                 ? DateOnly.FromDateTime(DateTime.UtcNow)
                 : DateOnly.ParseExact(start, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
+            Console.WriteLine($"[UsosEventsController] GetMyEvents: userId={userId}, start={parsedStart}, days={days}");
             var events = await _usosEventService.SyncAndGetEventsAsync(userId, parsedStart, days);
+            Console.WriteLine($"[UsosEventsController] Found {events.Count} events for user {userId}");
 
             return Ok(events);
         }
@@ -89,6 +91,10 @@ public class UsosEventsController : ControllerBase
         }
         catch (UsosException ex)
         {
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "USOS_AUTH_REQUIRED" });
+            }
             return StatusCode(StatusCodes.Status502BadGateway, new { message = ex.Message });
         }
         catch (InvalidResponseException ex)
@@ -147,6 +153,10 @@ public class UsosEventsController : ControllerBase
         }
         catch (UsosException ex)
         {
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "USOS_AUTH_REQUIRED" });
+            }
             return StatusCode(StatusCodes.Status502BadGateway, new { message = ex.Message });
         }
         catch (InvalidResponseException ex)
