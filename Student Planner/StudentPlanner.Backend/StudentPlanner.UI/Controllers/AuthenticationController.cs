@@ -150,6 +150,7 @@ public class AuthenticationController : ControllerBase
     [AllowAnonymous]
     [HttpPost("reset-password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
     {
         _logger.LogInformation("/authentication/reset-password");
@@ -161,7 +162,13 @@ public class AuthenticationController : ControllerBase
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
         {
+            // Masking "not found" for security (prevent enumeration)
             return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during password reset request for user {Email}", request.Email);
+            return BadRequest(ex.Message);
         }
     }
 
@@ -214,7 +221,7 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized, Description = "User not authenticated")]
     public async Task<IActionResult> Logout()
     {
-        var userId = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (userId == null)
             return Unauthorized("User not authenticated");
 
@@ -231,5 +238,33 @@ public class AuthenticationController : ControllerBase
             });
         }
         return Ok();
+    }
+
+    /// <summary>
+    /// Authenticates a student to USOS and updates their USOS token.
+    /// </summary>
+    /// <param name="usosLoginRequest">The USOS login credentials.</param>
+    /// <returns>200 OK on success.</returns>
+    [HttpPost("usos-login")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> UsosLogin([FromBody] UsosLoginRequestDto usosLoginRequest)
+    {
+        _logger.LogInformation("/authentication/usos-login");
+        var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userIdString == null || !Guid.TryParse(userIdString, out Guid userId))
+            return Unauthorized("User ID not found in claims.");
+
+        try
+        {
+            await _authenticationService.UsosLoginAsync(usosLoginRequest, userId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during USOS login for user {UserId}", userId);
+            return BadRequest(ex.Message);
+        }
     }
 }

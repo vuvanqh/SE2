@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/routing/ProtectedRoute";
 import LoginPage from "./pages/public/LoginPage";
 import RegisterPage from "./pages/public/RegisterPage";
 import ForgotPasswordPage from "./pages/public/ForgotPasswordPage";
+import UsosLoginPage from "./pages/public/UsosLoginPage";
 import ApplicationLayout from "./pages/ApplicationLayout";
 import StudentPage from "./pages/protected/Student/StudentPage";
 import RoleRoute from "./components/routing/RoleRoute";
@@ -35,6 +36,10 @@ export const router = createBrowserRouter([{
                 {
                     path: "forgot-password",
                     element: <ForgotPasswordPage />
+                },
+                {
+                    path: "usos-login",
+                    element: <UsosLoginPage />
                 }
             ]
         },

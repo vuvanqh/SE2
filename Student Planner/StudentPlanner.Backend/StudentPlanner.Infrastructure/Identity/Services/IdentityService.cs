@@ -32,9 +32,19 @@ public class IdentityService : IIdentityService
 
         var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent: false, lockoutOnFailure: true);
 
-        if (!result.Succeeded)
-            throw new UnauthorizedAccessException("Invalid Credentials");
+        if (result.IsLockedOut)
+        {
+            Console.WriteLine($"[IdentityService] Login failed: Account for {email} is LOCKED OUT.");
+            throw new UnauthorizedAccessException("Account is locked. Please try again later.");
+        }
 
+        if (!result.Succeeded)
+        {
+            Console.WriteLine($"[IdentityService] Login failed for {email}: Invalid Credentials.");
+            throw new UnauthorizedAccessException("Invalid Credentials");
+        }
+
+        Console.WriteLine($"[IdentityService] Login successful for {email}.");
         var roles = await _userManager.GetRolesAsync(user);
 
         var roleName = roles.FirstOrDefault() ?? UserRoleOptions.Student.ToString();
@@ -81,13 +91,16 @@ public class IdentityService : IIdentityService
 
     public async Task ResetPasswordAsync(string email, string token, string newPasswd)
     {
+        Console.WriteLine($"[IdentityService] Attempting to reset password for {email} with token: {token}");
         ApplicationUser user = (await _userManager.FindByEmailAsync(email)) ?? throw new InvalidOperationException("Invalid Operation");
         var result = await _userManager.ResetPasswordAsync(user, token, newPasswd);
         if (!result.Succeeded)
         {
             var errors = string.Join("\n", result.Errors.Select(e => e.Description));
+            Console.WriteLine($"[IdentityService] Password reset FAILED for {email}: {errors}");
             throw new InvalidOperationException(errors);
         }
+        Console.WriteLine($"[IdentityService] Password reset SUCCESSFUL for {email}.");
     }
     public async Task<IList<string>> GetUserRolesAsync(User user)
     {
