@@ -94,7 +94,8 @@ public class UserRepository : IUserRepository
             return null;
 
         var resp = await _userManager.GetRolesAsync(user);
-        return user.ToUser(resp[0]);
+        var role = resp.FirstOrDefault() ?? "Student";
+        return user.ToUser(role);
     }
 
     public async Task<bool?> GetNotificationPreferenceAsync(Guid userId)

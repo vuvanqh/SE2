@@ -45,6 +45,8 @@ public class EventRequestTests
         _erHubMock.Setup(h => h.Clients).Returns(clientsMock.Object);
 
         _userRepoMock = new Mock<IUserRepository>();
+        _userRepoMock.Setup(u => u.GetFacultyUsersAsync(It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<User>());
     }
 
     private EventRequestService CreateService()
