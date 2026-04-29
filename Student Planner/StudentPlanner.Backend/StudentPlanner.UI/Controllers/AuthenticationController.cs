@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using StudentPlanner.Core.Application.Authentication;
+using StudentPlanner.Core.Entities;
 
 namespace StudentPlanner.UI.Controllers;
 
@@ -246,7 +247,7 @@ public class AuthenticationController : ControllerBase
     /// <param name="usosLoginRequest">The USOS login credentials.</param>
     /// <returns>200 OK on success.</returns>
     [HttpPost("usos-login")]
-    [Authorize]
+    [Authorize(Roles = nameof(UserRoleOptions.Student))]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UsosLogin([FromBody] UsosLoginRequestDto usosLoginRequest)
@@ -255,7 +256,6 @@ public class AuthenticationController : ControllerBase
         var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (userIdString == null || !Guid.TryParse(userIdString, out Guid userId))
             return Unauthorized("User ID not found in claims.");
-
         try
         {
             await _authenticationService.UsosLoginAsync(usosLoginRequest, userId);

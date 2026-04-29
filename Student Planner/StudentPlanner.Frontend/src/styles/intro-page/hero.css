@@ -2,9 +2,9 @@
   position: relative;
   height: 65vh;
 
-  background-image: url("../../assets/us.jpg"); /* change image */
+  background-image: url("../../assets/hero.jpg"); /* change image */
   background-size: cover;
-  background-position: center 60%;
+  background-position: center 20%;
   background-repeat: no-repeat;
 
   display: flex;

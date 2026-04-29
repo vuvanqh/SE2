@@ -80,7 +80,7 @@ export function useAuth(){
         registerUser,
         sendResetToken,
         resetPassword,
-        isAuthenticated: !!queryClient.getQueryData(["user"]),
+        isAuthenticated: !!getStoredUser(),
         isLoginPending,
         isRegisterPending,
         isResetPending: isRequestPending || isResetPending,
@@ -93,7 +93,7 @@ export function useUser(){
     const {data} = useQuery({
         queryKey: ["user"],
         queryFn: getStoredUser,
-        initialData: () => queryClient.getQueryData(["user"]),
+        initialData: () => queryClient.getQueryData(["user"]) ?? getStoredUser(),
         staleTime: Infinity,
     })
     return {
