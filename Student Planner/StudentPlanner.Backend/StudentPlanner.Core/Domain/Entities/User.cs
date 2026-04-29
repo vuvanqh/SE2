@@ -15,6 +15,7 @@ public class User
     public DateTime RefreshTokenExpirationDate { get; set; }
     public DateTime RefreshTokenIssuedAt { get; set; }
     public string? UsosToken { get; set; }
+    public bool NotificationsEnabled { get; set; } = true;
     public Faculty? Faculty { get; set; }
     public required string Role { get; set; }
 }

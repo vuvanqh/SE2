@@ -2,7 +2,7 @@ export type createManagerRequest = {
     firstName: string;
     lastName: string;
     email: string;
-    facultyId: string;
+    facultyId?: string;
 }
 
 export type userResponse = {
@@ -12,5 +12,6 @@ export type userResponse = {
     email: string;
     userRole: "Admin" | "Manager" | "User";
     faculty: string;
+    facultyId?: string;
     facultyCode?: string;
 }

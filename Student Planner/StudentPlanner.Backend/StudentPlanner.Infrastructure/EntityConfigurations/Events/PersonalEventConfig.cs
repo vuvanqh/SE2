@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StudentPlanner.Core.Domain;
 using StudentPlanner.Infrastructure.IdentityEntities;
@@ -17,7 +17,7 @@ public class PersonalEventConfig : IEntityTypeConfiguration<PersonalEvent>
 
 
         builder.HasOne<ApplicationUser>()
-            .WithMany()
+            .WithMany(u => u.PersonalEvents)
             .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 

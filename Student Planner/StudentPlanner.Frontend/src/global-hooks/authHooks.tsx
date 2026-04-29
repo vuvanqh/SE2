@@ -24,7 +24,7 @@ export function useAuth(){
         onSuccess: (data) => {
             localStorage.setItem("token",data.token);
             localStorage.setItem("role",data.userRole);
-            localStorage.setItem("facultyId",data.facultyId);
+            localStorage.setItem("facultyId", data.facultyId ?? "");
             queryClient.setQueryData(["user"], data);
 
             successMessage("Logged in successfully!");

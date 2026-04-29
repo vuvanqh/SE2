@@ -5,7 +5,7 @@ public class CreateManagerRequestDto
 {
     [Required] public string FirstName { get; set; } = null!;
     [Required] public string LastName { get; set; } = null!;
-    [Required] public Guid FacultyId { get; set; }
+    public Guid? FacultyId { get; set; }
     [Required]
     [EmailAddress(ErrorMessage = "Email is not in a valid email format")]
     [RegularExpression(@"^[a-zA-Z0-9._%+-]+@pw\.edu\.pl$",

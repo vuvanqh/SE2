@@ -8,8 +8,8 @@ public sealed class EventDetails : IEquatable<EventDetails> //represents a final
     public string Title { get; set; } = null!;
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
-    [StringLength(70)]
-    public string? Location { get; set; }
+    [StringLength(100)]
+    public string Location { get; set; } = null!;
     public string? Description { get; set; }
 
     public bool Equals(EventDetails? other)

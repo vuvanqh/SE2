@@ -13,4 +13,6 @@ public interface IUserRepository
     Task DeleteUserAsync(User user);
     Task<User?> GetUserByRefreshToken(string token);
     Task<User?> GetByIdAsync(Guid userId);
+    Task<bool?> GetNotificationPreferenceAsync(Guid userId);
+    Task UpdateNotificationPreferenceAsync(Guid userId, bool notificationsEnabled);
 }

@@ -1,4 +1,4 @@
-﻿using StudentPlanner.Core.Domain;
+using StudentPlanner.Core.Domain;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using System.Runtime.CompilerServices;
 
@@ -55,7 +55,7 @@ public class PersonalEventService : IPersonalEventService
             StartTime = request.StartTime,
             EndTime = request.EndTime,
             Description = request.Description,
-            Location = request.Location,
+            Location = request.Location!,
         };
 
         personalEvent.EventDetails = details;

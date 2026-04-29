@@ -84,4 +84,20 @@ public class UserRepository : IUserRepository
         var resp = await _userManager.GetRolesAsync(user);
         return user.ToUser(resp[0]);
     }
+
+    public async Task<bool?> GetNotificationPreferenceAsync(Guid userId)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        return user?.NotificationsEnabled;
+    }
+
+    public async Task UpdateNotificationPreferenceAsync(Guid userId, bool notificationsEnabled)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+            throw new KeyNotFoundException("User not found.");
+
+        user.NotificationsEnabled = notificationsEnabled;
+        await _context.SaveChangesAsync();
+    }
 }

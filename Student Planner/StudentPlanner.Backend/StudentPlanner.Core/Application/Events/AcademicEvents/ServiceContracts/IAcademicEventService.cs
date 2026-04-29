@@ -9,4 +9,6 @@ public interface IAcademicEventService
 {
     Task<IEnumerable<AcademicEventResponse>> GetAccessibleEventsAsync(Guid id, string role, List<Guid>? facultyIds);
     Task<AcademicEventResponse?> GetEventByIdAsync(Guid id, Guid userId);
+    Task SubscribeAsync(Guid eventId, Guid userId);
+    Task UnsubscribeAsync(Guid eventId, Guid userId);
 }

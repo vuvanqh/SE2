@@ -11,7 +11,7 @@ public static class EventRequestExtensions
             Title = dto.Title,
             StartTime = dto.StartTime,
             EndTime = dto.EndTime,
-            Location = dto.Location,
+            Location = dto.Location!,
             Description = dto.Description
         };
     }

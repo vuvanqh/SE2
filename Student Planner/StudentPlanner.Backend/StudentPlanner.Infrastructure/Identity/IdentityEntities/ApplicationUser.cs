@@ -17,10 +17,12 @@ public class ApplicationUser : IdentityUser<Guid>
     public DateTime RefreshTokenIssuedAt { get; set; }
     public string? UsosToken { get; set; }
 
-
     public Guid? FacultyId { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore]
     public AppFaculty? Faculty { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<PersonalEvent> PersonalEvents { get; set; } = new List<PersonalEvent>();
+    public bool NotificationsEnabled { get; set; } = true;
 
     public User ToUser(string roleName) => new User()
     {
@@ -33,6 +35,7 @@ public class ApplicationUser : IdentityUser<Guid>
         RefreshTokenIssuedAt = RefreshTokenIssuedAt,
         UsosToken = UsosToken,
         Role = roleName,
-        Faculty = Faculty?.ToFaculty()
+        Faculty = Faculty?.ToFaculty(),
+        NotificationsEnabled = NotificationsEnabled
     };
 }

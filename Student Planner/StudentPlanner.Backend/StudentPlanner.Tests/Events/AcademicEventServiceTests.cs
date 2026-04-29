@@ -19,22 +19,29 @@ public class AcademicEventServiceTests
 {
     private readonly Mock<IAcademicEventRepository> _academicEventRepositoryMock;
     private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IFacultyRepository> _facultyRepositoryMock;
     private readonly AcademicEventService _academicEventService;
 
     public AcademicEventServiceTests()
     {
         _academicEventRepositoryMock = new Mock<IAcademicEventRepository>();
         _userRepositoryMock = new Mock<IUserRepository>();
+        _facultyRepositoryMock = new Mock<IFacultyRepository>();
 
         _academicEventService = new AcademicEventService(
             _academicEventRepositoryMock.Object,
-            _userRepositoryMock.Object
+            _userRepositoryMock.Object,
+            _facultyRepositoryMock.Object
         );
+
+        _academicEventRepositoryMock
+            .Setup(repo => repo.GetSubscribedEventIdsAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(new HashSet<Guid>());
     }
 
     private AcademicEvent GenerateTestEvent(Guid id, Guid facultyId)
     {
-        return new AcademicEvent
+        return new FacultyEvent
         {
             Id = id,
             FacultyId = facultyId,
@@ -85,10 +92,17 @@ public class AcademicEventServiceTests
             .Setup(repo => repo.GetByFacultyIdAsync(facultyId))
             .ReturnsAsync(events);
 
+        var subscribedEventId = events[0].Id;
+        _academicEventRepositoryMock
+            .Setup(repo => repo.GetSubscribedEventIdsAsync(userId))
+            .ReturnsAsync(new HashSet<Guid> { subscribedEventId });
+
         var result = await _academicEventService.GetAccessibleEventsAsync(userId, UserRoleOptions.Student.ToString(), null);
 
         result.Should().NotBeNull();
         result.Should().HaveCount(2);
+        result.First(e => e.Id == subscribedEventId).IsSubscribed.Should().BeTrue();
+        result.First(e => e.Id != subscribedEventId).IsSubscribed.Should().BeFalse();
 
         _userRepositoryMock.Verify(
             repo => repo.GetByIdAsync(userId),
@@ -408,5 +422,231 @@ public class AcademicEventServiceTests
         var result = await _academicEventService.GetEventByIdAsync(nonExistentId, userId);
 
         result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetEventsForUserAsync_ShouldReturnEvents_WhenUserHasFaculty()
+    {
+        var userId = Guid.NewGuid();
+        var facultyId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Email = "student@pw.edu.pl",
+            FirstName = "John",
+            LastName = "Doe",
+            Role = "Student",
+            Faculty = new Faculty { Id = facultyId, FacultyId = "FAC001", FacultyName = "Engineering", FacultyCode = "EN" }
+        };
+
+        var events = new List<AcademicEvent>
+        {
+            GenerateTestEvent(Guid.NewGuid(), facultyId)
+        };
+
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+        _academicEventRepositoryMock.Setup(repo => repo.GetByFacultyIdAsync(facultyId)).ReturnsAsync(events);
+        _academicEventRepositoryMock.Setup(repo => repo.GetSubscribedEventIdsAsync(userId)).ReturnsAsync(events.Select(e => e.Id).ToHashSet());
+
+        var result = await _academicEventService.GetEventsForUserAsync(userId);
+
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
+        result.First().FacultyId.Should().Be(facultyId);
+    }
+
+    [Fact]
+    public async Task GetEventsForUserAsync_ShouldThrowException_WhenUserNotFound()
+    {
+        var userId = Guid.NewGuid();
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync((User?)null);
+
+        Func<Task> act = async () => await _academicEventService.GetEventsForUserAsync(userId);
+
+        await act.Should().ThrowAsync<KeyNotFoundException>().WithMessage("User not found.");
+    }
+
+    [Fact]
+    public async Task GetEventsForUserAsync_ShouldReturnEmpty_WhenUserHasNoFaculty()
+    {
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Email = "admin@pw.edu.pl",
+            FirstName = "Admin",
+            LastName = "Doe",
+            Role = "Admin"
+        };
+
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+
+        var result = await _academicEventService.GetEventsForUserAsync(userId);
+
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
+        _academicEventRepositoryMock.Verify(repo => repo.GetByFacultyIdAsync(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task SubscribeAsync_ShouldSubscribe_WhenUserCanAccessEvent()
+    {
+        var eventId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var facultyId = Guid.NewGuid();
+
+        var academicEvent = GenerateTestEvent(eventId, facultyId);
+        var user = new User
+        {
+            Id = userId,
+            Email = "student@pw.edu.pl",
+            FirstName = "John",
+            LastName = "Doe",
+            Role = UserRoleOptions.Student.ToString(),
+            Faculty = new Faculty
+            {
+                Id = facultyId,
+                FacultyId = "FAC001",
+                FacultyName = "Engineering",
+                FacultyCode = "EN"
+            }
+        };
+
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+        _academicEventRepositoryMock.Setup(repo => repo.GetByIdAsync(eventId)).ReturnsAsync(academicEvent);
+
+        await _academicEventService.SubscribeAsync(eventId, userId);
+
+        _academicEventRepositoryMock.Verify(repo => repo.SubscribeAsync(eventId, userId), Times.Once);
+    }
+
+    [Fact]
+    public async Task SubscribeAsync_ShouldThrow_WhenEventDoesNotExist()
+    {
+        var eventId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+
+        var user = new User
+        {
+            Id = userId,
+            Email = "student@pw.edu.pl",
+            FirstName = "John",
+            LastName = "Doe",
+            Role = UserRoleOptions.Student.ToString()
+        };
+
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+        _academicEventRepositoryMock.Setup(repo => repo.GetByIdAsync(eventId)).ReturnsAsync((AcademicEvent?)null);
+
+        Func<Task> act = async () => await _academicEventService.SubscribeAsync(eventId, userId);
+
+        await act.Should().ThrowAsync<KeyNotFoundException>().WithMessage("Event not found.");
+        _academicEventRepositoryMock.Verify(repo => repo.SubscribeAsync(It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task SubscribeAsync_ShouldThrow_WhenUserIsFromDifferentFaculty()
+    {
+        var eventId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+
+        var academicEvent = GenerateTestEvent(eventId, Guid.NewGuid());
+        var user = new User
+        {
+            Id = userId,
+            Email = "student@pw.edu.pl",
+            FirstName = "John",
+            LastName = "Doe",
+            Role = UserRoleOptions.Student.ToString(),
+            Faculty = new Faculty
+            {
+                Id = Guid.NewGuid(),
+                FacultyId = "FAC001",
+                FacultyName = "Engineering",
+                FacultyCode = "EN"
+            }
+        };
+
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+        _academicEventRepositoryMock.Setup(repo => repo.GetByIdAsync(eventId)).ReturnsAsync(academicEvent);
+
+        Func<Task> act = async () => await _academicEventService.SubscribeAsync(eventId, userId);
+
+        await act.Should().ThrowAsync<KeyNotFoundException>().WithMessage("Event not found.");
+        _academicEventRepositoryMock.Verify(repo => repo.SubscribeAsync(It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UnsubscribeAsync_ShouldUnsubscribe_WhenUserCanAccessEvent()
+    {
+        var eventId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var facultyId = Guid.NewGuid();
+
+        var academicEvent = GenerateTestEvent(eventId, facultyId);
+        var user = new User
+        {
+            Id = userId,
+            Email = "student@pw.edu.pl",
+            FirstName = "John",
+            LastName = "Doe",
+            Role = UserRoleOptions.Student.ToString(),
+            Faculty = new Faculty
+            {
+                Id = facultyId,
+                FacultyId = "FAC001",
+                FacultyName = "Engineering",
+                FacultyCode = "EN"
+            }
+        };
+
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+        _academicEventRepositoryMock.Setup(repo => repo.GetByIdAsync(eventId)).ReturnsAsync(academicEvent);
+        _academicEventRepositoryMock
+            .Setup(repo => repo.IsSubscribedAsync(eventId, userId))
+            .ReturnsAsync(true);
+        _academicEventRepositoryMock.Setup(repo => repo.UnsubscribeAsync(eventId, userId)).Returns(Task.CompletedTask);
+
+        await _academicEventService.UnsubscribeAsync(eventId, userId);
+
+        _academicEventRepositoryMock.Verify(repo => repo.UnsubscribeAsync(eventId, userId), Times.Once);
+    }
+
+    [Fact]
+    public async Task UnsubscribeAsync_ShouldThrow_WhenSubscriptionDoesNotExist()
+    {
+        var eventId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var facultyId = Guid.NewGuid();
+
+        var academicEvent = GenerateTestEvent(eventId, facultyId);
+        var user = new User
+        {
+            Id = userId,
+            Email = "student@pw.edu.pl",
+            FirstName = "John",
+            LastName = "Doe",
+            Role = UserRoleOptions.Student.ToString(),
+            Faculty = new Faculty
+            {
+                Id = facultyId,
+                FacultyId = "FAC001",
+                FacultyName = "Engineering",
+                FacultyCode = "EN"
+            }
+        };
+
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+        _academicEventRepositoryMock.Setup(repo => repo.GetByIdAsync(eventId)).ReturnsAsync(academicEvent);
+        _academicEventRepositoryMock
+            .Setup(repo => repo.IsSubscribedAsync(eventId, userId))
+            .ReturnsAsync(false);
+        _academicEventRepositoryMock.Setup(repo => repo.UnsubscribeAsync(eventId, userId)).Returns(Task.CompletedTask);
+
+        Func<Task> act = async () => await _academicEventService.UnsubscribeAsync(eventId, userId);
+
+        await act.Should().ThrowAsync<KeyNotFoundException>().WithMessage("Subscription not found.");
     }
 }
