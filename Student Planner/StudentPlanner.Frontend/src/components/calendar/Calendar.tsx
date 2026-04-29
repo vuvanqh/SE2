@@ -1,7 +1,7 @@
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
 import interactionPlugin from "@fullcalendar/interaction"  // needed for dayClick
-import type { EventContentArg } from '@fullcalendar/core'
+import type { EventContentArg, DatesSetArg } from '@fullcalendar/core'
 import type { DateClickArg } from '@fullcalendar/interaction'
 import type { EventClickArg } from '@fullcalendar/core'
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -10,7 +10,7 @@ import { ModalContext } from '../../store/ModalContext'
 import { isSameDay, toLocalInput } from '../../api/helpers'
 import type { eventPreviewResponse } from '../../types/eventPreviewResponse'
 
-type calendarProps = {
+export type CalendarProps = {
   events: eventPreviewResponse[],
   onRangeChange?: (
     from: Date,
@@ -18,9 +18,9 @@ type calendarProps = {
   ) => void;
   onDateClick?: (date:string) => void
 }
-export default function Calendar({events, onDateClick, onRangeChange}: calendarProps) {
+export default function Calendar({events, onDateClick, onRangeChange}: CalendarProps) {
   const { open } = useContext(ModalContext);
-  const handleDatesSet = (arg: any) => {
+  const handleDatesSet = (arg: DatesSetArg) => {
     const from = arg.start;
 
     const to = new Date(arg.end);
@@ -71,7 +71,7 @@ export default function Calendar({events, onDateClick, onRangeChange}: calendarP
   }));
 
 
-  const calendarRef = useRef<any>(null);
+  const calendarRef = useRef<FullCalendar | null>(null);
 
   return (
     <div className="calendar-wrapper">

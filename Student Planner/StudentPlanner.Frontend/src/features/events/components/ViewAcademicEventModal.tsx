@@ -1,5 +1,5 @@
 import Modal from "../../../components/modals/Modal";
-import { formatDate } from "../../../api/helpers";
+import ViewEventDetails from "../../../components/common/ViewEventDetails";
 import { useUser } from "../../../global-hooks/authHooks";
 import { useGetAcademicEvent, useSubscribeToAcademicEvent, useUnsubscribeFromAcademicEvent } from "../hooks/academicEventHook";
 
@@ -32,18 +32,7 @@ export default function ViewAcademicEventModal({ eventId, onClose }: createEvent
         <Modal open onClose={onClose}>
            <h2>{event.title}</h2>
 
-            <div className="view-section">
-                <p className="view-label">Details</p>
-                <div className="view-content">
-                    <p><strong>Location:</strong> {event.location}</p>
-                    <p>{formatDate(event.startTime)} - {formatDate(event.endTime)}</p>
-                </div>
-            </div>
-
-            <div className="view-section">
-                <p className="view-label">Description</p>
-                <p className="view-text">{event.description}</p>
-            </div>
+           <ViewEventDetails location={event.location} startTime={event.startTime} endTime={event.endTime} description={event.description} />
 
            {user?.userRole=="Student" && <div className="modal-actions">
                 <button className="btn-secondary" onClick={handleSubscription} disabled={isSubscribePending || isUnsubscribePending}>

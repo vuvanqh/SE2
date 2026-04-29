@@ -1,11 +1,11 @@
 import EventPanel from "../../../components/calendar/EventPanel";
-import { formatDate } from "../../../api/helpers";
 import Calendar from "../../../components/calendar/Calendar";
 import useEventPreviews from "../../../global-hooks/eventPreviewHooks";
 import { useContext, useState } from "react";
 import { ModalContext } from "../../../store/ModalContext";
 import type { eventPreviewResponse } from "../../../types/eventPreviewResponse";
 import { getNEvents } from "../../../api/helpers";
+import { EventPreview } from "../../../features/events/components/EventPreview";
 
 export default function StudentCalendarPage(){
     const {open} = useContext(ModalContext);
@@ -24,9 +24,8 @@ export default function StudentCalendarPage(){
             {top10.length==0?<p>No upcoming events...</p>:
             <ul className="events-list">
             {top10.map(e => (
-                <li key={e.id} className="event-item">
-                    <button className="event-button">{e.title}</button>
-                    <p>{formatDate(e.startTime)} - {formatDate(e.endTime)}</p>
+                <li key={e.id}>
+                    <EventPreview event={e} />
                 </li>
                 ))}
             </ul>}

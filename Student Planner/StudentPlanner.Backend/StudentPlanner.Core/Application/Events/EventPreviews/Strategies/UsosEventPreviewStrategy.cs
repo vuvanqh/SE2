@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using StudentPlanner.Core.Application.ClientContracts;
 using StudentPlanner.Core.Application.ClientContracts.DTO;
 using StudentPlanner.Core.Domain.RepositoryContracts;
@@ -22,29 +22,32 @@ public class UsosEventPreviewStrategy : IEventPreviewStrategy
     public async Task<IEnumerable<EventPreveiwDto>> GetAsync(UserContext user, EventPreviewQuery query)
     {
         var now = DateTime.UtcNow;
-        var from = query.From ?? new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var from = query.From ?? now.Date;
         var days = query.Days ?? 31;
         string cacheKey = $"usos-preview:{user.Id}:{from:yyyyMMdd}:{days}";
 
-        IEnumerable<UsosEventResponseDto> events;
-
-        if (_cache.TryGetValue(cacheKey, out List<UsosEventResponseDto>? cached))
+        if (_cache.TryGetValue(cacheKey, out List<EventPreveiwDto>? cached))
         {
-            events = cached!;
-        }
-        else
-        {
-            var userEntity = await _userRepository.GetByIdAsync(user.Id);
-
-            if (userEntity == null)
-                throw new KeyNotFoundException("User doesn't exist");
-            if (string.IsNullOrWhiteSpace(userEntity.UsosToken))
-                throw new InvalidOperationException("User does not have a linked USOS token.");
-
-            events = await _usosClient.GetTimetableAsync(userEntity.UsosToken, DateOnly.FromDateTime(from), days);
+            Console.WriteLine($"[UsosEventPreviewStrategy] Returning cached events for user {user.Id}");
+            return cached!;
         }
 
-        var previews = events.Select(e => new EventPreveiwDto
+        var userEntity = await _userRepository.GetByIdAsync(user.Id);
+
+        if (userEntity == null)
+            throw new KeyNotFoundException("User doesn't exist");
+        if (string.IsNullOrWhiteSpace(userEntity.UsosToken))
+            throw new InvalidOperationException("User does not have a linked USOS token.");
+
+        var fetchedEvents = await _usosClient.GetTimetableAsync(userEntity.UsosToken, DateOnly.FromDateTime(from), days);
+        if (fetchedEvents == null)
+        {
+            Console.WriteLine($"[UsosEventPreviewStrategy] USOS client returned null events for user {user.Id}");
+            return Enumerable.Empty<EventPreveiwDto>();
+        }
+        Console.WriteLine($"[UsosEventPreviewStrategy] User {user.Id}: Fetched {fetchedEvents.Count} events from USOS for range {from} (+{days} days)");
+
+        var previews = fetchedEvents.Select(e => new EventPreveiwDto
         {
             Id = e.Id,
             Title = e.Title!,

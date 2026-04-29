@@ -20,7 +20,7 @@ export default function ModalRoot(){
     {
         case "createPersonal": return <CreateEventModal requiresRole={["Student"]} startTime={modal.startTime} key={modal.startTime} onClose={close}/>;
         case "eventList": return <EventListModal events={modal.events}/>;
-        case "view": return <ViewEventRoot eventPreveiw={modal.eventPreview} onClose={close}/>
+        case "view": return <ViewEventRoot eventPreview={modal.eventPreview} onClose={close}/>
         case "edit": return <EditEventModal eventId={modal.eventId} onClose={close}/>
 
         case "createRequest": return <CreateEventRequestModal requiresRole={["Manager"]} startTime={modal.startTime} onClose={close}/>

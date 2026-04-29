@@ -15,6 +15,11 @@ router.get('/faculty/:faculty_id', authMiddleware, (req, res) => {
   res.json(students);
 });
 
+// GET /services/users/me
+router.get('/me', authMiddleware, (req, res) => {
+  res.json(req.student);
+});
+
 // GET /services/users/course/:course_id
 router.get('/course/:course_id',authMiddleware, (req, res) => {
   const students = getStudentsByCourse(req.params.course_id);

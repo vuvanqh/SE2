@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useActionState } from "react";
 import { useAdmin } from "./hooks/adminHooks";
 import { emailValidator } from "../../api/helpers";
+import { UNIVERSITY_ID } from "../../constants/university";
 
 type stateType = {
     firstName: string,
@@ -39,6 +40,10 @@ export default function CreateManagerModal({onClose}: {onClose: () => void}){
             facultyId: (formData.get("facultyId") as string) || undefined,
         };
 
+        if (data.facultyId === UNIVERSITY_ID) {
+            data.facultyId = undefined;
+        }
+
         const { facultyId, ...otherFields } = data;
         if (!Object.values(otherFields).every(Boolean)){
             return { ...data, errors: ["First name, last name and email are required"] };
@@ -53,7 +58,9 @@ export default function CreateManagerModal({onClose}: {onClose: () => void}){
         }
     }, initialValues);
 
-    const selectedFaculty = state.facultyId && faculties.find(f => f.facultyId === state.facultyId)
+    const selectedFaculty = state.facultyId === UNIVERSITY_ID
+    ? { value: UNIVERSITY_ID, label: "University" }
+    : state.facultyId && faculties.find(f => f.facultyId === state.facultyId)
     ? {
         value: state.facultyId,
         label: faculties.find(f => f.facultyId === state.facultyId)!.facultyName
@@ -72,10 +79,13 @@ export default function CreateManagerModal({onClose}: {onClose: () => void}){
                 pattern="^[^@]+@pw\.edu\.pl$" onChange={emailValidator}/>
                 
                 <Select placeholder="Select faculty..." value={faculty?? selectedFaculty} onChange={setFaculty}
-                    options={faculties.map((f) => ({
-                        value: f.facultyId,
-                        label: f.facultyName,
-                    }))}
+                    options={[
+                        { value: UNIVERSITY_ID, label: "University" },
+                        ...faculties.map((f) => ({
+                            value: f.facultyId,
+                            label: f.facultyName,
+                        }))
+                    ]}
                     classNamePrefix="react-select"
                 />
 

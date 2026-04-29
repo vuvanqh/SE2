@@ -1,4 +1,4 @@
-import Modal from "../../../components/modals/Modal";
+import FormModal from "../../../components/common/FormModal";
 import EventForm from "../../../components/common/EventForm";
 import { useCreateRequest } from "../hooks/eventRequestHooks";
 import { extractErrors } from "../../../api/helpers";
@@ -46,13 +46,8 @@ export default function CreateEventRequestModal({ startTime, onClose }: createEv
         }
     }
     return (
-        <Modal open onClose={onClose}>
-            <div className="modal-header">
-                <h2>Create Event Request</h2>
-            </div>
-            <hr className="modal-divider" />
-
+        <FormModal title="Create Event Request" open onClose={onClose}>
             <EventForm initialValues={initial} submitLabel="Create" onClose={onClose} onSubmit={handleSubmit}/>
-        </Modal>
+        </FormModal>
     );
 }

@@ -1,7 +1,7 @@
 using StudentPlanner.Core.Domain;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Core.Entities;
-using System.ComponentModel.Design;
+using System.Linq;
 
 namespace StudentPlanner.Core.Application.Events.EventPreveiws;
 
@@ -74,7 +74,14 @@ public class AcademicEventPreviewStrategy : IEventPreviewStrategy
             events = events.Where(e => subscribedEventIds.Contains(e.Id));
         }
 
-        return events.Select(e => new EventPreveiwDto
+        var from = query.From ?? DateTime.UtcNow.Date;
+        var to = from.AddDays(query.Days ?? 31);
+
+        var filteredEvents = events.Where(e => e.EventDetails.StartTime >= from && e.EventDetails.StartTime <= to).ToList();
+
+        Console.WriteLine($"[AcademicEventPreviewStrategy] User {user.Id} ({user.Role}): Found {events.Count()} total events, {filteredEvents.Count} after date filtering ({from} to {to})");
+
+        return filteredEvents.Select(e => new EventPreveiwDto
         {
             EndTime = e.EventDetails.EndTime,
             StartTime = e.EventDetails.StartTime,

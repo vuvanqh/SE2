@@ -23,7 +23,7 @@ export default function Sidebar({ open }: { open: boolean }) {
             </div>
         </div>
 
-        <section className="sidebar-section">
+        {user?.userRole === "Student" && <section className="sidebar-section">
             <button
                 className="sidebar-toggle"
                 onClick={handleNotificationToggle}
@@ -33,7 +33,7 @@ export default function Sidebar({ open }: { open: boolean }) {
                 <span className="sidebar-section-title">Notifications</span>
                 <span>{preferences?.notificationsEnabled ? "On" : "Off"}</span>
             </button>
-        </section>
+        </section>}
 
         <div className="sidebar-actions">
             <button className="danger">Delete Account</button>

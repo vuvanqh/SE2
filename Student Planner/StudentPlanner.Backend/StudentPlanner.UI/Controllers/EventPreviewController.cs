@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using StudentPlanner.Core.Application.Events;
 using StudentPlanner.Core.Application.Events.EventPreveiws;
 using StudentPlanner.Core.Entities;
+using StudentPlanner.Core.Application.Exceptions;
 using System.Security.Claims;
 
 namespace StudentPlanner.UI.Controllers;
@@ -55,7 +56,7 @@ public class EventPreviewController : ControllerBase
 
         if (userId == null || role == null)
             return Unauthorized();
-        if (role != UserRoleOptions.Admin.ToString() && facultyIds.Any())
+        if (role != UserRoleOptions.Admin.ToString() && (facultyIds?.Any() ?? false))
             return Forbid();
 
         if (!Enum.TryParse<UserRoleOptions>(role, true, out var parsedRole))
@@ -65,6 +66,14 @@ public class EventPreviewController : ControllerBase
         {
             var result = await _eventPreviewService.GetForUserAsync(new UserContext { Id = Guid.Parse(userId), Role = parsedRole }, new EventPreviewQuery { From = from, Days = days, FacultyIds = facultyIds });
             return Ok(result);
+        }
+        catch (UsosException ex)
+        {
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "USOS_AUTH_REQUIRED" });
+            }
+            return StatusCode(StatusCodes.Status502BadGateway, new { message = ex.Message });
         }
         catch (Exception ex)
         {

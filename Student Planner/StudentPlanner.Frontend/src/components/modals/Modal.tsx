@@ -2,13 +2,13 @@ import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useRef, useEffect } from "react";
 
-type modalProps = {
-    open: boolean,
-    onClose?: ()=>void,
-    children: ReactNode,
-    className?: string
-}
-export default function Modal({open, children, onClose, className=""}: modalProps){
+export type ModalProps = {
+    open: boolean;
+    onClose?: () => void;
+    children: ReactNode;
+    className?: string;
+};
+export default function Modal({open, children, onClose, className=""}: ModalProps){
     const dialog = useRef<HTMLDialogElement | null>(null);
 
     useEffect(()=>{
