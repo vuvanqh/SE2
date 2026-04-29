@@ -3,11 +3,14 @@ import { approveEventRequest, createEventRequest, deleteEventRequest, getAllEven
 import type { createEventRequest as createRequestType, eventRequestResponse } from "../../../types/eventRequestTypes";
 import { queryClient } from "../../../api/queryClient";
 import { infoMessage } from "../../../toast/toastNotifications";
+import { useUser } from "../../../global-hooks/authHooks";
 
 export function useMyEventRequests(){
+    const {user} = useUser();
     const {data, isPending} = useQuery<eventRequestResponse[]>({
         queryKey: ["eventRequests", "all"],
-        queryFn: getMyRequests
+        queryFn: getMyRequests,
+        enabled: !!user && user.userRole=="Manager"
     })
 
     return {
@@ -17,9 +20,11 @@ export function useMyEventRequests(){
 }
 
 export function useAllEventRequests(){
+    const {user} = useUser();
     const {data, isPending} = useQuery<eventRequestResponse[]>({
         queryKey: ["eventRequests", "all"],
-        queryFn: getAllEventRequests
+        queryFn: getAllEventRequests,
+        enabled: !!user && user.userRole=="Admin"
     })
 
     return {
