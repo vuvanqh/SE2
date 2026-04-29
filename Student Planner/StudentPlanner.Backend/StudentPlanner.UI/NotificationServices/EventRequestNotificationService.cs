@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
 using StudentPlanner.Core.Application.Notifications.ServiceContracts;
 using StudentPlanner.Core.Entities;
 using StudentPlanner.UI.Hubs;
@@ -95,7 +95,7 @@ public class EventRequestNotificationService : IEventRequestNotificationService
     public async Task AcademicEventNotification(Guid studentId, string message, Guid? facultyId)
     {
         if (await _notificationPreferenceService.AreNotificationsEnabledAsync(studentId))
-            await _hub.Clients.User(studentId.ToString()).SendAsync("academicEvent", message);
+            await _hub.Clients.User(studentId.ToString()).SendAsync("academicEvent", message, facultyId);
     }
 
     /// <summary>

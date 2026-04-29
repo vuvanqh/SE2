@@ -3,6 +3,7 @@ import { useAdmin } from "../../../features/admin/hooks/adminHooks";
 import { useMemo, useState, useContext } from "react";
 import { ModalContext } from "../../../store/ModalContext";
 import FilterOption from "../../../components/common/FilterOption";
+import { UNIVERSITY_ID } from "../../../constants/university";
 
 export default function UserManagementPage(){
     const {faculties} = useFaculties();
@@ -37,7 +38,7 @@ export default function UserManagementPage(){
         const matchesFaculty =
         selectedFaculties.length === 0 ||
         (user.facultyId && selectedFaculties.includes(user.facultyId)) ||
-        (!user.facultyId && selectedFaculties.includes("00000000-0000-0000-0000-000000000000"));
+        (!user.facultyId && selectedFaculties.includes(UNIVERSITY_ID));
 
         return (
         matchesSearch &&
@@ -82,8 +83,8 @@ export default function UserManagementPage(){
             </div>
             <div className="filter-group">
                 <p className="filter-title">Faculties</p>
-                <FilterOption label="University" value={selectedFaculties.includes("00000000-0000-0000-0000-000000000000")}
-                    onChange={() => toggleValue("00000000-0000-0000-0000-000000000000", setSelectedFaculties)}/>
+                <FilterOption label="University" value={selectedFaculties.includes(UNIVERSITY_ID)}
+                    onChange={() => toggleValue(UNIVERSITY_ID, setSelectedFaculties)}/>
                 {faculties.map(f => <FilterOption key={f.facultyId} label={f.facultyName}
                      value={selectedFaculties.includes(f.facultyId)} 
                      onChange={() => toggleValue(f.facultyId, setSelectedFaculties)}/>)}
