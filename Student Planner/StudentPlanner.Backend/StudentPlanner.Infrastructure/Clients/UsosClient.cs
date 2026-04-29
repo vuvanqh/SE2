@@ -35,12 +35,13 @@ public class UsosClient : IUsosClient
 
         if (!response.IsSuccessStatusCode)
         {
-
-            _logger.LogWarning("USOS login failed for email {Email}. Status code: {StatusCode}",
+            var errorBody = await response.Content.ReadAsStringAsync();
+            _logger.LogWarning("USOS login failed for email {Email}. Status code: {StatusCode}. Body: {Body}",
                 email,
-                (int)response.StatusCode);
+                (int)response.StatusCode,
+                errorBody);
 
-            throw new UsosException($"USOS login failed for email {email}. Status code: {response.StatusCode}");
+            throw new UsosException($"USOS login failed for email {email}. Status code: {response.StatusCode}", response.StatusCode, errorBody);
         }
 
         UsosLoginResponseDto? resp = await response.Content.ReadFromJsonAsync<UsosLoginResponseDto>();
@@ -58,8 +59,9 @@ public class UsosClient : IUsosClient
         var resp = await _httpClient.GetAsync("/services/faculties");
         if (!resp.IsSuccessStatusCode)
         {
-            _logger.LogCritical("Failed to fetch faculties from UsosAPI with status code {StatusCode}.", resp.StatusCode);
-            throw new UsosException($"Failed to fetch faculties from UsosAPI with status code {resp.StatusCode}.");
+            var errorBody = await resp.Content.ReadAsStringAsync();
+            _logger.LogCritical("Failed to fetch faculties from UsosAPI with status code {StatusCode}. Body: {Body}", resp.StatusCode, errorBody);
+            throw new UsosException($"Failed to fetch faculties from UsosAPI with status code {resp.StatusCode}.", resp.StatusCode, errorBody);
         }
 
         List<FacultyResponse>? responses = await resp.Content.ReadFromJsonAsync<List<FacultyResponse>>();
@@ -132,9 +134,10 @@ public class UsosClient : IUsosClient
 
         if (!response.IsSuccessStatusCode)
         {
+            var errorBody = await response.Content.ReadAsStringAsync();
             Console.WriteLine($"[UsosClient] Fetching USOS timetable failed from {url}. Status: {response.StatusCode}");
-            _logger.LogWarning("Fetching USOS timetable failed from {Url}. Status: {StatusCode}", url, response.StatusCode);
-            throw new UsosException($"Fetching timetable failed with status {response.StatusCode}");
+            _logger.LogWarning("Fetching USOS timetable failed from {Url}. Status: {StatusCode}. Body: {Body}", url, response.StatusCode, errorBody);
+            throw new UsosException($"Fetching timetable failed with status {response.StatusCode}", response.StatusCode, errorBody);
         }
 
         Console.WriteLine($"[UsosClient] Successfully fetched USOS timetable from {url}");
@@ -170,8 +173,9 @@ public class UsosClient : IUsosClient
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogWarning("Fetching USOS event failed. Status: {StatusCode}", response.StatusCode);
-            throw new UsosException($"Fetching event failed with status {response.StatusCode}");
+            var errorBody = await response.Content.ReadAsStringAsync();
+            _logger.LogWarning("Fetching USOS event failed. Status: {StatusCode}. Body: {Body}", response.StatusCode, errorBody);
+            throw new UsosException($"Fetching event failed with status {response.StatusCode}", response.StatusCode, errorBody);
         }
 
         var result = await response.Content.ReadFromJsonAsync<UsosEventResponseDto>();

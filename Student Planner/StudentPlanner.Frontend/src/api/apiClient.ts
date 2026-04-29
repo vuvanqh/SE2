@@ -29,7 +29,7 @@ apiClient.interceptors.response.use(response => response,
         console.log("INTERCEPTOR ERROR:", error.response);
         console.log("STATUS:", error.response?.status);
 
-        if(error.response?.status != 401 || request._retry || request.url?.includes("login") )
+        if(error.response?.status != 401 || request._retry || request.url === "/auth/login" || request.url === "/auth/register")
         {
             if (error.response?.status === 403 && error.response.data?.message === "USOS_AUTH_REQUIRED") {
                 window.location.href = "/usos-login";

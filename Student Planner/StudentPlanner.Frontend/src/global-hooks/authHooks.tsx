@@ -64,6 +64,10 @@ export function useAuth(){
         mutationFn: usosLoginApi,
         onSuccess: () => {
             successMessage("USOS logged in successfully!");
+            queryClient.invalidateQueries({queryKey: ["academic-events"]});
+            queryClient.invalidateQueries({queryKey: ["eventPreviews"]});
+            queryClient.invalidateQueries({queryKey: ["usos-events"]});
+
             const role = localStorage.getItem("role");
             navigate(`/${role?.toLowerCase()}`);
         },

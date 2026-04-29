@@ -224,7 +224,7 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized, Description = "User not authenticated")]
     public async Task<IActionResult> Logout()
     {
-        var userId = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (userId == null)
             return Unauthorized("User not authenticated");
 
@@ -255,7 +255,7 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> UsosLogin([FromBody] UsosLoginRequestDto usosLoginRequest)
     {
         _logger.LogInformation("/authentication/usos-login");
-        var userIdString = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+        var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (userIdString == null || !Guid.TryParse(userIdString, out Guid userId))
             return Unauthorized("User ID not found in claims.");
 
