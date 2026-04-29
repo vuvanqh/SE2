@@ -61,4 +61,13 @@ public class EventRequestRepository : IEventRequestRepository
         _context.EventRequests.Remove(eventRequest);
         await _context.SaveChangesAsync();
     }
+    
+    public async Task DeleteByManagerIdAsync(Guid managerId)
+    {
+        var requests = await _context.EventRequests
+            .Where(e => e.ManagerId == managerId)
+            .ToListAsync();
+        _context.EventRequests.RemoveRange(requests);
+        await _context.SaveChangesAsync();
+    }
 }
