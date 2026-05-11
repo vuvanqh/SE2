@@ -91,18 +91,22 @@ public class AcademicEventServiceTests
         _academicEventRepositoryMock
             .Setup(repo => repo.GetByFacultyIdAsync(facultyId))
             .ReturnsAsync(events);
+        _academicEventRepositoryMock
+            .Setup(repo => repo.GetUniversityEventsAsync())
+            .ReturnsAsync(new List<AcademicEvent>());
 
         var subscribedEventId = events[0].Id;
         _academicEventRepositoryMock
             .Setup(repo => repo.GetSubscribedEventIdsAsync(userId))
             .ReturnsAsync(new HashSet<Guid> { subscribedEventId });
 
-        var result = await _academicEventService.GetAccessibleEventsAsync(userId, UserRoleOptions.Student.ToString(), null);
+        var result = await _academicEventService.GetAccessibleEventsAsync(userId, UserRoleOptions.Student.ToString(), null, 1, 10);
 
         result.Should().NotBeNull();
-        result.Should().HaveCount(2);
-        result.First(e => e.Id == subscribedEventId).IsSubscribed.Should().BeTrue();
-        result.First(e => e.Id != subscribedEventId).IsSubscribed.Should().BeFalse();
+        result.Items.Should().HaveCount(2);
+        result.TotalCount.Should().Be(2);
+        result.Items.First(e => e.Id == subscribedEventId).IsSubscribed.Should().BeTrue();
+        result.Items.First(e => e.Id != subscribedEventId).IsSubscribed.Should().BeFalse();
 
         _userRepositoryMock.Verify(
             repo => repo.GetByIdAsync(userId),
@@ -143,13 +147,18 @@ public class AcademicEventServiceTests
         _academicEventRepositoryMock
             .Setup(repo => repo.GetByFacultyIdAsync(facultyId))
             .ReturnsAsync(new List<AcademicEvent>());
+        _academicEventRepositoryMock
+            .Setup(repo => repo.GetUniversityEventsAsync())
+            .ReturnsAsync(new List<AcademicEvent>());
 
         var result = await _academicEventService.GetAccessibleEventsAsync(userId,
              UserRoleOptions.Student.ToString(),
-             null);
+             null,
+             1,
+             10);
 
         result.Should().NotBeNull();
-        result.Should().BeEmpty();
+        result.Items.Should().BeEmpty();
 
         _academicEventRepositoryMock.Verify(
             repo => repo.GetByFacultyIdAsync(facultyId),
@@ -191,14 +200,19 @@ public class AcademicEventServiceTests
         _academicEventRepositoryMock
             .Setup(x => x.GetByFacultyIdAsync(facultyId))
             .ReturnsAsync(events);
+        _academicEventRepositoryMock
+            .Setup(repo => repo.GetUniversityEventsAsync())
+            .ReturnsAsync(new List<AcademicEvent>());
 
         var result = await _academicEventService.GetAccessibleEventsAsync(
             userId,
             UserRoleOptions.Student.ToString(),
-            null
+            null,
+            1,
+            10
         );
 
-        result.Should().HaveCount(2);
+        result.Items.Should().HaveCount(2);
 
         _academicEventRepositoryMock.Verify(
             x => x.GetByFacultyIdAsync(facultyId),
@@ -235,14 +249,19 @@ public class AcademicEventServiceTests
         _academicEventRepositoryMock
             .Setup(x => x.GetByFacultyIdAsync(facultyId))
             .ReturnsAsync(new List<AcademicEvent>());
+        _academicEventRepositoryMock
+            .Setup(repo => repo.GetUniversityEventsAsync())
+            .ReturnsAsync(new List<AcademicEvent>());
 
         var result = await _academicEventService.GetAccessibleEventsAsync(
             userId,
             UserRoleOptions.Student.ToString(),
-            null
+            null,
+            1,
+            10
         );
 
-        result.Should().BeEmpty();
+        result.Items.Should().BeEmpty();
     }
 
     [Fact]
@@ -270,19 +289,24 @@ public class AcademicEventServiceTests
             .ReturnsAsync(user);
 
         _academicEventRepositoryMock
-            .Setup(x => x.GetAllAsync())
+            .Setup(x => x.CountAllAsync())
+            .ReturnsAsync(events.Count);
+        _academicEventRepositoryMock
+            .Setup(x => x.GetAllPagedAsync(0, 10))
             .ReturnsAsync(events);
 
         var result = await _academicEventService.GetAccessibleEventsAsync(
             userId,
             UserRoleOptions.Admin.ToString(),
-            null
+            null,
+            1,
+            10
         );
 
-        result.Should().HaveCount(2);
+        result.Items.Should().HaveCount(2);
 
         _academicEventRepositoryMock.Verify(
-            x => x.GetAllAsync(),
+            x => x.GetAllPagedAsync(0, 10),
             Times.Once
         );
     }
@@ -323,14 +347,19 @@ public class AcademicEventServiceTests
         _academicEventRepositoryMock
             .Setup(x => x.GetByFacultiesAsync(filters))
             .ReturnsAsync(events);
+        _academicEventRepositoryMock
+            .Setup(x => x.GetUniversityEventsAsync())
+            .ReturnsAsync(new List<AcademicEvent>());
 
         var result = await _academicEventService.GetAccessibleEventsAsync(
             userId,
             UserRoleOptions.Admin.ToString(),
-            filters
+            filters,
+            1,
+            10
         );
 
-        result.Should().HaveCount(2);
+        result.Items.Should().HaveCount(2);
 
         _academicEventRepositoryMock.Verify(
             x => x.GetByFacultiesAsync(filters),
@@ -351,7 +380,9 @@ public class AcademicEventServiceTests
             await _academicEventService.GetAccessibleEventsAsync(
                 userId,
                 UserRoleOptions.Admin.ToString(),
-                null
+                null,
+                1,
+                10
             );
 
         await act.Should()

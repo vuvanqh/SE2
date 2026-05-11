@@ -38,6 +38,9 @@
 .users-card{
   flex:1;
   padding:1.5rem;
+
+  display:flex;
+  flex-direction:column;
 }
 
 .users-header{
@@ -186,6 +189,23 @@
   display:flex;
   flex-direction:column;
   gap:.8rem;
+}
+
+.pagination-controls{
+  margin-top:auto;
+  padding-top:1.25rem;
+
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:.75rem;
+}
+
+.pagination-controls p{
+  margin:0;
+  color:#64748b;
+  font-size:.9rem;
+  font-weight:600;
 }
 
 .user-row{

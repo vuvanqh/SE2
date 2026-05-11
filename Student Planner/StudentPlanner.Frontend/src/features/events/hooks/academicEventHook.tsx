@@ -1,17 +1,22 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "../../../api/queryClient";
 import type { academicEventResponse } from "../../../types/academic-event.types";
+import type { pagedResult } from "../../../types/pagination.types";
 import { getAcademicEvent, getAcademicEvents, subscribeToAcademicEvent, unsubscribeFromAcademicEvent } from "../../../api/events/academic-events.api";
 import { errorMessage, infoMessage } from "../../../toast/toastNotifications";
 
-export function useAccessibleAcademicEvents(facultyIds?: string[]){
+export function useAccessibleAcademicEvents(facultyIds?: string[], page: number = 1, pageSize: number = 10){
     facultyIds?.slice().sort().join(",")
-    const {data, isLoading} = useQuery<academicEventResponse[]>({
-        queryKey: ["academic-events", facultyIds],
-        queryFn: () =>getAcademicEvents(facultyIds)
+    const {data, isLoading} = useQuery<pagedResult<academicEventResponse>>({
+        queryKey: ["academic-events", facultyIds, page, pageSize],
+        queryFn: () =>getAcademicEvents(facultyIds, page, pageSize)
     })
     return {
-        events: data??[],
+        events: data?.items ?? [],
+        page: data?.page ?? page,
+        pageSize: data?.pageSize ?? pageSize,
+        totalCount: data?.totalCount ?? 0,
+        totalPages: data?.totalPages ?? 0,
         isLoading
     }
 }

@@ -5,7 +5,9 @@ import { useUser } from "../../../global-hooks/authHooks";
 import FilterOption from "../../../components/common/FilterOption";
 
 export default function AcademicEventPage(){
-    const {events} = useAccessibleAcademicEvents()
+    const [page, setPage] = useState(1);
+    const pageSize = 10;
+    const {events, totalPages, isLoading} = useAccessibleAcademicEvents(undefined, page, pageSize)
     const [search, setSearch] = useState("");
     const [includeSubscribed, setIncludeSubscribed] = useState(true);
     const [facultyOnly, setFacultyOnly] = useState(false);
@@ -25,7 +27,9 @@ export default function AcademicEventPage(){
                 <h2>Academic Events</h2>
             </div>
             <ul className="users-list">
-                {filteredEvents.length > 0 ? (
+                {isLoading ? (
+                    <p>Loading events...</p>
+                ) : filteredEvents.length > 0 ? (
                     filteredEvents.map(event => (
                         <li key={event.id}>
                             <AcademicEventCard event={event}/>
@@ -35,6 +39,23 @@ export default function AcademicEventPage(){
                     <p>No events found matching your criteria.</p>
                 )}
             </ul>
+            <div className="pagination-controls">
+                <button
+                    className="ghost-btn"
+                    disabled={page <= 1}
+                    onClick={() => setPage(prev => prev - 1)}
+                >
+                    Previous
+                </button>
+                <p>Page {page} of {totalPages || 1}</p>
+                <button
+                    className="ghost-btn"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage(prev => prev + 1)}
+                >
+                    Next
+                </button>
+            </div>
         </section>
         <aside className="user-panel">
             <input 
