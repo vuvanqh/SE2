@@ -37,6 +37,8 @@ public class AcademicEventController : ControllerBase
     /// Optional administrator-only faculty filters. When omitted, administrators
     /// receive all events. Non-admin users may not supply this parameter.
     /// </param>
+    /// <param name="page">The 1-based page number to retrieve.</param>
+    /// <param name="pageSize">The number of events returned per page.</param>
     /// <returns>
     /// A collection of academic events visible to the authenticated user.
     /// </returns>
@@ -49,7 +51,7 @@ public class AcademicEventController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> GetAccessibleEvents([FromQuery] List<Guid> facultyIds)
+    public async Task<IActionResult> GetAccessibleEvents([FromQuery] List<Guid> facultyIds, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var role = User.FindFirst(ClaimTypes.Role)?.Value;
@@ -61,7 +63,7 @@ public class AcademicEventController : ControllerBase
 
         try
         {
-            var result = await _academicEventService.GetAccessibleEventsAsync(Guid.Parse(id), role, facultyIds);
+            var result = await _academicEventService.GetAccessibleEventsAsync(Guid.Parse(id), role, facultyIds, page, pageSize);
             return Ok(result);
         }
         catch (Exception)

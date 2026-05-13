@@ -1,6 +1,7 @@
 using StudentPlanner.Core.Application.AcademicEvents.DTOs;
 using StudentPlanner.Core.Application.AcademicEvents.ServiceContracts;
 using StudentPlanner.Core.Application.AcademicEvents.Mapping;
+using StudentPlanner.Core.Application.Common.DTOs;
 using StudentPlanner.Core.Domain;
 using StudentPlanner.Core.Domain.RepositoryContracts;
 using StudentPlanner.Core.Entities;
@@ -33,18 +34,25 @@ public class AcademicEventService : IAcademicEventService
         return faculties.Where(f => facultyIds.Contains(f.Id)).ToDictionary(f => f.Id, f => f.FacultyName);
     }
 
-    public async Task<IEnumerable<AcademicEventResponse>> GetAccessibleEventsAsync(Guid id, string role, List<Guid>? facultyIds)
+    public async Task<PagedResult<AcademicEventResponse>> GetAccessibleEventsAsync(Guid id, string role, List<Guid>? facultyIds, int page, int pageSize)
     {
         var user = await _userRepository.GetByIdAsync(id);
         if (user == null)
             throw new KeyNotFoundException("User not found.");
 
+        page = Math.Max(page, 1);
+        pageSize = Math.Clamp(pageSize, 1, 50);
+        var skip = (page - 1) * pageSize;
+
         IEnumerable<AcademicEvent> events;
+        int totalCount;
+
         if (string.Equals(role, UserRoleOptions.Admin.ToString(), StringComparison.OrdinalIgnoreCase))
         {
             if (facultyIds == null || !facultyIds.Any())
             {
-                events = await _academicEventRepository.GetAllAsync();
+                totalCount = await _academicEventRepository.CountAllAsync();
+                events = await _academicEventRepository.GetAllPagedAsync(skip, pageSize);
             }
             else
             {
@@ -59,20 +67,33 @@ public class AcademicEventService : IAcademicEventService
                     ? await _academicEventRepository.GetUniversityEventsAsync()
                     : Enumerable.Empty<AcademicEvent>();
 
-                events = facultyEvents.Concat(universityEvents);
+                events = facultyEvents
+                    .Concat(universityEvents)
+                    .OrderBy(e => e.EventDetails.StartTime)
+                    .Skip(skip)
+                    .Take(pageSize)
+                    .ToList();
+                totalCount = facultyEvents.Count() + universityEvents.Count();
             }
         }
         else if (string.Equals(role, UserRoleOptions.Student.ToString(), StringComparison.OrdinalIgnoreCase))
         {
-            var universityEvents = await _academicEventRepository.GetUniversityEventsAsync();
             if (user.Faculty == null)
             {
-                events = universityEvents;
+                totalCount = await _academicEventRepository.CountUniversityEventsAsync();
+                events = await _academicEventRepository.GetUniversityEventsPagedAsync(skip, pageSize);
             }
             else
             {
                 var facultyEvents = await _academicEventRepository.GetByFacultyIdAsync(user.Faculty.Id);
-                events = facultyEvents.Concat(universityEvents);
+                var universityEvents = await _academicEventRepository.GetUniversityEventsAsync();
+                events = facultyEvents
+                    .Concat(universityEvents)
+                    .OrderBy(e => e.EventDetails.StartTime)
+                    .Skip(skip)
+                    .Take(pageSize)
+                    .ToList();
+                totalCount = facultyEvents.Count() + universityEvents.Count();
             }
         }
         else // Manager
@@ -80,21 +101,32 @@ public class AcademicEventService : IAcademicEventService
             if (user.Faculty == null)
             {
                 // University Manager sees University Events only
-                events = await _academicEventRepository.GetUniversityEventsAsync();
+                totalCount = await _academicEventRepository.CountUniversityEventsAsync();
+                events = await _academicEventRepository.GetUniversityEventsPagedAsync(skip, pageSize);
             }
             else
             {
                 // Faculty Manager sees Faculty Events only
-                events = await _academicEventRepository.GetByFacultyIdAsync(user.Faculty.Id);
+                totalCount = await _academicEventRepository.CountByFacultyIdAsync(user.Faculty.Id);
+                events = await _academicEventRepository.GetByFacultyIdPagedAsync(user.Faculty.Id, skip, pageSize);
             }
         }
 
         var subscribedEventIds = await _academicEventRepository.GetSubscribedEventIdsAsync(id);
         var facultyNames = await GetFacultyNamesAsync(events);
 
-        return events.Select(e => e.ToAcademicEventResponse(
+        var items = events.Select(e => e.ToAcademicEventResponse(
             e.FacultyId.HasValue && facultyNames.TryGetValue(e.FacultyId.Value, out var name) ? name : null,
-            subscribedEventIds.Contains(e.Id)));
+            subscribedEventIds.Contains(e.Id))).ToList();
+
+        return new PagedResult<AcademicEventResponse>
+        {
+            Items = items,
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount,
+            TotalPages = totalCount == 0 ? 0 : (int)Math.Ceiling(totalCount / (double)pageSize)
+        };
     }
 
     public async Task<AcademicEventResponse?> GetEventByIdAsync(Guid id, Guid userId)

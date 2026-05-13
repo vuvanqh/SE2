@@ -16,6 +16,7 @@ using StudentPlanner.Infrastructure;
 using StudentPlanner.Core.Domain;
 using StudentPlanner.Core.Domain.Entities;
 using StudentPlanner.Core.Application.AcademicEvents.DTOs;
+using StudentPlanner.Core.Application.Common.DTOs;
 using StudentPlanner.Core;
 using Microsoft.EntityFrameworkCore;
 
@@ -219,10 +220,11 @@ public class AcademicEventControllerE2ETests : IntegrationTestBase
 
         var events =
             await response.Content.ReadFromJsonAsync<
-                List<AcademicEventResponse>>(cancellationToken: TestContext.Current.CancellationToken);
+                PagedResult<AcademicEventResponse>>(cancellationToken: TestContext.Current.CancellationToken);
 
-        events.Should().Contain(e => e.Id == event1);
-        events.Should().NotContain(e => e.Id == event2);
+        events.Should().NotBeNull();
+        events!.Items.Should().Contain(e => e.Id == event1);
+        events.Items.Should().NotContain(e => e.Id == event2);
     }
 
     [Fact]
@@ -248,11 +250,11 @@ public class AcademicEventControllerE2ETests : IntegrationTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var returnedEvents = await response.Content.ReadFromJsonAsync<List<AcademicEventResponse>>(TestContext.Current.CancellationToken);
+        var returnedEvents = await response.Content.ReadFromJsonAsync<PagedResult<AcademicEventResponse>>(TestContext.Current.CancellationToken);
 
         returnedEvents.Should().NotBeNull();
-        returnedEvents.Should().NotBeEmpty();
-        returnedEvents.Should().Contain(e => e.Id == eventId && e.Title == "E2E Test Event");
+        returnedEvents!.Items.Should().NotBeEmpty();
+        returnedEvents.Items.Should().Contain(e => e.Id == eventId && e.Title == "E2E Test Event");
     }
 
 
