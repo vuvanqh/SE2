@@ -1,5 +1,6 @@
 import { useState } from "react"
 import AcademicEventCard from "../../../features/events/components/AcademicEventCard"
+import ViewAcademicEventModal from "../../../features/events/components/ViewAcademicEventModal";
 import { useAccessibleAcademicEvents } from "../../../features/events/hooks/academicEventHook"
 import { useUser } from "../../../global-hooks/authHooks";
 import FilterOption from "../../../components/common/FilterOption";
@@ -11,6 +12,7 @@ export default function AcademicEventPage(){
     const [search, setSearch] = useState("");
     const [includeSubscribed, setIncludeSubscribed] = useState(true);
     const [facultyOnly, setFacultyOnly] = useState(false);
+    const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
     const {user} = useUser();
 
     const filteredEvents = events.filter(event => {
@@ -32,7 +34,7 @@ export default function AcademicEventPage(){
                 ) : filteredEvents.length > 0 ? (
                     filteredEvents.map(event => (
                         <li key={event.id}>
-                            <AcademicEventCard event={event}/>
+                            <AcademicEventCard event={event} onViewDetails={() => setSelectedEventId(event.id)}/>
                         </li>
                     ))
                 ) : (
@@ -86,5 +88,6 @@ export default function AcademicEventPage(){
                 Clear filters
             </button>
         </aside>
+        {selectedEventId && <ViewAcademicEventModal eventId={selectedEventId} onClose={() => setSelectedEventId(null)} />}
     </div>
 }
