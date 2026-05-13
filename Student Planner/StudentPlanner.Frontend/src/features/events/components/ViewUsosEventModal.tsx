@@ -15,7 +15,20 @@ export default function ViewUsosEventModal({ eventId, onClose }: createEventProp
     if (isLoading || !event) return <Modal open>Loading...</Modal>;
     return (
         <Modal open onClose={onClose}>
-           <h2>{event.title}</h2>
+           <div className="view-header">
+                <div>
+                    <h2>{event.title}</h2>
+                    <p className="view-sub">USOS Event</p>
+                </div>
+                <button
+                    className="modal-close-btn"
+                    onClick={onClose}
+                    type="button"
+                    aria-label="Close event details"
+                >
+                    x
+                </button>
+           </div>
 
            <ViewEventDetails location={`${event.buildingName} ${event.roomNumber}}`} startTime={event.startTime} endTime={event.endTime} />
         </Modal>

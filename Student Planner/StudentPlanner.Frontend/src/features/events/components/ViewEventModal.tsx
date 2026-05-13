@@ -24,7 +24,20 @@ export default function ViewEventModal({ eventId, onClose }: createEventProps) {
     
     return (
         <Modal open onClose={onClose}>
-           <h2>{event.title}</h2>
+           <div className="view-header">
+                <div>
+                    <h2>{event.title}</h2>
+                    <p className="view-sub">Personal Event</p>
+                </div>
+                <button
+                    className="modal-close-btn"
+                    onClick={onClose}
+                    type="button"
+                    aria-label="Close event details"
+                >
+                    x
+                </button>
+           </div>
 
            <ViewEventDetails location={event.location} startTime={event.startTime} endTime={event.endTime} description={event.description} />
 
