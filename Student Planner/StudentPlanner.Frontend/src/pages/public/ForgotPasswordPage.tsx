@@ -37,16 +37,20 @@ export default function ForgotPasswordPage() {
 
     try {
       await sendResetToken({ email });
-    } catch (err) {
-      // catch and ignore errors here to prevent account enumeration.
+      return {
+        ...prevState,
+        email,
+        step: ForgotPasswordStep.RESET_PASSWORD,
+        errors: []
+      };
+    } catch (err: any) {
+      const errors = extractErrors(err);
+      return {
+        ...prevState,
+        email,
+        errors: errors.length > 0 ? errors : ["Failed to send reset email. Please try again later."]
+      };
     }
-
-    return {
-      ...prevState,
-      email,
-      step: ForgotPasswordStep.RESET_PASSWORD,
-      errors: []
-    };
   }
 
   async function handleResetPassword(prevState: ForgotPasswordState, formData: FormData): Promise<ForgotPasswordState> {

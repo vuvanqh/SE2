@@ -1,6 +1,6 @@
 import Modal from "../../../components/modals/Modal";
+import ViewEventDetails from "../../../components/common/ViewEventDetails";
 import { useEventRequest } from "../hooks/eventRequestHooks";
-import { formatDate } from "../../../api/helpers";
 import { useUser } from "../../../global-hooks/authHooks"
 
 type createEventProps = {
@@ -9,7 +9,6 @@ type createEventProps = {
     onClose: () => void
 }
 
-//NOTE: TRY TO CLEAN THE CONDITIONAL LOGIC BLOCK
 export default function ViewEventRequestModal({ requestId, onClose }: createEventProps) {
     const { eventRequest, isPending, deleteRequest } = useEventRequest(requestId);
     const { user } = useUser();
@@ -35,18 +34,7 @@ export default function ViewEventRequestModal({ requestId, onClose }: createEven
                 </span>
             </div>
 
-            <div className="view-section">
-                <p className="view-label">Details</p>
-                <div className="view-content">
-                    <p><strong>Location:</strong> {eventDetails.location}</p>
-                    <p>{formatDate(eventDetails.startTime)} - {formatDate(eventDetails.endTime)}</p>
-                </div>
-            </div>
-
-            <div className="view-section">
-                <p className="view-label">Description</p>
-                <p className="view-text">{eventDetails.description}</p>
-            </div>
+            <ViewEventDetails location={eventDetails.location} startTime={eventDetails.startTime} endTime={eventDetails.endTime} description={eventDetails.description} />
 
             {user && user.userRole == "Manager" && eventRequest.status == "Pending" &&
                 <div className="modal-actions">

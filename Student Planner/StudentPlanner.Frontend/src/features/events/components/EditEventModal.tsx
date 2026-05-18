@@ -1,3 +1,4 @@
+import FormModal from "../../../components/common/FormModal";
 import Modal from "../../../components/modals/Modal";
 import { useGetPersonalEvent } from "../hooks/personalEventHooks";
 import { extractErrors } from "../../../api/helpers";
@@ -36,13 +37,8 @@ export default function EditEventModal({ eventId, onClose }: createEventProps) {
         }
 
     return (
-        <Modal open onClose={onClose}>
-            <div className="modal-header">
-                <h2>Edit Event</h2>
-            </div>
-            <hr className="modal-divider" />
-
+        <FormModal title="Edit Event" open onClose={onClose}>
             <EventForm initialValues={initial} onClose={onClose} submitLabel="Save" onSubmit={handleSubmit}/>
-        </Modal>
+        </FormModal>
     );
 }

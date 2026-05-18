@@ -25,6 +25,7 @@ public class NotificationPreferenceService : INotificationPreferenceService
         };
     }
 
+
     public async Task UpdatePreferenceAsync(Guid userId, UpdateNotificationPreferenceRequest request)
     {
         await _userRepository.UpdateNotificationPreferenceAsync(userId, request.NotificationsEnabled);

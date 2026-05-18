@@ -1,4 +1,5 @@
 import Modal from "../../../components/modals/Modal";
+import ViewEventDetails from "../../../components/common/ViewEventDetails";
 import { useGetPersonalEvent } from "../hooks/personalEventHooks";
 import { useContext } from "react";
 import { ModalContext } from "../../../store/ModalContext";
@@ -23,20 +24,22 @@ export default function ViewEventModal({ eventId, onClose }: createEventProps) {
     
     return (
         <Modal open onClose={onClose}>
-           <h2>{event.title}</h2>
-
-            <div className="view-section">
-                <p className="view-label">Details</p>
-                <div className="view-content">
-                    <p><strong>Location:</strong> {event.location}</p>
-                    <p>{event.startTime} - {event.endTime}</p>
+           <div className="view-header">
+                <div>
+                    <h2>{event.title}</h2>
+                    <p className="view-sub">Personal Event</p>
                 </div>
-            </div>
+                <button
+                    className="modal-close-btn"
+                    onClick={onClose}
+                    type="button"
+                    aria-label="Close event details"
+                >
+                    x
+                </button>
+           </div>
 
-            <div className="view-section">
-                <p className="view-label">Description</p>
-                <p className="view-text">{event.description}</p>
-            </div>
+           <ViewEventDetails location={event.location} startTime={event.startTime} endTime={event.endTime} description={event.description} />
 
            <div className="modal-actions">
                 <button className="btn-secondary" onClick={handleDelete}>Delete</button>

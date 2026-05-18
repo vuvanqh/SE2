@@ -9,6 +9,7 @@ import useEventPreviews from "../../../global-hooks/eventPreviewHooks";
 import FilterOption from "../../../components/common/FilterOption";
 import { useFaculties } from "../../../global-hooks/facultyHooks";
 import { getNEvents } from "../../../api/helpers";
+import { UNIVERSITY_ID } from "../../../constants/university";
 
 export default function AdminCalendarPage(){
     const [viewRequests, setVievRequests] = useState(false);
@@ -74,8 +75,8 @@ export default function AdminCalendarPage(){
             </h3>
             <div className="filter-group">
                 <p className="filter-title">Faculties</p>
-                <FilterOption label="University" value={selectedFaculties.includes("00000000-0000-0000-0000-000000000000")}
-                        onChange={() => toggleValue("00000000-0000-0000-0000-000000000000", setSelectedFaculties)}/>
+                <FilterOption label="University" value={selectedFaculties.includes(UNIVERSITY_ID)}
+                        onChange={() => toggleValue(UNIVERSITY_ID, setSelectedFaculties)}/>
                 {faculties.map(f => <FilterOption key={f.facultyId} label={f.facultyName}
                         value={selectedFaculties.includes(f.facultyId)} 
                         onChange={() => toggleValue(f.facultyId, setSelectedFaculties)}/>)}

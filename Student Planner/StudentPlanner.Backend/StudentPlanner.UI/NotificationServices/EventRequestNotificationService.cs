@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
 using StudentPlanner.Core.Application.Notifications.ServiceContracts;
 using StudentPlanner.Core.Entities;
 using StudentPlanner.UI.Hubs;
@@ -70,6 +70,32 @@ public class EventRequestNotificationService : IEventRequestNotificationService
         {
             await _hub.Clients.User(managerId.ToString()).SendAsync("refreshEventRequests");
         }
+    }
+
+    /// <summary>
+    /// Sends an academic event notification message to a student.
+    /// </summary>
+    /// <param name="studentId">
+    /// Identifier of the student who should receive the notification.
+    /// </param>
+    /// <param name="message">
+    /// Notification message delivered to the client.
+    /// </param>
+    /// <param name="facultyId">
+    /// Faculty id to which the notifications is to be added.
+    /// </param>
+    /// <returns>
+    /// A task representing the asynchronous notification operation.
+    /// </returns>
+    /// <remarks>
+    /// Sends an "academicEvent" SignalR message containing the provided
+    /// notification text to the specified student, provided the student
+    /// has notifications enabled.
+    /// </remarks>
+    public async Task AcademicEventNotification(Guid studentId, string message, Guid? facultyId)
+    {
+        if (await _notificationPreferenceService.AreNotificationsEnabledAsync(studentId))
+            await _hub.Clients.User(studentId.ToString()).SendAsync("academicEvent", message, facultyId);
     }
 
     /// <summary>

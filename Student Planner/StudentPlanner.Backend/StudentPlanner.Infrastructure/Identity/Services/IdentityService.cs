@@ -14,15 +14,15 @@ public class IdentityService : IIdentityService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
-    private readonly IUserRepository _userRepository;
+    private readonly IEventRequestRepository _eventRequestRepository;
 
     public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-        RoleManager<ApplicationRole> roleManager, IUserRepository userRepository)
+        RoleManager<ApplicationRole> roleManager, IEventRequestRepository eventRequestRepository)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
-        _userRepository = userRepository;
+        _eventRequestRepository = eventRequestRepository;
     }
     public async Task<User> SignInAsync(string email, string password)
     {
@@ -32,9 +32,19 @@ public class IdentityService : IIdentityService
 
         var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent: false, lockoutOnFailure: true);
 
-        if (!result.Succeeded)
-            throw new UnauthorizedAccessException("Invalid Credentials");
+        if (result.IsLockedOut)
+        {
+            Console.WriteLine($"[IdentityService] Login failed: Account for {email} is LOCKED OUT.");
+            throw new UnauthorizedAccessException("Account is locked. Please try again later.");
+        }
 
+        if (!result.Succeeded)
+        {
+            Console.WriteLine($"[IdentityService] Login failed for {email}: Invalid Credentials.");
+            throw new UnauthorizedAccessException("Invalid Credentials");
+        }
+
+        Console.WriteLine($"[IdentityService] Login successful for {email}.");
         var roles = await _userManager.GetRolesAsync(user);
 
         var roleName = roles.FirstOrDefault() ?? UserRoleOptions.Student.ToString();
@@ -81,13 +91,16 @@ public class IdentityService : IIdentityService
 
     public async Task ResetPasswordAsync(string email, string token, string newPasswd)
     {
+        Console.WriteLine($"[IdentityService] Attempting to reset password for {email} with token: {token}");
         ApplicationUser user = (await _userManager.FindByEmailAsync(email)) ?? throw new InvalidOperationException("Invalid Operation");
         var result = await _userManager.ResetPasswordAsync(user, token, newPasswd);
         if (!result.Succeeded)
         {
             var errors = string.Join("\n", result.Errors.Select(e => e.Description));
+            Console.WriteLine($"[IdentityService] Password reset FAILED for {email}: {errors}");
             throw new InvalidOperationException(errors);
         }
+        Console.WriteLine($"[IdentityService] Password reset SUCCESSFUL for {email}.");
     }
     public async Task<IList<string>> GetUserRolesAsync(User user)
     {
@@ -144,7 +157,18 @@ public class IdentityService : IIdentityService
             throw new KeyNotFoundException("User not found!");
         var roles = await _userManager.GetRolesAsync(appUser);
         var roleName = roles[0];
-        await _userRepository.DeleteUserAsync(appUser.ToUser(roleName));
+
+        if (roleName == "Manager")
+        {
+            await _eventRequestRepository.DeleteByManagerIdAsync(userId);
+        }
+
+        var result = await _userManager.DeleteAsync(appUser);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new InvalidOperationException(errors);
+        }
     }
 
     public async Task<User?> GetUserByEmailAsync(string email)

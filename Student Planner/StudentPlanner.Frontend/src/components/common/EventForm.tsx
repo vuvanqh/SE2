@@ -2,24 +2,24 @@ import Input from "../common/Input";
 import { useActionState } from "react";
 import { validateData } from "../../api/helpers";
 
-type stateType = {
-    title: string,
-    location?: string,
-    startTime: string,
-    endTime: string,
-    description?: string,
-    errors: string[]
-}
+export type EventFormState = {
+    title: string;
+    location?: string;
+    startTime: string;
+    endTime: string;
+    description?: string;
+    errors: string[];
+};
 
-type EventFormProps = {
-  initialValues: stateType;
+export type EventFormProps = {
+  initialValues: EventFormState;
   onClose: () => void;
   onSubmit: (data: any) => Promise<string[] | null>;
   submitLabel: string;
 };
 
 export default function EventForm({ initialValues, onClose, onSubmit, submitLabel }: EventFormProps) {
-    const [state, formAction] = useActionState(async (_: stateType, formData: FormData) => {
+    const [state, formAction] = useActionState(async (_: EventFormState, formData: FormData) => {
         const data = {
             title: formData.get("title") as string,
             location: formData.get("location") as string || undefined,

@@ -24,11 +24,11 @@ public class IdentityServiceTests : IDisposable
     private readonly Mock<RoleManager<ApplicationRole>> _roleManagerMock;
     private readonly ApplicationDbContext _context;
     private readonly IIdentityService _identityService;
-    private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IEventRequestRepository> _userRepositoryMock;
 
     public IdentityServiceTests()
     {
-        _userRepositoryMock = new Mock<IUserRepository>();
+        _userRepositoryMock = new Mock<IEventRequestRepository>();
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;

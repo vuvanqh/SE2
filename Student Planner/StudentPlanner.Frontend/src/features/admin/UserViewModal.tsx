@@ -17,7 +17,7 @@ export default function UserViewModal({user, onClose, deleteUser}: {user: userRe
         <div className="view-section">
         <span className="view-label">Faculty</span>
         <p className="view-text">
-            {user.facultyCode || "—"}
+            {user.faculty || "—"}
         </p>
         </div>
 

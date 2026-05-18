@@ -6,6 +6,7 @@ using StudentPlanner.Core.Application.ClientContracts.DTO;
 using StudentPlanner.Core.Application.Events.UsosEvents.Services;
 using StudentPlanner.Core.Entities;
 using StudentPlanner.Core.Domain.RepositoryContracts;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace StudentPlanner.Tests.Usos;
@@ -48,7 +49,8 @@ public class UsosEventServiceTests
         var service = new UsosEventService(
             usosClientMock.Object,
             cache,
-            userRepositoryMock.Object
+            userRepositoryMock.Object,
+            Mock.Of<ILogger<UsosEventService>>()
         );
 
         // Act
@@ -120,7 +122,8 @@ public class UsosEventServiceTests
         var service = new UsosEventService(
             usosClientMock.Object,
             cache,
-            userRepositoryMock.Object
+            userRepositoryMock.Object,
+            Mock.Of<ILogger<UsosEventService>>()
         );
 
         // Act

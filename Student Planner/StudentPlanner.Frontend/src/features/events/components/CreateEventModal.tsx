@@ -1,4 +1,4 @@
-import Modal from "../../../components/modals/Modal";
+import FormModal from "../../../components/common/FormModal";
 import EventForm from "../../../components/common/EventForm";
 import { useGetAllPersonalEvents } from "../hooks/personalEventHooks";
 import { extractErrors } from "../../../api/helpers";
@@ -31,13 +31,8 @@ export default function CreateEventModal({ startTime, onClose }: createEventProp
         }
     }
   return (
-    <Modal open onClose={onClose}>
-        <div className="modal-header">
-            <h2>Create Personal Event</h2>
-        </div>
-        <hr className="modal-divider" />
-
+    <FormModal title="Create Personal Event" open onClose={onClose}>
         <EventForm initialValues={initial} submitLabel="Create" onClose={onClose} onSubmit={handleSubmit}/>
-    </Modal>
+    </FormModal>
   );
 }

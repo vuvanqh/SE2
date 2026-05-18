@@ -8,7 +8,7 @@ namespace StudentPlanner.Core.Domain.RepositoryContracts;
 public interface IUserRepository
 {
     Task<User?> GetUserByEmailAsync(string email);
-    Task<List<User>> GetFacultyUsersAsync(Guid facultyId);
+    Task<List<User>> GetFacultyUsersAsync(Guid? facultyId);
     Task<List<User>> GetUserByRoleAsync(string role);
     Task DeleteUserAsync(User user);
     Task<User?> GetUserByRefreshToken(string token);

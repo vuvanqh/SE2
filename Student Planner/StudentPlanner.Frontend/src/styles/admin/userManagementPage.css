@@ -38,6 +38,9 @@
 .users-card{
   flex:1;
   padding:1.5rem;
+
+  display:flex;
+  flex-direction:column;
 }
 
 .users-header{
@@ -188,6 +191,27 @@
   gap:.8rem;
 }
 
+.users-list li{
+  width:100%;
+}
+
+.pagination-controls{
+  margin-top:auto;
+  padding-top:1.25rem;
+
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:.75rem;
+}
+
+.pagination-controls p{
+  margin:0;
+  color:#64748b;
+  font-size:.9rem;
+  font-weight:600;
+}
+
 .user-row{
   width:100%;
 
@@ -236,6 +260,69 @@
 
 .user-row:hover .row-arrow{
   transform:translateX(4px);
+}
+
+.academic-event-card{
+  display:flex;
+  flex-direction:column;
+  gap:.9rem;
+
+  padding:1rem 1.1rem;
+  border-radius:16px;
+  border:1px solid var(--glass-border);
+
+  background:rgba(255,255,255,.32);
+  box-shadow:0 10px 24px rgba(0,0,0,.07);
+}
+
+.academic-event-card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:1rem;
+}
+
+.academic-event-card-header h2{
+  margin:0;
+  color:var(--navy);
+  font-size:1.05rem;
+}
+
+.academic-event-card-faculty{
+  margin:.25rem 0 0;
+  color:#64748b;
+  font-size:.82rem;
+  font-weight:600;
+}
+
+.academic-event-card-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem 1rem;
+  color:#334155;
+  font-size:.9rem;
+}
+
+.academic-event-card-meta p,
+.academic-event-card-description{
+  margin:0;
+}
+
+.academic-event-card-description{
+  color:#475569;
+  line-height:1.5;
+  min-height:3rem;
+}
+
+.academic-event-card-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:.6rem;
+  flex-wrap:wrap;
+}
+
+.academic-event-card-actions .ghost-btn{
+  min-width:110px;
 }
 
 /* ---------- RESPONSIVE ---------- */

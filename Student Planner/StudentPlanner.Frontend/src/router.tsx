@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/routing/ProtectedRoute";
 import LoginPage from "./pages/public/LoginPage";
 import RegisterPage from "./pages/public/RegisterPage";
 import ForgotPasswordPage from "./pages/public/ForgotPasswordPage";
+import UsosLoginPage from "./pages/public/UsosLoginPage";
 import ApplicationLayout from "./pages/ApplicationLayout";
 import StudentPage from "./pages/protected/Student/StudentPage";
 import RoleRoute from "./components/routing/RoleRoute";
@@ -14,6 +15,7 @@ import ManagerCalendarPage from "./pages/protected/Manager/ManagerCalendarPage";
 import AdminCalendarPage from "./pages/protected/Admin/AdminCalendarPage";
 import UserManagementPage from "./pages/protected/Admin/UserManagementPage";
 import AcademicEventPage from "./pages/protected/common/AcademicEventPage";
+import EventRequestPage from "./pages/protected/common/EventRequestPage";
 
 export const router = createBrowserRouter([{
     path: "/",
@@ -34,6 +36,10 @@ export const router = createBrowserRouter([{
                 {
                     path: "forgot-password",
                     element: <ForgotPasswordPage />
+                },
+                {
+                    path: "usos-login",
+                    element: <UsosLoginPage />
                 }
             ]
         },
@@ -54,10 +60,6 @@ export const router = createBrowserRouter([{
                         {
                             path: "events",
                             element: <AcademicEventPage/>
-                        },
-                        {
-                            path: "requests",
-                            element: <StudentCalendarPage />
                         }
                     ]
                 },
@@ -77,7 +79,7 @@ export const router = createBrowserRouter([{
                         },
                         {
                             path: "requests",
-                            element: <ManagerCalendarPage />
+                            element: <EventRequestPage />
                         }
                     ]
                 },
@@ -90,6 +92,14 @@ export const router = createBrowserRouter([{
                         {
                             index: true,
                             element: <AdminCalendarPage/>
+                        },
+                        {
+                            path: "events",
+                            element: <AcademicEventPage/>
+                        },
+                        {
+                            path: "requests",
+                            element: <EventRequestPage />
                         },
                         {
                             path:"users",

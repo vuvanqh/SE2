@@ -34,21 +34,68 @@ public class AcademicEventRepository : IAcademicEventRepository
     public async Task<IEnumerable<AcademicEvent>> GetAllAsync()
     {
         return await _context.AcademicEvents
+            .OrderBy(e => e.EventDetails.StartTime)
             .ToListAsync();
+    }
+
+    public async Task<IEnumerable<AcademicEvent>> GetAllPagedAsync(int skip, int take)
+    {
+        return await _context.AcademicEvents
+            .OrderBy(e => e.EventDetails.StartTime)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync();
+    }
+
+    public async Task<int> CountAllAsync()
+    {
+        return await _context.AcademicEvents.CountAsync();
     }
 
     public async Task<IEnumerable<AcademicEvent>> GetByFacultyIdAsync(Guid facultyId)
     {
         return await _context.AcademicEvents
             .Where(e => e is FacultyEvent && e.FacultyId == facultyId)
+            .OrderBy(e => e.EventDetails.StartTime)
             .ToListAsync();
+    }
+
+    public async Task<IEnumerable<AcademicEvent>> GetByFacultyIdPagedAsync(Guid facultyId, int skip, int take)
+    {
+        return await _context.AcademicEvents
+            .Where(e => e is FacultyEvent && e.FacultyId == facultyId)
+            .OrderBy(e => e.EventDetails.StartTime)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync();
+    }
+
+    public async Task<int> CountByFacultyIdAsync(Guid facultyId)
+    {
+        return await _context.AcademicEvents.CountAsync(e => e is FacultyEvent && e.FacultyId == facultyId);
     }
 
     public async Task<IEnumerable<AcademicEvent>> GetUniversityEventsAsync()
     {
         return await _context.AcademicEvents
             .Where(e => e is UniversityEvent)
+            .OrderBy(e => e.EventDetails.StartTime)
             .ToListAsync();
+    }
+
+    public async Task<IEnumerable<AcademicEvent>> GetUniversityEventsPagedAsync(int skip, int take)
+    {
+        return await _context.AcademicEvents
+            .Where(e => e is UniversityEvent)
+            .OrderBy(e => e.EventDetails.StartTime)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync();
+    }
+
+    public async Task<int> CountUniversityEventsAsync()
+    {
+        return await _context.AcademicEvents.CountAsync(e => e is UniversityEvent);
     }
 
     public async Task UpdateAsync(AcademicEvent academicEvent)
@@ -101,6 +148,22 @@ public class AcademicEventRepository : IAcademicEventRepository
     {
         return await _context.AcademicEvents
             .Where(e => e is FacultyEvent && e.FacultyId.HasValue && facultyIds.Contains(e.FacultyId.Value))
+            .OrderBy(e => e.EventDetails.StartTime)
             .ToListAsync();
+    }
+
+    public async Task<IEnumerable<AcademicEvent>> GetByFacultiesPagedAsync(List<Guid> facultyIds, int skip, int take)
+    {
+        return await _context.AcademicEvents
+            .Where(e => e is FacultyEvent && e.FacultyId.HasValue && facultyIds.Contains(e.FacultyId.Value))
+            .OrderBy(e => e.EventDetails.StartTime)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync();
+    }
+
+    public async Task<int> CountByFacultiesAsync(List<Guid> facultyIds)
+    {
+        return await _context.AcademicEvents.CountAsync(e => e is FacultyEvent && e.FacultyId.HasValue && facultyIds.Contains(e.FacultyId.Value));
     }
 }

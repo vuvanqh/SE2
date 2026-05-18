@@ -16,6 +16,7 @@ using StudentPlanner.Infrastructure;
 using StudentPlanner.Core.Domain;
 using StudentPlanner.Core.Domain.Entities;
 using StudentPlanner.Core.Application.AcademicEvents.DTOs;
+using StudentPlanner.Core.Application.Common.DTOs;
 using StudentPlanner.Core;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,9 +40,12 @@ public class AcademicEventControllerE2ETests : IntegrationTestBase
             FacultyId = (Guid?)null
         }, TestContext.Current.CancellationToken);
 
-        // If registration fails with 400, it might be because the user already exists.
+        // If registration fails with 400 or 409, it might be because the user already exists.
         // We'll proceed to login anyway.
-        if (registerResponse.StatusCode != System.Net.HttpStatusCode.BadRequest && registerResponse.StatusCode != System.Net.HttpStatusCode.OK && registerResponse.StatusCode != System.Net.HttpStatusCode.Created)
+        if (registerResponse.StatusCode != System.Net.HttpStatusCode.BadRequest &&
+            registerResponse.StatusCode != System.Net.HttpStatusCode.Conflict &&
+            registerResponse.StatusCode != System.Net.HttpStatusCode.OK &&
+            registerResponse.StatusCode != System.Net.HttpStatusCode.Created)
         {
             registerResponse.EnsureSuccessStatusCode();
         }
@@ -126,7 +130,7 @@ public class AcademicEventControllerE2ETests : IntegrationTestBase
     public async Task GetAccessibleEvents_StudentWithoutFilters_Returns200()
     {
         var token = await RegisterAndLoginUserAsync(
-            "student_ok@test.com",
+            "student_ok@pw.edu.pl",
             "Password123!"
         );
 
@@ -144,7 +148,7 @@ public class AcademicEventControllerE2ETests : IntegrationTestBase
     public async Task GetAccessibleEvents_StudentWithFacultyFilter_Returns403()
     {
         var token = await RegisterAndLoginUserAsync(
-            "student_filter@test.com",
+            "student_filter@pw.edu.pl",
             "Password123!"
         );
 
@@ -199,7 +203,7 @@ public class AcademicEventControllerE2ETests : IntegrationTestBase
         await SeedEventAsync(event2, faculty2);
 
         var token = await RegisterAndLoginUserAsync(
-            "admin_filter@test.com",
+            "admin_filter@pw.edu.pl",
             "Password123!",
             "Admin"
         );
@@ -216,10 +220,11 @@ public class AcademicEventControllerE2ETests : IntegrationTestBase
 
         var events =
             await response.Content.ReadFromJsonAsync<
-                List<AcademicEventResponse>>(cancellationToken: TestContext.Current.CancellationToken);
+                PagedResult<AcademicEventResponse>>(cancellationToken: TestContext.Current.CancellationToken);
 
-        events.Should().Contain(e => e.Id == event1);
-        events.Should().NotContain(e => e.Id == event2);
+        events.Should().NotBeNull();
+        events!.Items.Should().Contain(e => e.Id == event1);
+        events.Items.Should().NotContain(e => e.Id == event2);
     }
 
     [Fact]
@@ -245,23 +250,13 @@ public class AcademicEventControllerE2ETests : IntegrationTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var returnedEvents = await response.Content.ReadFromJsonAsync<List<AcademicEventResponse>>(TestContext.Current.CancellationToken);
+        var returnedEvents = await response.Content.ReadFromJsonAsync<PagedResult<AcademicEventResponse>>(TestContext.Current.CancellationToken);
 
         returnedEvents.Should().NotBeNull();
-        returnedEvents.Should().NotBeEmpty();
-        returnedEvents.Should().Contain(e => e.Id == eventId && e.Title == "E2E Test Event");
+        returnedEvents!.Items.Should().NotBeEmpty();
+        returnedEvents.Items.Should().Contain(e => e.Id == eventId && e.Title == "E2E Test Event");
     }
 
-    [Fact]
-    public async Task GetAccessibleEvents_Student_Returns403()
-    {
-        var token = await RegisterAndLoginUserAsync("student_no_access@pw.edu.pl", "Password123!", "Student");
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-        var response = await _client.GetAsync("/api/academic-events", TestContext.Current.CancellationToken);
-
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-    }
 
     [Fact]
     public async Task GetAccessibleEvents_Unauthorized_Returns401()
