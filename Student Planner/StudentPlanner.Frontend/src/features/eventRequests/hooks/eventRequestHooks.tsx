@@ -8,9 +8,9 @@ import { useUser } from "../../../global-hooks/authHooks";
 export function useMyEventRequests(){
     const {user} = useUser();
     const {data, isPending} = useQuery<eventRequestResponse[]>({
-        queryKey: ["eventRequests", "all"],
+        queryKey: ["eventRequests", "mine"],
         queryFn: getMyRequests,
-        enabled: !!user && user.userRole=="Manager"
+        enabled: !user || user.userRole=="Manager"
     })
 
     return {
@@ -24,7 +24,7 @@ export function useAllEventRequests(){
     const {data, isPending} = useQuery<eventRequestResponse[]>({
         queryKey: ["eventRequests", "all"],
         queryFn: getAllEventRequests,
-        enabled: !!user && user.userRole=="Admin"
+        enabled: !user || user.userRole=="Admin"
     })
 
     return {

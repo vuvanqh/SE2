@@ -1,7 +1,9 @@
+import { useContext } from "react";
 import Modal from "../../../components/modals/Modal";
 import ViewEventDetails from "../../../components/common/ViewEventDetails";
 import { useEventRequest } from "../hooks/eventRequestHooks";
 import { useUser } from "../../../global-hooks/authHooks"
+import { ModalContext } from "../../../store/ModalContext";
 
 type createEventProps = {
     requiresRole?: ("Student" | "Manager" | "Admin")[],
@@ -12,6 +14,7 @@ type createEventProps = {
 export default function ViewEventRequestModal({ requestId, onClose }: createEventProps) {
     const { eventRequest, isPending, deleteRequest } = useEventRequest(requestId);
     const { user } = useUser();
+    const { open } = useContext(ModalContext);
 
     if (isPending || !eventRequest) return <Modal open>Loading...</Modal>;
 
@@ -39,6 +42,7 @@ export default function ViewEventRequestModal({ requestId, onClose }: createEven
             {user && user.userRole == "Manager" && eventRequest.status == "Pending" &&
                 <div className="modal-actions">
                     <button className="btn-secondary" onClick={handleDelete}>Delete</button>
+                    <button className="btn-primary" onClick={() => open({ type: "editRequest", requestId })}>Edit</button>
                 </div>}
 
             {user && user.userRole == "Admin" && eventRequest.status == "Pending" &&
